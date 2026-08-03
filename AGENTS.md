@@ -12,6 +12,8 @@ These rules extend `~/.codex/AGENTS.md` and apply to this repository.
 
 ## Required Pull Request Metadata
 
+Repository project: `AdamDjo` → `Scrum Board` (`#5`).
+
 Before reporting a pull request as ready, verify all of the following with the GitHub CLI:
 
 - linked issue through `Closes #<number>`;

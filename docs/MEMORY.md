@@ -3,6 +3,8 @@
 ## Repository
 
 - GitHub : `AdamDjo/PortfolioAI`
+- GitHub Project : `Scrum Board` (`AdamDjo`, projet #5)
+- Project ID : `PVT_kwHOAacnj84BU6rS`
 - Visibilité : publique
 - Branches d'intégration : `main` et `develop`
 
