@@ -202,7 +202,21 @@ release/<semver>
 
 - Always create the issue before the branch
 - Never commit directly to `develop` or `main`
+- Never merge a pull request: Adem always performs merges manually
+- Never run `gh pr merge`, call a GitHub merge API, merge locally into `develop` or `main`, or close the linked issue before Adem merges
 - Use `/feature`, `/bug`, `/hotfix` skills — they create issue + branch automatically
+
+**Required PR delivery checklist:**
+
+- Link the issue with `Closes #<number>`
+- Assign the PR to `AdamDjo`
+- Add all applicable type, domain, priority, and phase labels
+- Assign the matching milestone
+- Add the PR to the repository GitHub Project
+- Include a complete summary, test plan, and validation results
+- Verify every metadata field with the GitHub CLI after PR creation
+- CI may be monitored and fixes may be pushed to the PR branch, but the workflow always stops before merge
+- If a required permission, milestone, or GitHub Project is unavailable, report the blocker instead of silently omitting it
 
 ### Workflow Claude → GitHub
 
