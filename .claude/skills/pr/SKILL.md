@@ -1,7 +1,7 @@
 ---
 name: pr
-description: Pushes the current branch and opens a PR toward the correct target. Extracts the issue number from the branch name automatically.
-allowed-tools: Bash, mcp__github__create_pull_request
+description: Pushes the current branch and opens a fully configured PR toward the correct target. Never merges it.
+allowed-tools: Bash
 ---
 
 The user wants to push their current branch and open a PR.
@@ -64,12 +64,17 @@ Execute in order:
    - Add `domain: devops` if files changed in `.github/`
    - Add `domain: shared` if files changed in `packages/`
 
-8. **Create the PR via mcp**github**create_pull_request**
+8. **Create the PR with `gh pr create`**
    - owner and repo read from MEMORY.md
-   - assignees: [owner]
-   - reviewers: [owner]
+   - assign the PR to the owner
+   - never assign the owner as their own reviewer
+   - never merge the PR, even after CI passes
 
-9. **Assign the PR to the Scrum Board and milestone** (if PROJECT_ID is set in MEMORY.md)
+9. **Assign the PR to the Scrum Board and milestone — mandatory**
+
+   - Reuse the linked issue milestone when available; otherwise select the milestone matching the phase or release.
+   - Resolve the repository project with `gh project list --owner <owner>` when `PROJECT_ID` is not recorded in MEMORY.md.
+   - If the CLI lacks `read:project` or `project` scope, stop and ask the user to authorize the required scope. Never skip the project silently.
 
    ```bash
    PR_NODE_ID=$(gh api repos/<owner>/<repo>/pulls/<PR_NUMBER> --jq '.node_id')
@@ -79,5 +84,12 @@ Execute in order:
    gh api repos/<owner>/<repo>/issues/<PR_NUMBER> --method PATCH --field milestone=$MILESTONE_NUMBER
    ```
 
-10. **Confirm to the user with the PR URL**
-    - Show: assignee ✅, reviewer ✅, project ✅, milestone ✅ (or "no milestone for this branch")
+10. **Apply and verify all metadata**
+    - Add applicable type, domain, priority, and phase labels.
+    - Verify issue link, assignee, labels, milestone, project, title, body, and CI status with `gh`.
+    - Missing required metadata is a blocker, not a warning.
+
+11. **Confirm to the user with the PR URL, then stop**
+    - Show: issue ✅, assignee ✅, labels ✅, project ✅, milestone ✅, CI status.
+    - Explicitly state that the PR is waiting for Adem's manual merge.
+    - Do not close the linked issue manually before the merge.
