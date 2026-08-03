@@ -1,0 +1,10 @@
+node_modules
+.next
+dist
+build
+coverage
+.turbo
+pnpm-lock.yaml
+
+# Claude Code config — not source code, skip formatting
+.claude/
