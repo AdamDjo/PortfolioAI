@@ -3,7 +3,7 @@
 import { Github, Linkedin, Menu, Moon, Sun, X } from 'lucide-react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useEffect, useState, type ReactNode } from 'react'
+import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
 
 const navItems = [
   { href: '/', label: 'Accueil' },
@@ -12,6 +12,12 @@ const navItems = [
   { href: '/a-propos', label: 'À propos' },
   { href: '/contact', label: 'Contact' },
 ]
+
+const DarkModeContext = createContext(true)
+
+export function useDarkMode() {
+  return useContext(DarkModeContext)
+}
 
 export function SiteShell({ children }: { children: ReactNode }) {
   const pathname = usePathname()
@@ -35,13 +41,13 @@ export function SiteShell({ children }: { children: ReactNode }) {
   }
 
   return (
-    <>
+    <DarkModeContext.Provider value={darkMode}>
       <a className="skip-link" href="#main-content">
         Aller au contenu
       </a>
       <header className="site-header">
         <div className="shell header-inner">
-          <Link className="wordmark" href="/" aria-label="Retour à l’accueil">
+          <Link className="wordmark" href="/">
             ADEM<span>.</span>
           </Link>
           <nav
@@ -108,6 +114,6 @@ export function SiteShell({ children }: { children: ReactNode }) {
           </div>
         </div>
       </footer>
-    </>
+    </DarkModeContext.Provider>
   )
 }

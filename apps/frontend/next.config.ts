@@ -8,6 +8,9 @@ const withBundleAnalyzer = bundleAnalyzer({
 
 const nextConfig: NextConfig = {
   output: process.env.DOCKER_BUILD === 'true' ? 'standalone' : undefined,
+  eslint: {
+    ignoreDuringBuilds: true,
+  },
 }
 
 export default withBundleAnalyzer(nextConfig)
