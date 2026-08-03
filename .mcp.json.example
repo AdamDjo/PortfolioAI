@@ -1,0 +1,18 @@
+{
+  "mcpServers": {
+    "github": {
+      "type": "http",
+      "url": "https://api.githubcopilot.com/mcp/",
+      "headers": {
+        "Authorization": "Bearer <your-github-token>"
+      }
+    },
+    "supabase": {
+      "type": "http",
+      "url": "https://mcp.supabase.com",
+      "headers": {
+        "Authorization": "Bearer <your-supabase-access-token>"
+      }
+    }
+  }
+}

@@ -1,0 +1,79 @@
+name: "Feature Request"
+description: "Propose a new feature"
+title: "[FEATURE] "
+labels: ["type: feature"]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Feature description
+      description: "Clearly describe what you want to add and why."
+    validations:
+      required: true
+
+  - type: textarea
+    id: motivation
+    attributes:
+      label: Motivation / Problem solved
+      description: "What problem or need does this feature address?"
+    validations:
+      required: true
+
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: Acceptance criteria
+      placeholder: |
+        - [ ] Criterion 1
+        - [ ] Criterion 2
+    validations:
+      required: true
+
+  - type: dropdown
+    id: domain
+    attributes:
+      label: Domain
+      options:
+        - "domain: frontend"
+        - "domain: backend"
+        - "domain: shared"
+        - "domain: database"
+        - "domain: devops"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: phase
+    attributes:
+      label: Phase
+      options:
+        - "phase: 1"
+        - "phase: 2"
+        - "phase: 3"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: priority
+    attributes:
+      label: Priority
+      options:
+        - "priority: high"
+        - "priority: medium"
+        - "priority: low"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: size
+    attributes:
+      label: Estimated size
+      options:
+        - "XS (< 1h)"
+        - "S (1-3h)"
+        - "M (3-8h)"
+        - "L (1-2d)"
+        - "XL (2-5d)"
+        - "XXL (> 5d)"
+    validations:
+      required: false

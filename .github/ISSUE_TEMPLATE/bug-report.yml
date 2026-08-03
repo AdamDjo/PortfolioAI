@@ -1,0 +1,75 @@
+name: "Bug Report"
+description: "Report a bug"
+title: "[BUG] "
+labels: ["type: bug", "status: needs-info"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Please fill in this form as completely as possible. The more detail you provide, the faster we can fix it.
+
+  - type: textarea
+    id: description
+    attributes:
+      label: "Bug description"
+      description: "What happened? What was the expected behavior?"
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: "Steps to reproduce"
+      placeholder: |
+        1. Go to ...
+        2. Click on ...
+        3. See the error ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: "Expected behavior"
+    validations:
+      required: true
+
+  - type: textarea
+    id: logs
+    attributes:
+      label: "Logs / Stack trace"
+      description: "Paste browser console errors or terminal output here"
+      render: shell
+
+  - type: dropdown
+    id: domain
+    attributes:
+      label: "Affected domain"
+      options:
+        - "frontend"
+        - "backend"
+        - "shared"
+        - "database"
+        - "devops"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: "Severity"
+      options:
+        - "critical — completely blocks usage"
+        - "major — important feature broken"
+        - "minor — cosmetic or rare case"
+    validations:
+      required: true
+
+  - type: textarea
+    id: environment
+    attributes:
+      label: "Environment"
+      placeholder: |
+        - OS: macOS 15 / Windows 11 / Ubuntu 22
+        - Browser: Chrome 121 / Firefox 123
+        - Node: 20.x
