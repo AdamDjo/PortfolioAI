@@ -1,6 +1,5 @@
 'use client'
 
-import { AnimatePresence, LazyMotion, domAnimation, m } from 'framer-motion'
 import {
   ArrowRight,
   Bot,
@@ -13,11 +12,12 @@ import {
   Smartphone,
   Sparkles,
 } from 'lucide-react'
-import dynamic from 'next/dynamic'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useRef, useState, type FormEvent } from 'react'
 
+import { HomeMotion } from '@/components/home-motion'
+import { useDarkMode } from '@/components/site-shell'
 import { projects } from '@/data/portfolio'
 
 const features = [
@@ -27,11 +27,6 @@ const features = [
 ] as const
 
 type FeatureId = (typeof features)[number]['id']
-
-const HomeMotion = dynamic(
-  () => import('@/components/home-motion').then((module) => module.HomeMotion),
-  { ssr: false }
-)
 
 const linkPreview = [
   { name: 'Awwwards', category: 'Inspiration', tone: 'lime' },
@@ -47,6 +42,7 @@ const dashboardPreview = [
 ]
 
 export function HomePage() {
+  const darkMode = useDarkMode()
   const [question, setQuestion] = useState('')
   const [answer, setAnswer] = useState('')
   const [feature, setFeature] = useState<FeatureId>('ia')
@@ -103,25 +99,17 @@ export function HomePage() {
         </div>
 
         <div className="hero-visual" id="conversation">
-          <picture>
-            <source media="(prefers-color-scheme: light)" srcSet="/images/hero-brain-light.png" />
-            <Image
-              className="brain brain-dark"
-              src="/images/hero-brain-dark.png"
-              width={1536}
-              height={1024}
-              priority
-              alt="Cerveau 3D indigo relié par un réseau neuronal"
-            />
-            <Image
-              className="brain brain-light"
-              src="/images/hero-brain-light.png"
-              width={1536}
-              height={1024}
-              priority
-              alt="Cerveau 3D blanc relié par un réseau neuronal"
-            />
-          </picture>
+          <Image
+            className="brain"
+            src={darkMode ? '/images/hero-brain-dark.webp' : '/images/hero-brain-light.webp'}
+            width={1080}
+            height={720}
+            decoding="async"
+            unoptimized
+            priority
+            fetchPriority="high"
+            alt="Cerveau 3D relié par un réseau neuronal"
+          />
           <div className="chat-card">
             <div className="chat-header">
               <span>
@@ -196,105 +184,78 @@ export function HomePage() {
           role="tabpanel"
           aria-labelledby={`feature-tab-${feature}`}
         >
-          <LazyMotion features={domAnimation} strict>
-            <AnimatePresence initial={false} mode="wait">
-              {feature === 'ia' ? (
-                <m.div
-                  className="feature-panel feature-panel-ai"
-                  key="ia"
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -8 }}
-                  transition={{ type: 'spring', duration: 0.3, bounce: 0 }}
+          {feature === 'ia' ? (
+            <div className="feature-panel feature-panel-ai" key="ia">
+              <div>
+                <p className="eyebrow">Une réponse, pas un formulaire</p>
+                <h2>Explore mon travail en posant une vraie question.</h2>
+                <p>
+                  Le chat devient un point d’entrée rapide vers mes projets, mes compétences et ma
+                  façon de travailler.
+                </p>
+              </div>
+              <div className="prompt-list">
+                <button
+                  type="button"
+                  onClick={() => focusChat('Quel projet montre le mieux ton niveau en Next.js ?')}
                 >
-                  <div>
-                    <p className="eyebrow">Une réponse, pas un formulaire</p>
-                    <h2>Explore mon travail en posant une vraie question.</h2>
-                    <p>
-                      Le chat devient un point d’entrée rapide vers mes projets, mes compétences et
-                      ma façon de travailler.
-                    </p>
-                  </div>
-                  <div className="prompt-list">
-                    <button
-                      type="button"
-                      onClick={() =>
-                        focusChat('Quel projet montre le mieux ton niveau en Next.js ?')
-                      }
-                    >
-                      Mon meilleur projet Next.js <ArrowRight size={15} />
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => focusChat('Comment travailles-tu avec une équipe produit ?')}
-                    >
-                      Ma façon de collaborer <ArrowRight size={15} />
-                    </button>
-                  </div>
-                </m.div>
-              ) : null}
-              {feature === 'links' ? (
-                <m.div
-                  className="feature-panel feature-panel-links"
-                  key="links"
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -8 }}
-                  transition={{ type: 'spring', duration: 0.3, bounce: 0 }}
+                  Mon meilleur projet Next.js <ArrowRight size={15} />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => focusChat('Comment travailles-tu avec une équipe produit ?')}
                 >
-                  <div className="feature-panel-heading">
-                    <div>
-                      <p className="eyebrow">Bibliothèque personnelle</p>
-                      <h2>Les références que je garde sous la main.</h2>
-                    </div>
-                    <Link className="text-link" href="/liens">
-                      Ouvrir la collection <ArrowRight size={15} />
-                    </Link>
-                  </div>
-                  <div className="link-preview-grid">
-                    {linkPreview.map((link) => (
-                      <article key={link.name}>
-                        <span className={`link-preview-cover preview-${link.tone}`}>
-                          {link.name.slice(0, 1)}
-                        </span>
-                        <strong>{link.name}</strong>
-                        <small>{link.category}</small>
-                      </article>
-                    ))}
-                  </div>
-                </m.div>
-              ) : null}
-              {feature === 'admin' ? (
-                <m.div
-                  className="feature-panel feature-panel-admin"
-                  key="admin"
-                  initial={{ opacity: 0, y: 12 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -8 }}
-                  transition={{ type: 'spring', duration: 0.3, bounce: 0 }}
-                >
-                  <div className="feature-panel-heading">
-                    <div>
-                      <p className="eyebrow">Vue d’ensemble</p>
-                      <h2>Un panneau simple pour piloter le contenu.</h2>
-                    </div>
-                    <Link className="text-link" href="/admin">
-                      Voir le dashboard <ArrowRight size={15} />
-                    </Link>
-                  </div>
-                  <div className="dashboard-preview-grid">
-                    {dashboardPreview.map((metric) => (
-                      <article key={metric.label}>
-                        <span>{metric.label}</span>
-                        <strong>{metric.value}</strong>
-                        <small>{metric.delta}</small>
-                      </article>
-                    ))}
-                  </div>
-                </m.div>
-              ) : null}
-            </AnimatePresence>
-          </LazyMotion>
+                  Ma façon de collaborer <ArrowRight size={15} />
+                </button>
+              </div>
+            </div>
+          ) : null}
+          {feature === 'links' ? (
+            <div className="feature-panel feature-panel-links" key="links">
+              <div className="feature-panel-heading">
+                <div>
+                  <p className="eyebrow">Bibliothèque personnelle</p>
+                  <h2>Les références que je garde sous la main.</h2>
+                </div>
+                <Link className="text-link" href="/liens">
+                  Ouvrir la collection <ArrowRight size={15} />
+                </Link>
+              </div>
+              <div className="link-preview-grid">
+                {linkPreview.map((link) => (
+                  <article key={link.name}>
+                    <span className={`link-preview-cover preview-${link.tone}`}>
+                      {link.name.slice(0, 1)}
+                    </span>
+                    <strong>{link.name}</strong>
+                    <small>{link.category}</small>
+                  </article>
+                ))}
+              </div>
+            </div>
+          ) : null}
+          {feature === 'admin' ? (
+            <div className="feature-panel feature-panel-admin" key="admin">
+              <div className="feature-panel-heading">
+                <div>
+                  <p className="eyebrow">Vue d’ensemble</p>
+                  <h2>Un panneau simple pour piloter le contenu.</h2>
+                </div>
+                <Link className="text-link" href="/admin">
+                  Voir le dashboard <ArrowRight size={15} />
+                </Link>
+              </div>
+              <div className="dashboard-preview-grid">
+                {dashboardPreview.map((metric) => (
+                  <article key={metric.label}>
+                    <span>{metric.label}</span>
+                    <strong>{metric.value}</strong>
+                    <small>{metric.delta}</small>
+                  </article>
+                ))}
+              </div>
+            </div>
+          ) : null}
         </div>
       </section>
 

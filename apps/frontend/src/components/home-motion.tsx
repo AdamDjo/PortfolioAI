@@ -1,97 +1,59 @@
 'use client'
 
-import { useGSAP } from '@gsap/react'
-import gsap from 'gsap'
-import { ScrollTrigger } from 'gsap/ScrollTrigger'
-
-gsap.registerPlugin(useGSAP, ScrollTrigger)
+import { useEffect } from 'react'
 
 export function HomeMotion() {
-  useGSAP(() => {
+  useEffect(() => {
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    if (reduceMotion) return
+    if (reduceMotion || !('IntersectionObserver' in window)) return
 
-    const activeBrain =
-      document.documentElement.dataset.theme === 'dark' ? '.brain-dark' : '.brain-light'
-    const intro = gsap.timeline({ defaults: { ease: 'power3.out' } })
-    intro
-      .from('.hero-copy > *', {
-        opacity: 0,
-        y: 18,
-        duration: 0.65,
-        stagger: 0.08,
-        clearProps: 'opacity,transform',
-      })
-      .from(
-        activeBrain,
-        { opacity: 0, scale: 0.92, duration: 1.1, clearProps: 'opacity,transform' },
-        0.1
-      )
-      .from(
-        '.chat-card',
-        { opacity: 0, y: 24, scale: 0.97, duration: 0.75, clearProps: 'opacity,transform' },
-        0.28
-      )
+    const animations: Animation[] = []
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return
 
-    const revealElements = gsap.utils.toArray<HTMLElement>('[data-reveal]')
-    const revealTriggers = revealElements.map((element) =>
-      ScrollTrigger.create({
-        trigger: element,
-        start: 'top 88%',
-        once: true,
-        onEnter: () => {
-          gsap.fromTo(
-            element,
-            { opacity: 0, y: 30 },
-            {
-              opacity: 1,
-              y: 0,
-              duration: 0.75,
-              ease: 'power3.out',
-              clearProps: 'opacity,transform',
-            }
+          const element = entry.target
+          animations.push(
+            element.animate(
+              [
+                { opacity: 0, transform: 'translateY(24px)' },
+                { opacity: 1, transform: 'translateY(0)' },
+              ],
+              { duration: 560, easing: 'cubic-bezier(.22,1,.36,1)' }
+            )
           )
-        },
-      })
-    )
 
-    const projectCards = gsap.utils.toArray<HTMLElement>('.project-card')
-    const projectTrigger =
-      projectCards.length > 0
-        ? ScrollTrigger.create({
-            trigger: '.project-grid-home',
-            start: 'top 88%',
-            once: true,
-            onEnter: () => {
-              gsap.fromTo(
-                projectCards,
-                { opacity: 0, y: 24, scale: 0.97 },
+          element.querySelectorAll<HTMLElement>('.project-card').forEach((card, index) => {
+            animations.push(
+              card.animate(
+                [
+                  { opacity: 0, transform: 'translateY(18px) scale(.98)' },
+                  { opacity: 1, transform: 'translateY(0) scale(1)' },
+                ],
                 {
-                  opacity: 1,
-                  y: 0,
-                  scale: 1,
-                  duration: 0.65,
-                  stagger: 0.09,
-                  ease: 'power3.out',
-                  clearProps: 'opacity,transform',
+                  duration: 480,
+                  delay: index * 70,
+                  easing: 'cubic-bezier(.22,1,.36,1)',
+                  fill: 'backwards',
                 }
               )
-            },
+            )
           })
-        : null
 
-    const refreshScrollTriggers = () => ScrollTrigger.refresh()
-    const refreshFrame = window.requestAnimationFrame(refreshScrollTriggers)
-    if (document.readyState !== 'complete') {
-      window.addEventListener('load', refreshScrollTriggers, { once: true })
-    }
+          observer.unobserve(element)
+        })
+      },
+      { rootMargin: '0px 0px -12% 0px' }
+    )
+
+    document.querySelectorAll<HTMLElement>('[data-reveal]').forEach((element) => {
+      observer.observe(element)
+    })
 
     return () => {
-      window.cancelAnimationFrame(refreshFrame)
-      window.removeEventListener('load', refreshScrollTriggers)
-      revealTriggers.forEach((trigger) => trigger.kill())
-      projectTrigger?.kill()
-      intro.kill()
+      observer.disconnect()
+      animations.forEach((animation) => animation.cancel())
     }
   }, [])
 
