@@ -20,7 +20,13 @@ const DEFAULT_TAG = 'À trier'
 const COVER_TONES = ['violet', 'coral', 'blue', 'green', 'cyan', 'mono'] as const
 
 const seedBookmarks: Bookmark[] = [
-  { id: 'react-dev', url: 'https://react.dev', domain: 'react.dev', name: 'React', tags: ['React'] },
+  {
+    id: 'react-dev',
+    url: 'https://react.dev',
+    domain: 'react.dev',
+    name: 'React',
+    tags: ['React'],
+  },
   {
     id: 'nextjs-org',
     url: 'https://nextjs.org',

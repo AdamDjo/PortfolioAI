@@ -5,7 +5,6 @@ import { m } from 'motion/react'
 import type { Variants } from 'motion/react'
 import type { ReactNode } from 'react'
 
-
 export const EASE_OUT_EXPO = [0.16, 1, 0.3, 1] as const
 export const EASE_OUT_QUINT = [0.22, 1, 0.36, 1] as const
 
@@ -115,4 +114,3 @@ export function StaggerItem({ children, className, variant = 'rise' }: StaggerIt
     </m.div>
   )
 }
-

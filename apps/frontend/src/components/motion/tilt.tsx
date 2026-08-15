@@ -17,14 +17,8 @@ export function Tilt({ children, className, max = 5 }: TiltProps) {
   const pointerX = useMotionValue(0.5)
   const pointerY = useMotionValue(0.5)
   const spring = { stiffness: 260, damping: 22, mass: 0.6 }
-  const rotateX = useSpring(
-    useTransform(pointerY, [0, 1], [max, -max]),
-    spring
-  )
-  const rotateY = useSpring(
-    useTransform(pointerX, [0, 1], [-max, max]),
-    spring
-  )
+  const rotateX = useSpring(useTransform(pointerY, [0, 1], [max, -max]), spring)
+  const rotateY = useSpring(useTransform(pointerX, [0, 1], [-max, max]), spring)
 
   function track(event: PointerEvent<HTMLDivElement>) {
     const bounds = event.currentTarget.getBoundingClientRect()
