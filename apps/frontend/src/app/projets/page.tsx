@@ -1,5 +1,6 @@
 import Link from 'next/link'
 
+import { Stagger, StaggerItem } from '@/components/motion/primitives'
 import { projects } from '@/data/portfolio'
 
 import type { Metadata } from 'next'
@@ -20,29 +21,30 @@ function ProjectsPage() {
           disparaître pour l’utilisateur ?
         </p>
       </header>
-      <div className="project-grid projects-page-grid">
+      <Stagger className="project-grid projects-page-grid" stagger={0.12}>
         {projects.map((project, index) => (
-          <article
-            className="project-card project-card-large"
-            id={project.title.toLowerCase().replaceAll(' ', '-')}
-            key={project.title}
-          >
-            <span className={`project-visual tone-${project.tone}`}>
-              <span>
-                0{index + 1} · {project.title}
+          <StaggerItem key={project.title}>
+            <article
+              className="project-card project-card-large"
+              id={project.title.toLowerCase().replaceAll(' ', '-')}
+            >
+              <span className={`project-visual tone-${project.tone}`}>
+                <span>
+                  0{index + 1} · {project.title}
+                </span>
               </span>
-            </span>
-            <div className="project-card-body">
-              <p className="eyebrow">{project.tags.join(' · ')}</p>
-              <h2>{project.title}</h2>
-              <p>{project.description}</p>
-              <Link className="text-link" href={project.url}>
-                Voir l’étude de cas →
-              </Link>
-            </div>
-          </article>
+              <div className="project-card-body">
+                <p className="eyebrow">{project.tags.join(' · ')}</p>
+                <h2>{project.title}</h2>
+                <p>{project.description}</p>
+                <Link className="text-link" href={project.url}>
+                  Voir l’étude de cas →
+                </Link>
+              </div>
+            </article>
+          </StaggerItem>
         ))}
-      </div>
+      </Stagger>
     </div>
   )
 }

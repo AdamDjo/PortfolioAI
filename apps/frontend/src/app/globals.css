@@ -5,13 +5,19 @@
   --surface: #ffffff;
   --surface-2: #f5f7fb;
   --text: #111318;
-  --muted: #69707d;
+  /* Kept at >=4.5:1 on --bg and --surface-2 so muted body copy passes WCAG AA. */
+  --muted: #5c6373;
   --line: #e4e8ef;
   --line-strong: #d9dee8;
   --accent: #6755f5;
+  /* Accent variant used as a solid fill under white text (>=4.5:1). */
+  --accent-solid: #6755f5;
   --accent-2: #8970ff;
   --accent-soft: #eeeaff;
+  /* Accent variant readable as text on --accent-soft (>=4.5:1). */
+  --accent-on-soft: #5a49e0;
   --success: #19a76f;
+  --success-text: #0a7049;
   --shadow: 0 24px 70px rgb(69 74 105 / 9%);
   --header: rgb(251 252 255 / 82%);
   color-scheme: light;
@@ -26,9 +32,14 @@
   --line: #20252e;
   --line-strong: #2a303b;
   --accent: #7060ff;
+  /* Darkened from --accent: white on #7060ff only reaches 4.37:1. */
+  --accent-solid: #6a58f5;
   --accent-2: #9b62f6;
   --accent-soft: #1d1839;
+  /* Accent variant readable as text on --accent-soft (>=4.5:1). */
+  --accent-on-soft: #a59dff;
   --success: #3ecf8e;
+  --success-text: #55dfa0;
   --shadow: 0 30px 90px rgb(0 0 0 / 36%);
   --header: rgb(0 1 2 / 82%);
   color-scheme: dark;
@@ -39,6 +50,7 @@
 }
 html {
   scroll-behavior: smooth;
+  overflow-x: clip;
   background: var(--bg);
 }
 body {
@@ -47,7 +59,12 @@ body {
   overflow-x: clip;
   background: var(--bg);
   color: var(--text);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family:
+    var(--font-sans),
+    -apple-system,
+    BlinkMacSystemFont,
+    'Segoe UI',
+    sans-serif;
   font-size: 15px;
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
@@ -75,7 +92,7 @@ img {
   max-width: 100%;
 }
 ::selection {
-  background: var(--accent);
+  background: var(--accent-solid);
   color: white;
 }
 :focus-visible {
@@ -169,10 +186,20 @@ img {
 }
 .nav-link.is-active {
   color: var(--text);
+}
+.nav-pill {
+  position: absolute;
+  inset: 0;
+  border-radius: 8px;
   background: var(--surface);
   box-shadow:
     0 1px 2px rgb(18 24 40 / 10%),
     0 6px 18px rgb(18 24 40 / 7%);
+}
+.nav-link .active-dot,
+.nav-link .nav-label {
+  position: relative;
+  z-index: 1;
 }
 .active-dot {
   width: 5px;
@@ -237,23 +264,51 @@ img {
   padding-top: 40px;
 }
 .availability {
+  position: relative;
   display: inline-flex;
   align-items: center;
   gap: 9px;
   padding: 8px 13px;
+  overflow: hidden;
   border: 1px solid var(--line-strong);
   border-radius: 8px;
   background: color-mix(in srgb, var(--surface) 88%, transparent);
   color: var(--muted);
-  font-size: 11px;
+  font-size: 12px;
   box-shadow: 0 8px 28px rgb(36 42 63 / 5%);
 }
-.availability span {
+.availability-dot {
+  position: relative;
+  display: grid;
+  place-items: center;
   width: 7px;
   height: 7px;
+}
+.availability-core,
+.availability-ping {
+  position: absolute;
+  inset: 0;
   border-radius: 50%;
   background: var(--success);
+}
+.availability-core {
   box-shadow: 0 0 0 4px color-mix(in srgb, var(--success) 13%, transparent);
+}
+.availability-ping {
+  opacity: 0;
+}
+/* Light sweep travelling across the badge; masked by the parent's overflow. */
+.availability-sweep {
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 42%;
+  background: linear-gradient(
+    100deg,
+    transparent,
+    color-mix(in srgb, var(--success) 22%, transparent),
+    transparent
+  );
+  pointer-events: none;
 }
 .hero h1 {
   max-width: 620px;
@@ -307,7 +362,8 @@ img {
 }
 .button-primary {
   color: white;
-  background: linear-gradient(104deg, #2f71e8, #704bf3 62%, #9a60ed);
+  /* Every stop kept at >=4.5:1 against white; the old #9a60ed tail was 3.98:1. */
+  background: linear-gradient(104deg, #2f71e8, #6344e0 62%, #8a4fd8);
   box-shadow: 0 12px 25px rgb(103 85 245 / 28%);
 }
 .button-primary:hover {
@@ -320,7 +376,7 @@ img {
 .hero-location {
   margin: 72px 0 0;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .hero-visual {
@@ -368,7 +424,7 @@ img {
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
 }
 .chat-header svg {
@@ -378,8 +434,9 @@ img {
   display: flex;
   align-items: center;
   gap: 6px;
-  color: var(--success);
-  font-size: 9px;
+  /* Dedicated darker green: --success is tuned for dots, not 9px text. */
+  color: var(--success-text);
+  font-size: 12px;
 }
 .chat-header small::before {
   content: '';
@@ -416,7 +473,7 @@ img {
   border-radius: 11px;
   color: white;
   font-weight: 800;
-  background: linear-gradient(145deg, #202737, var(--accent));
+  background: linear-gradient(145deg, #202737, var(--accent-solid));
   box-shadow: 0 8px 20px rgb(103 85 245 / 20%);
 }
 .message-ai {
@@ -429,7 +486,7 @@ img {
   padding: 10px 12px;
   border-left: 2px solid var(--accent);
   color: var(--muted);
-  font-size: 11px;
+  font-size: 12px;
 }
 .chat-form {
   display: flex;
@@ -504,7 +561,7 @@ img {
   padding: 0 6px;
   background: var(--bg);
   color: var(--muted);
-  font-size: 9px;
+  font-size: 12px;
   letter-spacing: 0.35em;
   text-transform: uppercase;
   white-space: nowrap;
@@ -551,12 +608,12 @@ img {
   color: var(--accent);
   background: var(--accent-soft);
 }
-.feature-tab.is-active::after {
-  content: '';
+.feature-underline {
   position: absolute;
   inset: auto 12% -1px;
   height: 2px;
   background: var(--accent);
+  box-shadow: 0 0 12px color-mix(in srgb, var(--accent) 55%, transparent);
 }
 .feature-stage {
   min-height: 320px;
@@ -571,13 +628,6 @@ img {
   box-shadow:
     0 20px 60px rgb(18 24 40 / 7%),
     inset 0 1px rgb(255 255 255 / 5%);
-  animation: feature-panel-enter 240ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-@keyframes feature-panel-enter {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
 }
 .feature-panel h2 {
   max-width: 650px;
@@ -612,7 +662,7 @@ img {
   border-radius: 11px;
   background: var(--bg);
   color: var(--text);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
   cursor: pointer;
   transition-property: border-color, background-color, transform, box-shadow;
@@ -667,7 +717,8 @@ img {
   background: radial-gradient(circle, #365314, #0f150a 70%);
 }
 .preview-cyan {
-  color: #12677e;
+  /* Darkened so the glyph clears 3:1 on the gradient's darkest stop too. */
+  color: #055c7a;
   background: linear-gradient(135deg, #dff5f7, #76c2cc);
 }
 .preview-mono {
@@ -683,7 +734,7 @@ img {
 }
 .link-preview-grid small {
   color: var(--muted);
-  font-size: 9px;
+  font-size: 12px;
 }
 .dashboard-preview-grid {
   display: grid;
@@ -701,7 +752,7 @@ img {
 .dashboard-preview-grid span {
   display: block;
   color: var(--muted);
-  font-size: 10px;
+  font-size: 12px;
 }
 .dashboard-preview-grid strong {
   display: block;
@@ -714,7 +765,7 @@ img {
   right: 15px;
   bottom: 17px;
   color: var(--success);
-  font-size: 9px;
+  font-size: 12px;
 }
 
 .intro-projects {
@@ -730,7 +781,7 @@ img {
 .eyebrow {
   margin: 0 0 10px;
   color: var(--muted);
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: 0.18em;
   text-transform: uppercase;
@@ -773,7 +824,9 @@ img {
   gap: 14px;
 }
 .project-card {
+  display: block;
   min-width: 0;
+  height: 100%;
   padding: 8px 8px 13px;
   border: 1px solid var(--line);
   border-radius: 11px;
@@ -837,7 +890,8 @@ img {
 .tone-coral {
   --orb-a: #ff6a88;
   --orb-b: #ffaf86;
-  background: #f75d7a;
+  /* Darkened from #f75d7a so the white label clears 4.5:1. */
+  background: #c62348;
 }
 .tone-ice {
   --orb-a: #a8d3ff;
@@ -858,7 +912,7 @@ img {
 .project-card small {
   margin-top: 2px;
   color: var(--muted);
-  font-size: 10px;
+  font-size: 12px;
 }
 .quality-strip {
   border-top: 1px solid var(--line);
@@ -875,7 +929,7 @@ img {
   justify-content: center;
   gap: 9px;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .site-footer {
@@ -888,7 +942,7 @@ img {
   justify-content: space-between;
   gap: 24px;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 12px;
 }
 .footer-links {
   display: flex;
@@ -1038,7 +1092,7 @@ img {
 .contact-detail span {
   display: block;
   color: var(--muted);
-  font-size: 10px;
+  font-size: 12px;
   text-transform: uppercase;
   letter-spacing: 0.15em;
 }
@@ -1062,7 +1116,7 @@ img {
 }
 .contact-form label {
   color: var(--muted);
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 700;
 }
 .contact-form input,
@@ -1124,10 +1178,10 @@ img {
   padding: 0 10px;
   border-radius: 7px;
   color: var(--muted);
-  font-size: 11px;
+  font-size: 12px;
 }
 .workspace-nav-item.is-active {
-  color: var(--accent);
+  color: var(--accent-on-soft);
   background: var(--accent-soft);
 }
 .workspace-content {
@@ -1162,16 +1216,17 @@ img {
   outline: 0;
   background: transparent;
   color: var(--text);
-  font-size: 11px;
+  /* 16px: iOS Safari zooms the viewport on focus below this size. */
+  font-size: 16px;
 }
 .search-bar button {
   height: 36px;
   padding: 0 15px;
   border: 0;
   border-radius: 7px;
-  background: #5b4bd6;
+  background: var(--accent-solid);
   color: white;
-  font-size: 11px;
+  font-size: 12px;
   cursor: pointer;
 }
 .filter-row {
@@ -1188,14 +1243,16 @@ img {
   border: 1px solid var(--line);
   border-radius: 7px;
   color: var(--muted);
-  font-size: 10px;
+  font-size: 12px;
 }
 .filter-row .is-active {
   border-color: color-mix(in srgb, var(--accent) 35%, var(--line));
   color: #5b4bd6;
   background: var(--accent-soft);
 }
-[data-theme='dark'] .filter-row .is-active {
+/* Scoped to the soft-background pills only: the veille tags use a solid
+   --accent background and need white text to clear 4.5:1. */
+[data-theme='dark'] .filter-row span.is-active {
   color: #a59dff;
 }
 .bookmark-grid {
@@ -1225,7 +1282,8 @@ img {
 }
 .link-cyan {
   background: linear-gradient(140deg, #eef8f9, #8bcad1);
-  color: #087aa0;
+  /* Darkened so the glyph clears 3:1 on the gradient's darkest stop too. */
+  color: #055c7a;
 }
 .link-mono {
   background: #0c0c0d;
@@ -1242,12 +1300,12 @@ img {
 .bookmark-card > p {
   margin: 9px 2px 1px;
   color: var(--muted);
-  font-size: 8px;
+  font-size: 12px;
 }
 .bookmark-card h2 {
   overflow: hidden;
   margin: 0 2px 5px;
-  font-size: 12px;
+  font-size: 14px;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
@@ -1257,7 +1315,7 @@ img {
   border-radius: 4px;
   color: var(--muted);
   background: var(--surface-2);
-  font-size: 8px;
+  font-size: 12px;
 }
 .metric-grid {
   display: grid;
@@ -1276,7 +1334,7 @@ img {
 .metric-card span {
   display: block;
   color: var(--muted);
-  font-size: 10px;
+  font-size: 12px;
 }
 .metric-card strong {
   display: block;
@@ -1289,7 +1347,7 @@ img {
   right: 14px;
   bottom: 18px;
   color: var(--success);
-  font-size: 9px;
+  font-size: 12px;
 }
 .admin-panels {
   display: grid;
@@ -1423,9 +1481,13 @@ img {
     width: 680px;
     margin-left: -340px;
   }
+  /* Motion drives .chat-card's transform, so centring must not use translateX. */
   .chat-card {
-    right: 50%;
-    transform: translateX(50%);
+    right: 0;
+    left: 0;
+    width: auto;
+    max-width: 520px;
+    margin-inline: auto;
   }
   .hero-location {
     margin-top: 38px;
@@ -1536,6 +1598,332 @@ img {
     align-items: flex-start;
     flex-direction: column;
     padding-block: 28px;
+  }
+}
+
+.theme-icon {
+  display: grid;
+  place-items: center;
+}
+
+/* Motion wrappers inside CSS grids must stretch to the cell. */
+.card-fill {
+  height: 100%;
+}
+
+.mask-line {
+  display: block;
+  overflow: hidden;
+  padding-block-end: 0.08em;
+  margin-block-end: -0.08em;
+}
+.mask-line > span {
+  display: block;
+  will-change: transform;
+}
+
+/* Ambient background: fixed behind every page, never interactive. */
+.ambient-field {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  width: 100vw;
+  max-width: 100%;
+  overflow: clip;
+  pointer-events: none;
+}
+.ambient-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(110px);
+  opacity: 0.18;
+  will-change: transform;
+}
+[data-theme='dark'] .ambient-orb {
+  opacity: 0.26;
+}
+.ambient-orb-a {
+  top: -180px;
+  left: -140px;
+  width: 520px;
+  height: 520px;
+  background: radial-gradient(circle, var(--accent) 0%, transparent 68%);
+}
+.ambient-orb-b {
+  top: 30%;
+  right: -200px;
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, #3ecf8e 0%, transparent 68%);
+  opacity: 0.12;
+}
+.ambient-orb-c {
+  bottom: -220px;
+  left: 32%;
+  width: 560px;
+  height: 560px;
+  background: radial-gradient(circle, #6d8cff 0%, transparent 68%);
+  opacity: 0.14;
+}
+.ambient-grid {
+  position: absolute;
+  inset: -40px;
+  background-image:
+    linear-gradient(to right, var(--line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--line) 1px, transparent 1px);
+  background-size: 58px 58px;
+  mask-image: radial-gradient(ellipse 90% 60% at 50% 40%, black 0%, transparent 78%);
+  opacity: 0.3;
+  will-change: opacity;
+}
+.site-shell-content {
+  position: relative;
+  z-index: 1;
+}
+
+/* Veille — bookmark library */
+.veille-add-bar {
+  margin-bottom: 14px;
+}
+.veille-add-bar button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.veille-error {
+  margin: 0 0 12px;
+  overflow: hidden;
+  color: #e5484d;
+  font-size: 13px;
+}
+.veille-tags {
+  flex-wrap: wrap;
+  margin-bottom: 26px;
+}
+.veille-tags button {
+  padding: 6px 13px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 12px;
+  cursor: pointer;
+  transition:
+    color 180ms ease,
+    border-color 180ms ease,
+    background-color 180ms ease;
+}
+.veille-tags button:hover {
+  border-color: var(--accent);
+  color: var(--text);
+}
+.veille-tags button.is-active {
+  border-color: var(--accent-solid);
+  background: var(--accent-solid);
+  color: white;
+}
+.veille-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 18px;
+}
+.veille-card {
+  position: relative;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface);
+  transition:
+    border-color 220ms ease,
+    box-shadow 220ms ease;
+}
+.veille-card:hover {
+  border-color: var(--accent);
+  box-shadow: 0 14px 34px rgb(18 24 40 / 10%);
+}
+.veille-card > a {
+  display: block;
+  padding: 12px 12px 16px;
+}
+.veille-cover {
+  display: grid;
+  place-items: center;
+  height: 108px;
+  margin-bottom: 14px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--bg);
+}
+.veille-cover-violet {
+  background: color-mix(in srgb, var(--accent) 10%, var(--bg));
+}
+.veille-cover-green {
+  background: color-mix(in srgb, #3ecf8e 12%, var(--bg));
+}
+.veille-cover-blue {
+  background: color-mix(in srgb, #6d8cff 12%, var(--bg));
+}
+.veille-cover-coral {
+  background: color-mix(in srgb, #ff7a6b 12%, var(--bg));
+}
+.veille-cover-cyan {
+  background: color-mix(in srgb, #3ec8cf 12%, var(--bg));
+}
+.veille-cover-mono {
+  background: color-mix(in srgb, var(--muted) 10%, var(--bg));
+}
+.veille-cover img {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+}
+.veille-card > a > p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+.veille-card h2 {
+  margin: 4px 0 10px;
+  overflow: hidden;
+  font-size: 15px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.veille-tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.veille-tag-list span {
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--surface-2, var(--bg));
+  color: var(--muted);
+  font-size: 12px;
+}
+.veille-remove {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--muted);
+  opacity: 0;
+  cursor: pointer;
+  transition: opacity 180ms ease;
+}
+.veille-card:hover .veille-remove,
+.veille-remove:focus-visible {
+  opacity: 1;
+}
+.veille-empty {
+  padding: 40px 0;
+  color: var(--muted);
+  text-align: center;
+}
+
+/* À propos — profile, stats, skills */
+.about-hero {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  align-items: center;
+  gap: 40px;
+  margin-bottom: 56px;
+}
+.about-hero h1 {
+  margin: 10px 0 18px;
+  font-size: clamp(38px, 4.4vw, 58px);
+}
+.about-hero p {
+  max-width: 52ch;
+  color: var(--muted);
+  font-size: 16px;
+}
+.about-portrait {
+  position: relative;
+  display: grid;
+  place-items: center;
+  padding: 22px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: var(--surface);
+}
+.about-portrait img {
+  width: 100%;
+  height: auto;
+}
+.about-portrait .brain-light {
+  display: block;
+}
+.about-portrait .brain-dark {
+  display: none;
+}
+[data-theme='dark'] .about-portrait .brain-light {
+  display: none;
+}
+[data-theme='dark'] .about-portrait .brain-dark {
+  display: block;
+}
+.about-stats {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+  margin-bottom: 56px;
+}
+.about-stat {
+  padding: 22px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface);
+}
+.about-stat strong {
+  display: block;
+  color: var(--accent);
+  font-size: 30px;
+  line-height: 1.2;
+}
+.about-stat span {
+  color: var(--muted);
+  font-size: 13px;
+}
+.skill-list {
+  display: grid;
+  gap: 18px;
+  max-width: 680px;
+}
+.skill-row > span {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 8px;
+  font-size: 13px;
+}
+.skill-row > span em {
+  color: var(--muted);
+  font-style: normal;
+}
+.skill-track {
+  height: 8px;
+  overflow: hidden;
+  border-radius: 999px;
+  background: var(--line);
+}
+.skill-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(90deg, var(--accent), #6d8cff);
+  transform-origin: left center;
+}
+
+@media (max-width: 900px) {
+  .about-hero {
+    grid-template-columns: 1fr;
+  }
+  .about-stats {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 

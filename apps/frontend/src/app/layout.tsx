@@ -1,8 +1,18 @@
+import { Inter } from 'next/font/google'
+
+import { MotionProvider } from '@/components/motion/motion-provider'
 import { SiteShell } from '@/components/site-shell'
 
 import type { Metadata, Viewport } from 'next'
 
 import './globals.css'
+
+// Self-hosted by next/font at build time: no third-party request, no layout shift.
+const inter = Inter({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-sans',
+})
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://adem.dev'),
@@ -24,7 +34,7 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="fr" data-theme="dark" suppressHydrationWarning>
+    <html lang="fr" data-theme="dark" className={inter.variable} suppressHydrationWarning>
       <head>
         <script
           dangerouslySetInnerHTML={{
@@ -34,7 +44,9 @@ export default function RootLayout({
         />
       </head>
       <body>
-        <SiteShell>{children}</SiteShell>
+        <MotionProvider>
+          <SiteShell>{children}</SiteShell>
+        </MotionProvider>
       </body>
     </html>
   )
