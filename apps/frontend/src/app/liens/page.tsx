@@ -1,7 +1,10 @@
 'use client'
 
 import { Bookmark, Folder, Github, LayoutGrid, Search } from 'lucide-react'
+import { AnimatePresence, m } from 'motion/react'
 import { useMemo, useState } from 'react'
+
+import { EASE_OUT_QUINT } from '@/components/motion/primitives'
 
 const links = [
   { name: 'Awwwards', domain: 'awwwards.com', category: 'Inspiration', tone: 'green' },
@@ -73,16 +76,26 @@ function LinksPage() {
           <span>Design</span>
         </div>
         <div className="bookmark-grid">
-          {visibleLinks.map((link) => (
-            <article className="bookmark-card" key={link.domain}>
-              <div className={`bookmark-cover link-${link.tone}`}>
-                {link.name === 'GitHub' ? <Github size={42} /> : link.name.slice(0, 1)}
-              </div>
-              <p>{link.domain}</p>
-              <h2>{link.name}</h2>
-              <span>{link.category}</span>
-            </article>
-          ))}
+          <AnimatePresence mode="popLayout" initial={false}>
+            {visibleLinks.map((link) => (
+              <m.article
+                className="bookmark-card"
+                key={link.domain}
+                layout
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.32, ease: EASE_OUT_QUINT }}
+              >
+                <div className={`bookmark-cover link-${link.tone}`}>
+                  {link.name === 'GitHub' ? <Github size={42} /> : link.name.slice(0, 1)}
+                </div>
+                <p>{link.domain}</p>
+                <h2>{link.name}</h2>
+                <span>{link.category}</span>
+              </m.article>
+            ))}
+          </AnimatePresence>
         </div>
       </section>
     </div>

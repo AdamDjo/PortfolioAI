@@ -1,9 +1,13 @@
 'use client'
 
 import { Github, Linkedin, Menu, Moon, Sun, X } from 'lucide-react'
+import { AnimatePresence, m } from 'motion/react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
+
+import { AmbientField } from '@/components/motion/ambient-field'
+import { EASE_OUT_QUINT } from '@/components/motion/primitives'
 
 const navItems = [
   { href: '/', label: 'Accueil' },
@@ -45,7 +49,13 @@ export function SiteShell({ children }: { children: ReactNode }) {
       <a className="skip-link" href="#main-content">
         Aller au contenu
       </a>
-      <header className="site-header">
+      <AmbientField />
+      <m.header
+        className="site-header"
+        initial={{ y: -18, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.6, ease: EASE_OUT_QUINT }}
+      >
         <div className="shell header-inner">
           <Link className="wordmark" href="/">
             ADEM<span>.</span>
@@ -64,6 +74,14 @@ export function SiteShell({ children }: { children: ReactNode }) {
                   key={item.href}
                   onClick={() => setMenuOpen(false)}
                 >
+                  {active ? (
+                    <m.span
+                      className="nav-pill"
+                      layoutId="nav-active-pill"
+                      transition={{ type: 'spring', bounce: 0.16, duration: 0.55 }}
+                      aria-hidden="true"
+                    />
+                  ) : null}
                   <span className="active-dot" aria-hidden="true" />
                   <span className="nav-label">{item.label}</span>
                 </Link>
@@ -83,11 +101,22 @@ export function SiteShell({ children }: { children: ReactNode }) {
               aria-label="Changer de thème"
               type="button"
             >
-              {darkMode ? (
-                <Sun size={18} strokeWidth={1.7} />
-              ) : (
-                <Moon size={18} strokeWidth={1.7} />
-              )}
+              <AnimatePresence mode="wait" initial={false}>
+                <m.span
+                  className="theme-icon"
+                  key={darkMode ? 'sun' : 'moon'}
+                  initial={{ rotate: -70, opacity: 0, scale: 0.6 }}
+                  animate={{ rotate: 0, opacity: 1, scale: 1 }}
+                  exit={{ rotate: 70, opacity: 0, scale: 0.6 }}
+                  transition={{ duration: 0.22, ease: EASE_OUT_QUINT }}
+                >
+                  {darkMode ? (
+                    <Sun size={18} strokeWidth={1.7} />
+                  ) : (
+                    <Moon size={18} strokeWidth={1.7} />
+                  )}
+                </m.span>
+              </AnimatePresence>
             </button>
             <button
               className="icon-link menu-trigger"
@@ -100,9 +129,11 @@ export function SiteShell({ children }: { children: ReactNode }) {
             </button>
           </div>
         </div>
-      </header>
-      <main id="main-content">{children}</main>
-      <footer className="site-footer">
+      </m.header>
+      <main className="site-shell-content" id="main-content">
+        {children}
+      </main>
+      <footer className="site-footer site-shell-content">
         <div className="shell footer-inner">
           <span className="wordmark wordmark-small">
             ADEM<span>.</span>

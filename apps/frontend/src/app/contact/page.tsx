@@ -1,7 +1,10 @@
 'use client'
 
 import { Mail, MapPin, Send } from 'lucide-react'
+import { AnimatePresence, m } from 'motion/react'
 import { useState, type FormEvent } from 'react'
+
+import { EASE_OUT_QUINT } from '@/components/motion/primitives'
 
 function ContactPage() {
   const [sent, setSent] = useState(false)
@@ -40,32 +43,47 @@ function ContactPage() {
         </aside>
         <form className="contact-form" onSubmit={submit}>
           <div className="field-row">
-            <label>
+            <label htmlFor="contact-name">
               Nom
-              <input name="name" required autoComplete="name" />
+              <input id="contact-name" name="name" required autoComplete="name" />
             </label>
-            <label>
+            <label htmlFor="contact-email">
               Email
-              <input name="email" type="email" required autoComplete="email" />
+              <input id="contact-email" name="email" type="email" required autoComplete="email" />
             </label>
           </div>
-          <label>
+          <label htmlFor="contact-subject">
             Sujet
-            <input name="subject" required />
+            <input id="contact-subject" name="subject" required />
           </label>
-          <label>
+          <label htmlFor="contact-message">
             Message
-            <textarea name="message" required rows={6} />
+            <textarea id="contact-message" name="message" required rows={6} />
           </label>
-          <button className="button button-primary" type="submit">
+          <m.button
+            className="button button-primary"
+            type="submit"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.97 }}
+            transition={{ type: 'spring', stiffness: 420, damping: 24 }}
+          >
             Envoyer le message <Send size={15} />
-          </button>
-          {sent ? (
-            <p className="form-success" role="status">
-              Message prêt à être envoyé. La connexion au service email sera ajoutée avec le
-              backend.
-            </p>
-          ) : null}
+          </m.button>
+          <AnimatePresence>
+            {sent ? (
+              <m.p
+                className="form-success"
+                role="status"
+                initial={{ opacity: 0, y: 12, height: 0 }}
+                animate={{ opacity: 1, y: 0, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.45, ease: EASE_OUT_QUINT }}
+              >
+                Message prêt à être envoyé. La connexion au service email sera ajoutée avec le
+                backend.
+              </m.p>
+            ) : null}
+          </AnimatePresence>
         </form>
       </div>
     </div>

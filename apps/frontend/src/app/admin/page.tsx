@@ -1,5 +1,8 @@
 import { Folder, Gauge, Link2, MessageSquare, Pencil, Settings } from 'lucide-react'
 
+import { AnimatedCounter } from '@/components/motion/animated-counter'
+import { Reveal, Stagger, StaggerItem } from '@/components/motion/primitives'
+
 const metrics = [
   { label: 'Projets', value: '12', delta: '↑ 20%' },
   { label: 'Liens', value: '248', delta: '↑ 15%' },
@@ -48,47 +51,55 @@ function AdminPage() {
           <p className="eyebrow">Accueil / Admin</p>
           <h1>Admin Dashboard</h1>
         </header>
-        <div className="metric-grid">
-          {metrics.map((metric) => (
-            <article className="metric-card" key={metric.label}>
-              <span>{metric.label}</span>
-              <strong>{metric.value}</strong>
-              <small>{metric.delta}</small>
-            </article>
+        <Stagger className="metric-grid" stagger={0.08} onMount>
+          {metrics.map((metric, index) => (
+            <StaggerItem key={metric.label} variant="scale">
+              <article className="metric-card">
+                <span>{metric.label}</span>
+                <strong>
+                  <AnimatedCounter value={metric.value} delay={0.2 + index * 0.08} />
+                </strong>
+                <small>{metric.delta}</small>
+              </article>
+            </StaggerItem>
           ))}
-        </div>
+        </Stagger>
         <div className="admin-panels">
-          <article className="panel">
-            <h2>Projets récents</h2>
-            {['Nexora Dashboard', 'SaaS Landing Page', 'Mobile Banking App', 'Portfolio v2'].map(
-              (name) => (
-                <div className="admin-row" key={name}>
-                  <span className="mini-cover" />
-                  <div>
-                    <strong>{name}</strong>
-                    <small>Mis à jour récemment</small>
+          <Reveal delay={0.15}>
+            <article className="panel">
+              <h2>Projets récents</h2>
+              {['Nexora Dashboard', 'SaaS Landing Page', 'Mobile Banking App', 'Portfolio v2'].map(
+                (name) => (
+                  <div className="admin-row" key={name}>
+                    <span className="mini-cover" />
+                    <div>
+                      <strong>{name}</strong>
+                      <small>Mis à jour récemment</small>
+                    </div>
+                    <button type="button" aria-label={`Modifier ${name}`}>
+                      <Pencil size={14} />
+                    </button>
                   </div>
-                  <button type="button" aria-label={`Modifier ${name}`}>
-                    <Pencil size={14} />
-                  </button>
-                </div>
-              )
-            )}
-          </article>
-          <article className="panel">
-            <h2>Activité récente</h2>
-            {['Nouveau lien ajouté', 'Projet mis à jour', 'Message reçu', 'Nouveau dossier'].map(
-              (name) => (
-                <div className="admin-row" key={name}>
-                  <span className="activity-dot" />
-                  <div>
-                    <strong>{name}</strong>
-                    <small>Il y a quelques heures</small>
+                )
+              )}
+            </article>
+          </Reveal>
+          <Reveal delay={0.25}>
+            <article className="panel">
+              <h2>Activité récente</h2>
+              {['Nouveau lien ajouté', 'Projet mis à jour', 'Message reçu', 'Nouveau dossier'].map(
+                (name) => (
+                  <div className="admin-row" key={name}>
+                    <span className="activity-dot" />
+                    <div>
+                      <strong>{name}</strong>
+                      <small>Il y a quelques heures</small>
+                    </div>
                   </div>
-                </div>
-              )
-            )}
-          </article>
+                )
+              )}
+            </article>
+          </Reveal>
         </div>
       </section>
     </div>
