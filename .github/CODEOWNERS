@@ -1,0 +1,6 @@
+# CODEOWNERS — disabled for solo projects
+# GitHub Enterprise only supports bypass-by-actor.
+# On personal repos, CODEOWNERS forces review even for the repo owner.
+# Uncomment when working in an organization or with collaborators.
+
+# * @AdamDjo

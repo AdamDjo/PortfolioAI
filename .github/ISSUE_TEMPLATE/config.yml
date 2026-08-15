@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Project documentation
+    url: https://github.com/AdamDjo/PortfolioAI/tree/main/docs
+    about: Read the technical documentation before creating an issue
+  - name: Wiki — Workflow & Labels
+    url: https://github.com/AdamDjo/PortfolioAI/wiki
+    about: Full guide on Git workflow, Scrum labels, and CI/CD
