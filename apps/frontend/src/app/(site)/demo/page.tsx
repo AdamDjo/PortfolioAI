@@ -10,7 +10,7 @@ const metrics = [
   { label: 'Messages', value: '32', delta: '↑ 12%' },
 ]
 
-function AdminPage() {
+function DemoDashboardPage() {
   return (
     <div className="workspace admin-workspace shell">
       <aside className="workspace-sidebar">
@@ -106,4 +106,4 @@ function AdminPage() {
   )
 }
 
-export { AdminPage as default }
+export { DemoDashboardPage as default }

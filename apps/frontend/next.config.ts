@@ -1,4 +1,5 @@
 import bundleAnalyzer from '@next/bundle-analyzer'
+import { withPayload } from '@payloadcms/next/withPayload'
 
 import type { NextConfig } from 'next'
 
@@ -8,9 +9,6 @@ const withBundleAnalyzer = bundleAnalyzer({
 
 const nextConfig: NextConfig = {
   output: process.env.DOCKER_BUILD === 'true' ? 'standalone' : undefined,
-  eslint: {
-    ignoreDuringBuilds: true,
-  },
 }
 
-export default withBundleAnalyzer(nextConfig)
+export default withPayload(withBundleAnalyzer(nextConfig))

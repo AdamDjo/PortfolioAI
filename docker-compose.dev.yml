@@ -1,21 +1,20 @@
 services:
-  backend:
-    build:
-      context: .
-      dockerfile: apps/backend/Dockerfile.dev
+  postgres:
+    image: postgres:17-alpine
     restart: unless-stopped
     environment:
-      NODE_ENV: development
-      PORT: 3001
-      FRONTEND_URL: http://localhost:3000
-      SUPABASE_URL: ${SUPABASE_URL}
-      SUPABASE_SERVICE_KEY: ${SUPABASE_SERVICE_KEY}
+      POSTGRES_USER: portfolio
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-portfolio}
+      POSTGRES_DB: portfolio
     ports:
-      - "3001:3001"
-      - "9229:9229"
+      - "5432:5432"
     volumes:
-      - ./apps/backend/src:/app/apps/backend/src
-      - ./packages/shared/src:/app/packages/shared/src
+      - postgres-dev-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U portfolio -d portfolio"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   frontend:
     build:
@@ -24,9 +23,9 @@ services:
     restart: unless-stopped
     environment:
       NODE_ENV: development
-      NEXT_PUBLIC_API_URL: http://localhost:3001
-      NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL}
-      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${NEXT_PUBLIC_SUPABASE_ANON_KEY}
+      PAYLOAD_SECRET: ${PAYLOAD_SECRET}
+      DATABASE_URI: ${DATABASE_URI:-postgresql://portfolio:${POSTGRES_PASSWORD:-portfolio}@postgres:5432/portfolio}
+      NEXT_PUBLIC_SERVER_URL: http://localhost:3000
     ports:
       - "3000:3000"
     volumes:
@@ -34,4 +33,8 @@ services:
       - ./apps/frontend/public:/app/apps/frontend/public
       - ./packages/shared/src:/app/packages/shared/src
     depends_on:
-      - backend
+      postgres:
+        condition: service_healthy
+
+volumes:
+  postgres-dev-data:

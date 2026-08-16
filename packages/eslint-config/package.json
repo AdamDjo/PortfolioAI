@@ -5,8 +5,7 @@
   "main": "index.js",
   "exports": {
     ".": "./index.js",
-    "./next": "./next.js",
-    "./backend": "./backend.js"
+    "./next": "./next.js"
   },
   "devDependencies": {
     "typescript-eslint": "^8.0.0",

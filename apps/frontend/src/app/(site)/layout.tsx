@@ -5,7 +5,7 @@ import { SiteShell } from '@/components/site-shell'
 
 import type { Metadata, Viewport } from 'next'
 
-import './globals.css'
+import '../globals.css'
 
 // Self-hosted by next/font at build time: no third-party request, no layout shift.
 const inter = Inter({

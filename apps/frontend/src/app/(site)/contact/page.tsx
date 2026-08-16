@@ -79,8 +79,8 @@ function ContactPage() {
                 exit={{ opacity: 0, height: 0 }}
                 transition={{ duration: 0.45, ease: EASE_OUT_QUINT }}
               >
-                Message prêt à être envoyé. La connexion au service email sera ajoutée avec le
-                backend.
+                Message prêt à être envoyé. La connexion au service email sera ajoutée
+                prochainement.
               </m.p>
             ) : null}
           </AnimatePresence>

@@ -361,7 +361,7 @@ export function HomePage() {
                     <p className="eyebrow">Vue d’ensemble</p>
                     <h2>Un panneau simple pour piloter le contenu.</h2>
                   </div>
-                  <Link className="text-link" href="/admin">
+                  <Link className="text-link" href="/demo">
                     Voir le dashboard <ArrowRight size={15} />
                   </Link>
                 </m.div>

@@ -1,17 +1,18 @@
 services:
-  backend:
-    build:
-      context: .
-      dockerfile: apps/backend/Dockerfile
+  postgres:
+    image: postgres:17-alpine
     restart: unless-stopped
     environment:
-      NODE_ENV: development
-      PORT: 3001
-      FRONTEND_URL: http://localhost:3000
-      SUPABASE_URL: ${SUPABASE_URL}
-      SUPABASE_SERVICE_KEY: ${SUPABASE_SERVICE_KEY}
-    ports:
-      - "3001:3001"
+      POSTGRES_USER: portfolio
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: portfolio
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U portfolio -d portfolio"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
   frontend:
     build:
@@ -22,10 +23,16 @@ services:
     restart: unless-stopped
     environment:
       NODE_ENV: production
-      NEXT_PUBLIC_API_URL: http://localhost:3001
-      NEXT_PUBLIC_SUPABASE_URL: ${NEXT_PUBLIC_SUPABASE_URL}
-      NEXT_PUBLIC_SUPABASE_ANON_KEY: ${NEXT_PUBLIC_SUPABASE_ANON_KEY}
+      PAYLOAD_SECRET: ${PAYLOAD_SECRET}
+      # Par défaut la base auto-hébergée ci-dessus ; surchargez DATABASE_URI
+      # pour pointer vers Supabase ou toute autre instance PostgreSQL.
+      DATABASE_URI: ${DATABASE_URI:-postgresql://portfolio:${POSTGRES_PASSWORD}@postgres:5432/portfolio}
+      NEXT_PUBLIC_SERVER_URL: ${NEXT_PUBLIC_SERVER_URL}
     ports:
       - "3000:3000"
     depends_on:
-      - backend
+      postgres:
+        condition: service_healthy
+
+volumes:
+  postgres-data:
