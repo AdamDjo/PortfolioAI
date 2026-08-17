@@ -66,6 +66,17 @@ are excluded from linting for that reason.
 - Business logic belongs in Payload (collections, hooks, access control), not in components
 - Use server components by default, `'use client'` only when needed
 - Tailwind for all styling, use design tokens/theme variables
+- Comments are minimal and in English: a one-line JSDoc above a function/component
+  when its purpose isn't obvious from its name, an inline `//` only for a
+  non-obvious _why_ (a constraint, a workaround, an invariant). Don't restate what
+  the code already says.
+- `_content.ts` holds the page's own copy: `metadata` (when the route declares
+  one) plus the static strings tied to that page's structure — headings, labels,
+  fallback text. Content the site owner edits from `/admin` (profile, experiences,
+  bookmarks) stays in Payload and is read through `src/lib/site-content.ts` or
+  `src/lib/bookmarks.ts`, never duplicated into `_content.ts`. Unlike code
+  comments, these strings are the site's actual displayed content and stay in
+  French.
 
 ## State Management
 
