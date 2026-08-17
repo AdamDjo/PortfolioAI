@@ -1,7 +1,10 @@
 import { canonicalizeUrl } from '../lib/canonical-url'
+import { CONTENT_TAGS, revalidateCollection } from '../lib/content-cache'
 import { withOpenGraphPreview } from '../lib/open-graph-hook'
 
 import type { CollectionConfig } from 'payload'
+
+const revalidate = revalidateCollection(CONTENT_TAGS.bookmarks)
 
 /**
  * Liens de veille.
@@ -110,6 +113,9 @@ const Bookmarks: CollectionConfig = {
         domain: 'domain',
       }),
     ],
+    // Un lien ajouté depuis `/veille` doit apparaître sur l'accueil sans délai.
+    afterChange: [revalidate.afterChange],
+    afterDelete: [revalidate.afterDelete],
   },
 }
 

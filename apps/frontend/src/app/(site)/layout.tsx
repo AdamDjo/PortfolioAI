@@ -2,6 +2,7 @@ import { Inter } from 'next/font/google'
 
 import { MotionProvider } from '@/components/motion/motion-provider'
 import { SiteShell } from '@/components/site-shell'
+import { getIdentity } from '@/lib/site-content'
 
 import type { Metadata, Viewport } from 'next'
 
@@ -14,27 +15,41 @@ const inter = Inter({
   variable: '--font-sans',
 })
 
+// Prénom seul : c'est le nom sous lequel le site se présente. Le nom complet
+// n'apparaît que dans les mentions légales, où la loi l'impose.
+const TITLE = 'Adem — Senior Frontend Developer'
+const DESCRIPTION =
+  'Développeur frontend senior en Île-de-France. Interfaces React et Next.js rapides, accessibles et maintenables.'
+
 export const metadata: Metadata = {
-  metadataBase: new URL('https://adem.dev'),
-  title: { default: 'Adem — Frontend engineer', template: '%s — Adem' },
-  description:
-    'Frontend engineer en France. Interfaces rapides, accessibles et soignées avec React, Next.js et TypeScript.',
-  openGraph: {
-    title: 'Adem — Frontend engineer',
-    description: 'Des interfaces modernes, performantes et accessibles.',
-    type: 'website',
-  },
+  // Le domaine définitif n'est pas encore arrêté : il vient de l'environnement
+  // plutôt que d'être écrit en dur, et retombe sur l'URL de développement.
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SERVER_URL ?? 'http://localhost:3000'),
+  title: { default: TITLE, template: '%s — Adem' },
+  description: DESCRIPTION,
+  openGraph: { title: TITLE, description: DESCRIPTION, type: 'website' },
 }
 
 export const viewport: Viewport = { colorScheme: 'light dark', themeColor: '#080a0f' }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const identity = await getIdentity()
+
+  // `data-scroll-behavior` déclare que le défilement doux de `globals.css` est
+  // voulu : sans cet attribut, Next avertit qu'une navigation pourrait être
+  // animée par accident.
   return (
-    <html lang="fr" data-theme="dark" className={inter.variable} suppressHydrationWarning>
+    <html
+      lang="fr"
+      data-theme="dark"
+      data-scroll-behavior="smooth"
+      className={inter.variable}
+      suppressHydrationWarning
+    >
       <head>
         <script
           dangerouslySetInnerHTML={{
@@ -45,7 +60,16 @@ export default function RootLayout({
       </head>
       <body>
         <MotionProvider>
-          <SiteShell>{children}</SiteShell>
+          <SiteShell
+            identity={{
+              role: identity.role,
+              location: identity.location,
+              githubUrl: identity.githubUrl,
+              linkedinUrl: identity.linkedinUrl,
+            }}
+          >
+            {children}
+          </SiteShell>
         </MotionProvider>
       </body>
     </html>

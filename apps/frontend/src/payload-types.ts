@@ -70,6 +70,7 @@ export interface Config {
     users: User
     media: Media
     projects: Project
+    experiences: Experience
     tags: Tag
     bookmarks: Bookmark
     'payload-kv': PayloadKv
@@ -82,6 +83,7 @@ export interface Config {
     users: UsersSelect<false> | UsersSelect<true>
     media: MediaSelect<false> | MediaSelect<true>
     projects: ProjectsSelect<false> | ProjectsSelect<true>
+    experiences: ExperiencesSelect<false> | ExperiencesSelect<true>
     tags: TagsSelect<false> | TagsSelect<true>
     bookmarks: BookmarksSelect<false> | BookmarksSelect<true>
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>
@@ -95,8 +97,14 @@ export interface Config {
     defaultIDType: number
   }
   fallbackLocale: null
-  globals: {}
-  globalsSelect: {}
+  globals: {
+    'site-identity': SiteIdentity
+    profile: Profile
+  }
+  globalsSelect: {
+    'site-identity': SiteIdentitySelect<false> | SiteIdentitySelect<true>
+    profile: ProfileSelect<false> | ProfileSelect<true>
+  }
   locale: null
   widgets: {
     collections: CollectionsWidget
@@ -198,7 +206,60 @@ export interface Project {
    * Optionnel. Prend le pas sur l'image d'aperçu automatique quand il est renseigné.
    */
   cover?: (number | null) | Media
+  /**
+   * Optionnel. Affiché à côté du lien de démonstration.
+   */
+  repositoryUrl?: string | null
+  /**
+   * Affichées en surtitre de la carte projet.
+   */
+  technologies?: string[] | null
   featured?: boolean | null
+  /**
+   * Croissant : 0 en premier. À valeur égale, les projets les plus récents passent devant.
+   */
+  order?: number | null
+  updatedAt: string
+  createdAt: string
+}
+/**
+ * Postes affichés sur la page À propos, du plus récent au plus ancien.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "experiences".
+ */
+export interface Experience {
+  id: number
+  company: string
+  role: string
+  location?: string | null
+  /**
+   * Sert au tri du parcours.
+   */
+  startDate: string
+  /**
+   * Laissez vide pour le poste en cours.
+   */
+  endDate?: string | null
+  /**
+   * Affiche « Aujourd’hui » à la place de la date de fin.
+   */
+  current?: boolean | null
+  /**
+   * Optionnel : le produit sur lequel porte la mission.
+   */
+  project?: string | null
+  /**
+   * Équipe, périmètre, enjeu de la mission.
+   */
+  context?: string | null
+  achievements?:
+    | {
+        statement: string
+        id?: string | null
+      }[]
+    | null
+  technologies?: string[] | null
   updatedAt: string
   createdAt: string
 }
@@ -290,6 +351,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'projects'
         value: number | Project
+      } | null)
+    | ({
+        relationTo: 'experiences'
+        value: number | Experience
       } | null)
     | ({
         relationTo: 'tags'
@@ -392,7 +457,33 @@ export interface ProjectsSelect<T extends boolean = true> {
   description?: T
   previewImageUrl?: T
   cover?: T
+  repositoryUrl?: T
+  technologies?: T
   featured?: T
+  order?: T
+  updatedAt?: T
+  createdAt?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "experiences_select".
+ */
+export interface ExperiencesSelect<T extends boolean = true> {
+  company?: T
+  role?: T
+  location?: T
+  startDate?: T
+  endDate?: T
+  current?: T
+  project?: T
+  context?: T
+  achievements?:
+    | T
+    | {
+        statement?: T
+        id?: T
+      }
+  technologies?: T
   updatedAt?: T
   createdAt?: T
 }
@@ -460,6 +551,142 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
   batch?: T
   updatedAt?: T
   createdAt?: T
+}
+/**
+ * Coordonnées, liens sociaux et informations légales.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-identity".
+ */
+export interface SiteIdentity {
+  id: number
+  contact: {
+    /**
+     * Nom montré sur le site et dans les titres de page. L'identité légale complète se saisit dans « Éditeur », plus bas.
+     */
+    displayName: string
+    role: string
+    /**
+     * Affichée dans le pied de page et sur la page À propos.
+     */
+    location?: string | null
+    email: string
+  }
+  social?: {
+    githubUrl?: string | null
+    linkedinUrl?: string | null
+  }
+  /**
+   * Sert à générer la page Mentions légales.
+   */
+  legal?: {
+    /**
+     * Personne physique ou morale responsable de la publication. La loi exige ici une identité complète : nom et prénom pour un particulier. Seule cette page l’affiche, le reste du site utilise le nom d’affichage.
+     */
+    publisher?: string | null
+    hostName?: string | null
+    hostAddress?: string | null
+    /**
+     * Ce que le site collecte, et ce qu’il n’en fait pas.
+     */
+    dataPolicy?: string | null
+  }
+  updatedAt?: string | null
+  createdAt?: string | null
+}
+/**
+ * Biographie, compétences et principes affichés sur la page À propos.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "profile".
+ */
+export interface Profile {
+  id: number
+  headline: string
+  /**
+   * Deux à trois phrases, à la première personne.
+   */
+  bio: string
+  /**
+   * Seul chiffre affiché en haut de page. Laissez vide pour le masquer.
+   */
+  yearsOfExperience?: number | null
+  skillGroups?:
+    | {
+        label: string
+        items: string[]
+        id?: string | null
+      }[]
+    | null
+  principles?:
+    | {
+        statement: string
+        /**
+         * Optionnel : ce que le principe change concrètement.
+         */
+        detail?: string | null
+        id?: string | null
+      }[]
+    | null
+  updatedAt?: string | null
+  createdAt?: string | null
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "site-identity_select".
+ */
+export interface SiteIdentitySelect<T extends boolean = true> {
+  contact?:
+    | T
+    | {
+        displayName?: T
+        role?: T
+        location?: T
+        email?: T
+      }
+  social?:
+    | T
+    | {
+        githubUrl?: T
+        linkedinUrl?: T
+      }
+  legal?:
+    | T
+    | {
+        publisher?: T
+        hostName?: T
+        hostAddress?: T
+        dataPolicy?: T
+      }
+  updatedAt?: T
+  createdAt?: T
+  globalType?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "profile_select".
+ */
+export interface ProfileSelect<T extends boolean = true> {
+  headline?: T
+  bio?: T
+  yearsOfExperience?: T
+  skillGroups?:
+    | T
+    | {
+        label?: T
+        items?: T
+        id?: T
+      }
+  principles?:
+    | T
+    | {
+        statement?: T
+        detail?: T
+        id?: T
+      }
+  updatedAt?: T
+  createdAt?: T
+  globalType?: T
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema

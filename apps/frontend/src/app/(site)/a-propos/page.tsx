@@ -1,8 +1,11 @@
+import { CalendarClock } from 'lucide-react'
 import Image from 'next/image'
 
+import { CareerTimeline } from '@/components/career-timeline'
 import { AnimatedCounter } from '@/components/motion/animated-counter'
 import { Reveal, Stagger, StaggerItem } from '@/components/motion/primitives'
-import { SkillBars } from '@/components/motion/skill-bars'
+import { SkillGroups } from '@/components/motion/skill-groups'
+import { getIdentity, getProfile, listExperiences } from '@/lib/site-content'
 
 import type { Metadata } from 'next'
 
@@ -11,40 +14,24 @@ export const metadata: Metadata = {
   description: 'Le parcours, les compétences et l’approche frontend d’Adem.',
 }
 
-const stats = [
-  { value: '5', label: 'Années de pratique' },
-  { value: '30', label: 'Projets livrés' },
-  { value: '98', label: 'Score Lighthouse moyen' },
-  { value: '100%', label: 'TypeScript strict' },
-]
+async function AboutPage() {
+  // Trois lectures indépendantes : elles partent en parallèle plutôt qu'en série.
+  const [identity, profile, experiences] = await Promise.all([
+    getIdentity(),
+    getProfile(),
+    listExperiences(),
+  ])
 
-const skills = [
-  { label: 'React & Next.js', level: 92, note: 'App Router, RSC' },
-  { label: 'TypeScript', level: 88, note: 'Mode strict' },
-  { label: 'CSS & Design System', level: 90, note: 'Tokens, thèmes' },
-  { label: 'Motion & Interaction', level: 84, note: 'Motion, transitions' },
-  { label: 'Accessibilité', level: 80, note: 'WCAG AA' },
-  { label: 'Node & API', level: 72, note: 'Payload, PostgreSQL' },
-]
-
-const principles = [
-  'Comprendre avant de composer.',
-  'Rendre les états explicites.',
-  'Mesurer avant d’optimiser.',
-  'Livrer une base durable.',
-]
-
-function AboutPage() {
   return (
     <div className="page shell about-page">
       <div className="about-hero">
         <div>
           <p className="eyebrow">À propos</p>
-          <h1>Je construis l’interface entre une idée et son usage.</h1>
-          <p>
-            Frontend engineer basé en France, je conçois des expériences web où la qualité visuelle,
-            la performance et l’accessibilité avancent ensemble. J’aime les produits où chaque
-            détail d’interaction a été décidé, pas subi.
+          <h1>{profile.headline}</h1>
+          <p>{profile.bio}</p>
+          <p className="about-meta">
+            {identity.role}
+            {identity.location ? ` · ${identity.location}` : ''}
           </p>
         </div>
         <div className="about-portrait">
@@ -66,63 +53,61 @@ function AboutPage() {
         </div>
       </div>
 
-      <Stagger className="about-stats" stagger={0.08}>
-        {stats.map((stat, index) => (
-          <StaggerItem key={stat.label} variant="scale">
+      {profile.yearsOfExperience !== null ? (
+        <Stagger className="about-stats" stagger={0.08} onMount>
+          <StaggerItem variant="scale">
             <div className="about-stat">
+              <span className="about-stat-icon" aria-hidden="true">
+                <CalendarClock size={18} strokeWidth={1.8} />
+              </span>
               <strong>
-                <AnimatedCounter value={stat.value} delay={0.2 + index * 0.08} />
+                <AnimatedCounter value={String(profile.yearsOfExperience)} delay={0.2} />
               </strong>
-              <span>{stat.label}</span>
+              <span className="about-stat-label">Années d’expérience</span>
             </div>
           </StaggerItem>
-        ))}
-      </Stagger>
-
-      <section className="content-section">
-        <Reveal>
-          <p className="eyebrow">Compétences</p>
-          <h2>Ce que je maîtrise au quotidien.</h2>
-        </Reveal>
-        <SkillBars skills={skills} />
-      </section>
-
-      <Stagger className="content-section content-grid" stagger={0.12}>
-        <StaggerItem>
-          <article>
-            <p className="eyebrow">Approche</p>
-            <h2>Moins de décor, plus d’intention.</h2>
-            <p>
-              Je pars du parcours utilisateur, puis je construis un système de composants cohérent.
-              Chaque animation explique une transition, chaque contraste sert la lecture.
-            </p>
-          </article>
-        </StaggerItem>
-        <StaggerItem>
-          <article>
-            <p className="eyebrow">Stack</p>
-            <h2>React, Next.js et TypeScript strict.</h2>
-            <p>
-              J’utilise le rendu serveur par défaut et je réserve le JavaScript client aux
-              interactions qui en ont besoin. Le résultat reste rapide et maintenable.
-            </p>
-          </article>
-        </StaggerItem>
-      </Stagger>
-
-      <section className="content-section">
-        <Reveal>
-          <p className="eyebrow">Principes</p>
-        </Reveal>
-        <Stagger className="principles-grid" stagger={0.08}>
-          {principles.map((principle, index) => (
-            <StaggerItem key={principle} variant="scale">
-              <strong>0{index + 1}</strong>
-              <span>{principle}</span>
-            </StaggerItem>
-          ))}
         </Stagger>
-      </section>
+      ) : null}
+
+      {profile.skillGroups.length > 0 ? (
+        <section className="content-section">
+          {/* Cette section est encore dans le premier écran : elle s'anime au montage,
+              sinon elle réserve sa hauteur sans jamais s'afficher. */}
+          <Reveal onMount>
+            <p className="eyebrow">Compétences</p>
+            <h2>Ce que j’utilise au quotidien.</h2>
+          </Reveal>
+          <SkillGroups groups={profile.skillGroups} onMount />
+        </section>
+      ) : null}
+
+      {experiences.length > 0 ? (
+        <section className="content-section">
+          <Reveal>
+            <p className="eyebrow">Parcours</p>
+            <h2>Où j’ai travaillé, et sur quoi.</h2>
+          </Reveal>
+          <CareerTimeline experiences={experiences} />
+        </section>
+      ) : null}
+
+      {profile.principles.length > 0 ? (
+        <section className="content-section">
+          <Reveal>
+            <p className="eyebrow">Principes</p>
+            <h2>Comment je travaille.</h2>
+          </Reveal>
+          <Stagger className="principles-grid" stagger={0.08}>
+            {profile.principles.map((principle, index) => (
+              <StaggerItem key={principle.statement} variant="scale">
+                <strong>0{index + 1}</strong>
+                <span>{principle.statement}</span>
+                {principle.detail ? <small>{principle.detail}</small> : null}
+              </StaggerItem>
+            ))}
+          </Stagger>
+        </section>
+      ) : null}
     </div>
   )
 }

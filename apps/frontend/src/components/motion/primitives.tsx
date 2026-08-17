@@ -31,7 +31,7 @@ export const riseItem: Variants = {
  * starting at opacity 0 is not painted until hydration runs, which defers LCP
  * on slow devices. Motion here enriches an already-visible element.
  */
-export const riseItemVisible: Variants = {
+const riseItemVisible: Variants = {
   hidden: { y: 26, filter: 'blur(6px)' },
   visible: {
     y: 0,
@@ -40,7 +40,7 @@ export const riseItemVisible: Variants = {
   },
 }
 
-export const scaleItem: Variants = {
+const scaleItem: Variants = {
   hidden: { opacity: 0, y: 18, scale: 0.97 },
   visible: {
     opacity: 1,
@@ -57,15 +57,32 @@ interface RevealProps {
   y?: number
   blur?: boolean
   once?: boolean
+  /**
+   * Animate on mount instead of on scroll into view.
+   *
+   * `VIEWPORT` trims 14% off the bottom of the viewport so the reveal fires just
+   * before an element is reached. Content already inside the first screen never
+   * crosses that reduced boundary, so it would hold its hidden state — and its
+   * height — until the visitor scrolls.
+   */
+  onMount?: boolean
 }
 
-export function Reveal({ children, className, delay = 0, y = 26, blur = true }: RevealProps) {
+export function Reveal({
+  children,
+  className,
+  delay = 0,
+  y = 26,
+  blur = true,
+  onMount,
+}: RevealProps) {
+  const visible = { opacity: 1, y: 0, filter: 'blur(0px)' }
+
   return (
     <m.div
       className={className}
       initial={{ opacity: 0, y, filter: blur ? 'blur(6px)' : 'blur(0px)' }}
-      whileInView={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-      viewport={VIEWPORT}
+      {...(onMount ? { animate: visible } : { whileInView: visible, viewport: VIEWPORT })}
       transition={{ duration: 0.75, delay, ease: EASE_OUT_QUINT }}
     >
       {children}

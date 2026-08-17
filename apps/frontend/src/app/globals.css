@@ -702,27 +702,18 @@ img {
   border-color: color-mix(in srgb, var(--accent) 38%, var(--line));
   box-shadow: 0 16px 35px rgb(18 24 40 / 10%);
 }
+/* Les liens sont éditoriaux : leur nombre et leur nature changent, donc pas de
+   teinte codée en dur par lien. Une seule pastille neutre pour tous. */
 .link-preview-cover {
   display: grid;
   height: 86px;
   margin-bottom: 11px;
   place-items: center;
   border-radius: 8px;
-  color: white;
+  color: var(--accent-on-soft);
+  background: var(--accent-soft);
   font-size: 28px;
   font-weight: 900;
-}
-.preview-lime {
-  color: #9ad047;
-  background: radial-gradient(circle, #365314, #0f150a 70%);
-}
-.preview-cyan {
-  /* Darkened so the glyph clears 3:1 on the gradient's darkest stop too. */
-  color: #055c7a;
-  background: linear-gradient(135deg, #dff5f7, #76c2cc);
-}
-.preview-mono {
-  background: #08090c;
 }
 .link-preview-grid strong,
 .link-preview-grid small {
@@ -736,38 +727,6 @@ img {
   color: var(--muted);
   font-size: 12px;
 }
-.dashboard-preview-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
-}
-.dashboard-preview-grid article {
-  position: relative;
-  min-height: 112px;
-  padding: 17px;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  background: var(--bg);
-}
-.dashboard-preview-grid span {
-  display: block;
-  color: var(--muted);
-  font-size: 12px;
-}
-.dashboard-preview-grid strong {
-  display: block;
-  margin-top: 8px;
-  font-size: 24px;
-  font-variant-numeric: tabular-nums;
-}
-.dashboard-preview-grid small {
-  position: absolute;
-  right: 15px;
-  bottom: 17px;
-  color: var(--success);
-  font-size: 12px;
-}
-
 .intro-projects {
   display: grid;
   grid-template-columns: 0.8fr 2.2fr;
@@ -882,24 +841,10 @@ img {
   letter-spacing: -0.02em;
   text-align: center;
 }
-.tone-violet {
-  --orb-a: #184ecb;
-  --orb-b: #7c2bd2;
-  background: #11142b;
-}
-.tone-coral {
-  --orb-a: #ff6a88;
-  --orb-b: #ffaf86;
-  /* Darkened from #f75d7a so the white label clears 4.5:1. */
-  background: #c62348;
-}
-.tone-ice {
-  --orb-a: #a8d3ff;
-  --orb-b: #d5baff;
-  background: #ecf5ff;
-}
-.tone-ice > span {
-  color: #26324a;
+/* L'aperçu distant remplit le cadre ; les orbes ne servent que de repli quand
+   l'image manque ou échoue. */
+.project-visual img {
+  object-fit: cover;
 }
 .project-card strong,
 .project-card small {
@@ -1050,26 +995,41 @@ img {
 }
 .principles-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  /* Le nombre de principes est éditable dans Payload : la grille s'adapte au
+     lieu de supposer quatre colonnes. */
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
   gap: 1px;
   background: var(--line);
   border: 1px solid var(--line);
 }
-.principles-grid div {
+.principles-grid > * {
   min-height: 150px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
-  padding: 20px;
+  gap: 8px;
+  padding: 22px;
   background: var(--bg);
+  transition: background 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.principles-grid > *:hover {
+  background: var(--surface);
 }
 .principles-grid strong {
-  color: var(--accent);
-  font-size: 12px;
+  /* Le numéro sert de repère visuel : assez gros pour ancrer la carte, en accent
+     atténué pour ne pas concurrencer l'énoncé. */
+  font-size: 26px;
+  font-weight: 700;
+  line-height: 1;
+  color: color-mix(in srgb, var(--accent) 45%, transparent);
 }
 .principles-grid span {
   font-size: 15px;
   font-weight: 700;
+}
+.principles-grid small {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.55;
 }
 .contact-layout {
   display: grid;
@@ -1139,63 +1099,6 @@ img {
   font-size: 12px;
 }
 
-.workspace {
-  display: grid;
-  grid-template-columns: 210px 1fr;
-  min-height: 720px;
-  margin-block: 30px 80px;
-  overflow: hidden;
-  border: 1px solid var(--line);
-  border-radius: 16px;
-  background: var(--surface);
-  box-shadow: var(--shadow);
-}
-.workspace-sidebar {
-  padding: 24px 14px;
-  border-right: 1px solid var(--line);
-  background: color-mix(in srgb, var(--surface) 88%, var(--bg));
-}
-.workspace-sidebar .wordmark {
-  display: block;
-  margin: 2px 9px 34px;
-}
-.workspace-sidebar > p {
-  margin: 26px 10px 8px;
-  color: var(--muted);
-  font-size: 8px;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-}
-.workspace-sidebar nav {
-  display: grid;
-  gap: 4px;
-}
-.workspace-nav-item {
-  display: flex;
-  min-height: 38px;
-  align-items: center;
-  gap: 10px;
-  padding: 0 10px;
-  border-radius: 7px;
-  color: var(--muted);
-  font-size: 12px;
-}
-.workspace-nav-item.is-active {
-  color: var(--accent-on-soft);
-  background: var(--accent-soft);
-}
-.workspace-content {
-  min-width: 0;
-  padding: 28px;
-}
-.workspace-content > header h1 {
-  margin: 0;
-  font-size: 24px;
-  letter-spacing: -0.04em;
-}
-.workspace-content > header .eyebrow {
-  margin-top: 5px;
-}
 .search-bar {
   display: flex;
   align-items: center;
@@ -1254,160 +1157,6 @@ img {
    --accent background and need white text to clear 4.5:1. */
 [data-theme='dark'] .filter-row span.is-active {
   color: #a59dff;
-}
-.bookmark-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 13px;
-}
-.bookmark-card {
-  min-width: 0;
-  padding: 8px 8px 13px;
-  border: 1px solid var(--line);
-  border-radius: 9px;
-}
-.bookmark-cover {
-  display: grid;
-  height: 100px;
-  place-items: center;
-  border-radius: 6px;
-  color: white;
-  font-size: 34px;
-  font-weight: 900;
-  letter-spacing: -0.08em;
-}
-.link-green {
-  background: radial-gradient(circle at 50% 70%, #415d14, #10140d 70%);
-  color: #8bd044;
-}
-.link-cyan {
-  background: linear-gradient(140deg, #eef8f9, #8bcad1);
-  /* Darkened so the glyph clears 3:1 on the gradient's darkest stop too. */
-  color: #055c7a;
-}
-.link-mono {
-  background: #0c0c0d;
-}
-.link-violet {
-  background: linear-gradient(145deg, #0e1015, #482d84);
-}
-.link-coral {
-  background: linear-gradient(145deg, #281218, #d55472);
-}
-.link-blue {
-  background: radial-gradient(circle, #194f9c, #08111e);
-}
-.bookmark-card > p {
-  margin: 9px 2px 1px;
-  color: var(--muted);
-  font-size: 12px;
-}
-.bookmark-card h2 {
-  overflow: hidden;
-  margin: 0 2px 5px;
-  font-size: 14px;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.bookmark-card > span {
-  margin-left: 2px;
-  padding: 3px 6px;
-  border-radius: 4px;
-  color: var(--muted);
-  background: var(--surface-2);
-  font-size: 12px;
-}
-.metric-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 14px;
-  margin-top: 28px;
-}
-.metric-card {
-  position: relative;
-  min-height: 100px;
-  padding: 18px;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  background: var(--surface-2);
-}
-.metric-card span {
-  display: block;
-  color: var(--muted);
-  font-size: 12px;
-}
-.metric-card strong {
-  display: block;
-  margin-top: 8px;
-  font-size: 24px;
-  font-variant-numeric: tabular-nums;
-}
-.metric-card small {
-  position: absolute;
-  right: 14px;
-  bottom: 18px;
-  color: var(--success);
-  font-size: 12px;
-}
-.admin-panels {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 16px;
-  margin-top: 18px;
-}
-.admin-panels h2 {
-  margin: 0 0 14px;
-  font-size: 14px;
-}
-.admin-row {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  min-height: 55px;
-  padding: 8px;
-  border-top: 1px solid var(--line);
-}
-.admin-row:first-of-type {
-  border-top: 0;
-}
-.admin-row > div {
-  min-width: 0;
-  flex: 1;
-}
-.admin-row strong,
-.admin-row small {
-  display: block;
-}
-.admin-row strong {
-  font-size: 10px;
-}
-.admin-row small {
-  color: var(--muted);
-  font-size: 8px;
-}
-.admin-row button {
-  display: grid;
-  width: 28px;
-  height: 28px;
-  place-items: center;
-  border: 1px solid var(--line);
-  border-radius: 7px;
-  background: transparent;
-  cursor: pointer;
-}
-.mini-cover {
-  flex: 0 0 34px;
-  height: 28px;
-  border-radius: 4px;
-  background: linear-gradient(135deg, #29265f, var(--accent));
-}
-.activity-dot {
-  flex: 0 0 28px;
-  height: 28px;
-  border-radius: 50%;
-  background: var(--accent-soft);
-  box-shadow: inset 0 0 0 8px var(--surface);
-  border: 1px solid var(--line);
 }
 .not-found {
   min-height: 70vh;
@@ -1558,36 +1307,14 @@ img {
   .link-preview-grid {
     grid-template-columns: 1fr;
   }
-  .dashboard-preview-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
   .project-grid,
   .content-grid {
     grid-template-columns: 1fr;
   }
   .projects-page-grid,
   .field-row,
-  .contact-layout,
-  .admin-panels {
+  .contact-layout {
     grid-template-columns: 1fr;
-  }
-  .principles-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .workspace {
-    grid-template-columns: 1fr;
-  }
-  .workspace-sidebar {
-    display: none;
-  }
-  .workspace-content {
-    padding: 18px;
-  }
-  .bookmark-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-  .metric-grid {
-    grid-template-columns: repeat(2, 1fr);
   }
   .quality-grid {
     grid-template-columns: repeat(2, 1fr);
@@ -1894,62 +1621,192 @@ img {
 [data-theme='dark'] .about-portrait .brain-dark {
   display: block;
 }
+.about-meta {
+  margin-top: 14px;
+  color: var(--muted);
+  font-size: 14px;
+}
 .about-stats {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  /* Une seule statistique défendable : elle occupe une colonne, pas toute la
+     largeur, sinon le bloc se lit comme une bannière. */
+  grid-template-columns: repeat(auto-fit, minmax(190px, 220px));
   gap: 18px;
   margin-bottom: 56px;
 }
 .about-stat {
   padding: 22px;
   border: 1px solid var(--line);
-  border-radius: 14px;
+  border-radius: 16px;
+  /* Un dégradé très léger depuis l'accent : la carte se détache du fond sans
+     devenir une bannière colorée. */
+  background: linear-gradient(150deg, var(--accent-soft) 0%, transparent 65%), var(--surface);
+}
+.about-stat-icon {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  margin-bottom: 14px;
+  border-radius: 10px;
   background: var(--surface);
+  border: 1px solid var(--line);
+  color: var(--accent);
 }
 .about-stat strong {
   display: block;
   color: var(--accent);
-  font-size: 30px;
-  line-height: 1.2;
+  font-size: 34px;
+  font-weight: 700;
+  line-height: 1.1;
 }
-.about-stat span {
+.about-stat-label {
   color: var(--muted);
   font-size: 13px;
 }
-.skill-list {
+/* Compétences groupées par domaine : liste de définitions, le domaine est le
+   terme et les technologies la définition. */
+.skill-groups {
   display: grid;
-  gap: 18px;
-  max-width: 680px;
+  /* Deux colonnes dès qu'il y a la place, une seule sinon : le nombre de domaines
+     est éditable, la grille ne peut donc pas le présupposer. Le minimum est large
+     pour qu'un libellé de domaine tienne sur une ligne. */
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 16px;
 }
-.skill-row > span {
+.skill-group {
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+  transition:
+    border-color 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.skill-group:hover {
+  border-color: color-mix(in srgb, var(--accent) 42%, var(--line));
+  transform: translateY(-2px);
+}
+.skill-group dt {
   display: flex;
-  justify-content: space-between;
-  margin-bottom: 8px;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text);
+}
+.skill-group-icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.skill-group dd {
+  margin: 0;
+}
+.skill-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.skill-chips li {
+  padding: 5px 11px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--bg);
+  color: var(--muted);
   font-size: 13px;
 }
-.skill-row > span em {
-  color: var(--muted);
-  font-style: normal;
-}
-.skill-track {
-  height: 8px;
-  overflow: hidden;
-  border-radius: 999px;
+
+/* Parcours professionnel. */
+.career-list {
+  display: grid;
+  gap: 1px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
   background: var(--line);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  overflow: hidden;
 }
-.skill-fill {
-  height: 100%;
-  border-radius: 999px;
-  background: linear-gradient(90deg, var(--accent), #6d8cff);
-  transform-origin: left center;
+.career-entry {
+  padding: 26px;
+  background: var(--bg);
+}
+.career-entry-head h3 {
+  margin: 6px 0 0;
+  font-size: 18px;
+  letter-spacing: -0.01em;
+}
+.career-location {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 13px;
+}
+.career-project {
+  margin-top: 14px;
+  max-width: 68ch;
+}
+.career-entry > p {
+  max-width: 68ch;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.65;
+}
+.career-achievements {
+  display: grid;
+  gap: 8px;
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.career-achievements li {
+  position: relative;
+  max-width: 68ch;
+  padding-left: 18px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+.career-achievements li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 9px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+.career-entry .skill-chips {
+  margin-top: 18px;
+}
+
+/* Actions externes des cartes projet : même écartement que `.hero-actions`,
+   puisque ce sont les mêmes boutons. */
+.project-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 22px;
 }
 
 @media (max-width: 900px) {
   .about-hero {
     grid-template-columns: 1fr;
   }
-  .about-stats {
-    grid-template-columns: repeat(2, 1fr);
+  .career-entry {
+    padding: 20px;
   }
 }
 

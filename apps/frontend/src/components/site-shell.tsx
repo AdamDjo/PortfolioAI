@@ -23,7 +23,26 @@ export function useDarkMode() {
   return useContext(DarkModeContext)
 }
 
-export function SiteShell({ children }: { children: ReactNode }) {
+/**
+ * Coordonnées affichées dans l'en-tête et le pied de page.
+ *
+ * Elles arrivent en props depuis le layout serveur : ce composant est client (il
+ * gère le thème et le menu) et ne peut donc pas interroger Payload lui-même.
+ */
+interface SiteShellIdentity {
+  role: string
+  location: string | null
+  githubUrl: string | null
+  linkedinUrl: string | null
+}
+
+export function SiteShell({
+  children,
+  identity,
+}: {
+  children: ReactNode
+  identity: SiteShellIdentity
+}) {
   const pathname = usePathname()
   const [darkMode, setDarkMode] = useState(true)
   const [menuOpen, setMenuOpen] = useState(false)
@@ -89,12 +108,28 @@ export function SiteShell({ children }: { children: ReactNode }) {
             })}
           </nav>
           <div className="header-actions">
-            <a className="icon-link hide-mobile" href="https://github.com" aria-label="GitHub">
-              <Github size={17} strokeWidth={1.7} />
-            </a>
-            <a className="icon-link hide-mobile" href="https://linkedin.com" aria-label="LinkedIn">
-              <Linkedin size={17} strokeWidth={1.7} />
-            </a>
+            {identity.githubUrl ? (
+              <a
+                className="icon-link hide-mobile"
+                href={identity.githubUrl}
+                aria-label="GitHub"
+                rel="noreferrer noopener"
+                target="_blank"
+              >
+                <Github size={17} strokeWidth={1.7} />
+              </a>
+            ) : null}
+            {identity.linkedinUrl ? (
+              <a
+                className="icon-link hide-mobile"
+                href={identity.linkedinUrl}
+                aria-label="LinkedIn"
+                rel="noreferrer noopener"
+                target="_blank"
+              >
+                <Linkedin size={17} strokeWidth={1.7} />
+              </a>
+            ) : null}
             <button
               className="icon-link"
               onClick={toggleTheme}
@@ -138,7 +173,10 @@ export function SiteShell({ children }: { children: ReactNode }) {
           <span className="wordmark wordmark-small">
             ADEM<span>.</span>
           </span>
-          <p>Frontend engineer basé en France.</p>
+          <p>
+            {identity.role}
+            {identity.location ? ` · ${identity.location}` : ''}
+          </p>
           <div className="footer-links">
             <Link href="/contact">Me contacter</Link>
             <Link href="/mentions-legales">Mentions légales</Link>

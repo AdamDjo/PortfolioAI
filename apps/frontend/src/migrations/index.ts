@@ -1,6 +1,8 @@
 import * as migration_20260817_094223_initial from './20260817_094223_initial'
 import * as migration_20260817_100546_projects from './20260817_100546_projects'
 import * as migration_20260817_104541_bookmarks from './20260817_104541_bookmarks'
+import * as migration_20260817_124153_real_content from './20260817_124153_real_content'
+import * as migration_20260817_155900_display_name from './20260817_155900_display_name'
 
 export const migrations = [
   {
@@ -17,5 +19,15 @@ export const migrations = [
     up: migration_20260817_104541_bookmarks.up,
     down: migration_20260817_104541_bookmarks.down,
     name: '20260817_104541_bookmarks',
+  },
+  {
+    up: migration_20260817_124153_real_content.up,
+    down: migration_20260817_124153_real_content.down,
+    name: '20260817_124153_real_content',
+  },
+  {
+    up: migration_20260817_155900_display_name.up,
+    down: migration_20260817_155900_display_name.down,
+    name: '20260817_155900_display_name',
   },
 ]
