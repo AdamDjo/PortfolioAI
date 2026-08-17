@@ -1,19 +1,6 @@
-import { fetchOpenGraphMetadata } from '../lib/open-graph'
+import { withOpenGraphPreview } from '../lib/open-graph-hook'
 
 import type { CollectionConfig } from 'payload'
-
-/**
- * Lit une valeur de formulaire comme texte utile.
- *
- * Un champ vidé depuis l'administration arrive comme chaîne vide, pas comme
- * `null` : on le traite donc comme absent afin que la valeur automatique
- * reprenne la main.
- */
-const readTrimmedString = (value: unknown): string | undefined => {
-  if (typeof value !== 'string') return undefined
-  const trimmed = value.trim()
-  return trimmed === '' ? undefined : trimmed
-}
 
 /**
  * Projets du portfolio, décrits d'abord par leur URL.
@@ -94,28 +81,12 @@ const Projects: CollectionConfig = {
   ],
   hooks: {
     beforeChange: [
-      async ({ data, originalDoc, operation }) => {
-        const url = readTrimmedString(data.url)
-        if (!url) return data
-
-        // On n'interroge le site distant que si l'URL est nouvelle ou a changé,
-        // pour ne pas déclencher une requête à chaque sauvegarde.
-        const previousUrl = readTrimmedString(
-          (originalDoc as Record<string, unknown> | undefined)?.url
-        )
-        if (operation !== 'create' && url === previousUrl) return data
-
-        const metadata = await fetchOpenGraphMetadata(url)
-
-        return {
-          ...data,
-          url,
-          previewImageUrl: metadata.imageUrl,
-          // Les valeurs saisies à la main ne sont jamais écrasées.
-          title: readTrimmedString(data.title) ?? metadata.title ?? url,
-          description: readTrimmedString(data.description) ?? metadata.description ?? undefined,
-        }
-      },
+      withOpenGraphPreview({
+        url: 'url',
+        title: 'title',
+        description: 'description',
+        imageUrl: 'previewImageUrl',
+      }),
     ],
   },
 }

@@ -1,5 +1,6 @@
 import * as migration_20260817_094223_initial from './20260817_094223_initial'
 import * as migration_20260817_100546_projects from './20260817_100546_projects'
+import * as migration_20260817_104541_bookmarks from './20260817_104541_bookmarks'
 
 export const migrations = [
   {
@@ -11,5 +12,10 @@ export const migrations = [
     up: migration_20260817_100546_projects.up,
     down: migration_20260817_100546_projects.down,
     name: '20260817_100546_projects',
+  },
+  {
+    up: migration_20260817_104541_bookmarks.up,
+    down: migration_20260817_104541_bookmarks.down,
+    name: '20260817_104541_bookmarks',
   },
 ]

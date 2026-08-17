@@ -6,8 +6,10 @@ import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { buildConfig } from 'payload'
 import sharp from 'sharp'
 
+import { Bookmarks } from './collections/bookmarks'
 import { Media } from './collections/media'
 import { Projects } from './collections/projects'
+import { Tags } from './collections/tags'
 import { Users } from './collections/users'
 
 const filename = fileURLToPath(import.meta.url)
@@ -20,7 +22,7 @@ export default buildConfig({
       titleSuffix: '— Adem',
     },
   },
-  collections: [Users, Media, Projects],
+  collections: [Users, Media, Projects, Tags, Bookmarks],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET ?? '',
   typescript: {
