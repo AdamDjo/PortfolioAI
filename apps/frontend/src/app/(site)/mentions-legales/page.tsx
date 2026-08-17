@@ -19,11 +19,20 @@ async function LegalPage() {
       </header>
       <section className="content-section">
         <h2>Éditeur</h2>
-        <p>
-          Ce site est édité à titre personnel par {legal.publisher ?? identity.fullName},{' '}
-          {identity.role}
-          {identity.location ? `, ${identity.location}` : ''}.
-        </p>
+        {/*
+          Seule page à nommer l'éditeur en entier : la loi exige une identité
+          complète ici, alors que le reste du site s'en tient au nom d'affichage.
+          Pas de repli sur ce dernier — un prénom seul ne satisfait pas
+          l'obligation, autant annoncer le champ manquant.
+        */}
+        {legal.publisher ? (
+          <p>
+            Ce site est édité à titre personnel par {legal.publisher}, {identity.role}
+            {identity.location ? `, ${identity.location}` : ''}.
+          </p>
+        ) : (
+          <p>L’identité de l’éditeur sera précisée ici avant la mise en ligne publique du site.</p>
+        )}
         <p>
           Contact : <a href={`mailto:${identity.email}`}>{identity.email}</a>
         </p>
@@ -58,9 +67,9 @@ async function LegalPage() {
 
         <h2>Propriété intellectuelle</h2>
         <p>
-          Les textes et visuels de ce site sont la propriété de {identity.fullName}, sauf mention
-          contraire. Le code source des projets présentés est publié sous licence libre sur les
-          dépôts indiqués.
+          Les textes et visuels de ce site sont la propriété de{' '}
+          {legal.publisher ?? identity.displayName}, sauf mention contraire. Le code source des
+          projets présentés est publié sous licence libre sur les dépôts indiqués.
         </p>
       </section>
     </div>

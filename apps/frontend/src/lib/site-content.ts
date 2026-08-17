@@ -39,7 +39,12 @@ const asTextList = (value: (string | null)[] | null | undefined): string[] => {
 }
 
 interface IdentityView {
-  fullName: string
+  /**
+   * Prénom seul, ou tout autre nom d'usage : c'est le nom montré sur le site.
+   * L'identité légale complète vit dans `legal.publisher`, que seules les
+   * mentions légales affichent.
+   */
+  displayName: string
   role: string
   location: string | null
   email: string
@@ -96,7 +101,7 @@ interface ProjectView {
 }
 
 const toIdentityView = (doc: SiteIdentity): IdentityView => ({
-  fullName: doc.contact.fullName,
+  displayName: doc.contact.displayName,
   role: doc.contact.role,
   location: asText(doc.contact.location),
   email: doc.contact.email,

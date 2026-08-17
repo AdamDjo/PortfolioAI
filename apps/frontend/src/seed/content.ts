@@ -41,7 +41,7 @@ interface ProjectSeed {
  */
 const identity: Omit<SiteIdentity, 'id' | 'createdAt' | 'updatedAt'> = {
   contact: {
-    fullName: 'Adem Ben Messaoud',
+    displayName: 'Adem',
     role: 'Senior Frontend Developer',
     location: 'Île-de-France, Paris',
     email: 'adem.benmessaoud.dev@gmail.com',
@@ -49,6 +49,12 @@ const identity: Omit<SiteIdentity, 'id' | 'createdAt' | 'updatedAt'> = {
   social: {
     githubUrl: 'https://github.com/AdamDjo',
     linkedinUrl: 'https://www.linkedin.com/in/adem-benmessaoud-dev',
+  },
+  legal: {
+    // Le site se présente sous le prénom seul ; la loi exige en revanche une
+    // identité complète pour l'éditeur, et les mentions légales sont la seule
+    // page à l'afficher.
+    publisher: 'Adem Ben Messaoud',
   },
 }
 

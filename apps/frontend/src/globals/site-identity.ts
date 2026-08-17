@@ -31,10 +31,14 @@ const SiteIdentity: GlobalConfig = {
       label: 'Coordonnées',
       fields: [
         {
-          name: 'fullName',
+          name: 'displayName',
           type: 'text',
-          label: 'Nom complet',
+          label: "Nom d'affichage",
           required: true,
+          admin: {
+            description:
+              "Nom montré sur le site et dans les titres de page. L'identité légale complète se saisit dans « Éditeur », plus bas.",
+          },
         },
         {
           name: 'role',
@@ -88,7 +92,8 @@ const SiteIdentity: GlobalConfig = {
           type: 'text',
           label: 'Éditeur',
           admin: {
-            description: 'Personne physique ou morale responsable de la publication.',
+            description:
+              'Personne physique ou morale responsable de la publication. La loi exige ici une identité complète : nom et prénom pour un particulier. Seule cette page l’affiche, le reste du site utilise le nom d’affichage.',
           },
         },
         {

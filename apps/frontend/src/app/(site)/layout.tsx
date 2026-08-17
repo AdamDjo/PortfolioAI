@@ -15,7 +15,9 @@ const inter = Inter({
   variable: '--font-sans',
 })
 
-const TITLE = 'Adem Ben Messaoud — Senior Frontend Developer'
+// Prénom seul : c'est le nom sous lequel le site se présente. Le nom complet
+// n'apparaît que dans les mentions légales, où la loi l'impose.
+const TITLE = 'Adem — Senior Frontend Developer'
 const DESCRIPTION =
   'Développeur frontend senior en Île-de-France. Interfaces React et Next.js rapides, accessibles et maintenables.'
 
@@ -23,7 +25,7 @@ export const metadata: Metadata = {
   // Le domaine définitif n'est pas encore arrêté : il vient de l'environnement
   // plutôt que d'être écrit en dur, et retombe sur l'URL de développement.
   metadataBase: new URL(process.env.NEXT_PUBLIC_SERVER_URL ?? 'http://localhost:3000'),
-  title: { default: TITLE, template: '%s — Adem Ben Messaoud' },
+  title: { default: TITLE, template: '%s — Adem' },
   description: DESCRIPTION,
   openGraph: { title: TITLE, description: DESCRIPTION, type: 'website' },
 }

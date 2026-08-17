@@ -561,7 +561,10 @@ export interface PayloadMigrationsSelect<T extends boolean = true> {
 export interface SiteIdentity {
   id: number
   contact: {
-    fullName: string
+    /**
+     * Nom montré sur le site et dans les titres de page. L'identité légale complète se saisit dans « Éditeur », plus bas.
+     */
+    displayName: string
     role: string
     /**
      * Affichée dans le pied de page et sur la page À propos.
@@ -578,7 +581,7 @@ export interface SiteIdentity {
    */
   legal?: {
     /**
-     * Personne physique ou morale responsable de la publication.
+     * Personne physique ou morale responsable de la publication. La loi exige ici une identité complète : nom et prénom pour un particulier. Seule cette page l’affiche, le reste du site utilise le nom d’affichage.
      */
     publisher?: string | null
     hostName?: string | null
@@ -636,7 +639,7 @@ export interface SiteIdentitySelect<T extends boolean = true> {
   contact?:
     | T
     | {
-        fullName?: T
+        displayName?: T
         role?: T
         location?: T
         email?: T
