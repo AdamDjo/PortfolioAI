@@ -39,6 +39,10 @@ A component, a stylesheet or a piece of copy lives next to the route that uses
 it. It moves up to `src/components/` or `src/styles/` the moment a second route
 needs it — not before, so that shared code is shared on purpose.
 
+What is left in `src/components/` is therefore shared on purpose: the site frame
+(`site-shell` and its islands), the theme provider, the motion infrastructure
+under `motion/`, and `project-visual`, the one component two routes render.
+
 `globals.css` holds the design tokens and the list of imports. The import order
 reproduces the order the rules had when they lived in one file: the cascade
 breaks ties by source order, so reordering those lines changes which rule wins.

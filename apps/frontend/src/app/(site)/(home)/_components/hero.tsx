@@ -7,8 +7,9 @@ import Link from 'next/link'
 import { useImperativeHandle, useRef, useState, type FormEvent, type RefObject } from 'react'
 
 import { HOME_CONTENT } from '@/app/(site)/(home)/_content'
-import { AvailabilityBadge } from '@/components/motion/availability-badge'
 import { EASE_OUT_QUINT, Stagger, StaggerItem } from '@/components/motion/primitives'
+
+import { AvailabilityBadge } from './availability-badge'
 
 const { hero, chat } = HOME_CONTENT
 

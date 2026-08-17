@@ -3,8 +3,9 @@ import Link from 'next/link'
 
 import { HOME_CONTENT } from '@/app/(site)/(home)/_content'
 import { Reveal, Stagger, StaggerItem } from '@/components/motion/primitives'
-import { Tilt } from '@/components/motion/tilt'
 import { ProjectVisual } from '@/components/project-visual'
+
+import { Tilt } from './tilt'
 
 import type { HomeProject } from './types'
 

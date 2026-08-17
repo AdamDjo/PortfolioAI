@@ -1,7 +1,8 @@
 import { Mail, MapPin } from 'lucide-react'
 
-import { ContactForm } from '@/components/contact-form'
 import { getIdentity } from '@/lib/site-content'
+
+import { ContactForm } from './_components/contact-form'
 
 import type { Metadata } from 'next'
 

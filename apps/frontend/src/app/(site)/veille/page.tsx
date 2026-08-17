@@ -1,10 +1,11 @@
 import { headers } from 'next/headers'
 import { getPayload } from 'payload'
 
-import { BookmarkComposer } from '@/components/veille/bookmark-composer'
-import { BookmarkGrid } from '@/components/veille/bookmark-grid'
 import { listPublicBookmarks } from '@/lib/bookmarks'
 import config from '@payload-config'
+
+import { BookmarkComposer } from './_components/bookmark-composer'
+import { BookmarkGrid } from './_components/bookmark-grid'
 
 import type { Metadata } from 'next'
 

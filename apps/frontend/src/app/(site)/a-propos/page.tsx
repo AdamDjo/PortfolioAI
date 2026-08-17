@@ -1,11 +1,12 @@
 import { CalendarClock } from 'lucide-react'
 import Image from 'next/image'
 
-import { CareerTimeline } from '@/components/career-timeline'
-import { AnimatedCounter } from '@/components/motion/animated-counter'
 import { Reveal, Stagger, StaggerItem } from '@/components/motion/primitives'
-import { SkillGroups } from '@/components/motion/skill-groups'
 import { getIdentity, getProfile, listExperiences } from '@/lib/site-content'
+
+import { AnimatedCounter } from './_components/animated-counter'
+import { CareerTimeline } from './_components/career-timeline'
+import { SkillGroups } from './_components/skill-groups'
 
 import type { Metadata } from 'next'
 
