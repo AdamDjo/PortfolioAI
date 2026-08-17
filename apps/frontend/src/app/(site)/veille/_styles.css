@@ -1,0 +1,171 @@
+.veille-add-bar {
+  margin-bottom: 14px;
+}
+.veille-add-bar button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.veille-error {
+  margin: 0 0 12px;
+  overflow: hidden;
+  color: #e5484d;
+  font-size: 13px;
+}
+.veille-tags {
+  flex-wrap: wrap;
+  margin-bottom: 26px;
+}
+.veille-tags button {
+  padding: 6px 13px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 12px;
+  cursor: pointer;
+  transition:
+    color 180ms ease,
+    border-color 180ms ease,
+    background-color 180ms ease;
+}
+.veille-tags button:hover {
+  border-color: var(--accent);
+  color: var(--text);
+}
+.veille-tags button.is-active {
+  border-color: var(--accent-solid);
+  background: var(--accent-solid);
+  color: white;
+}
+.veille-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 18px;
+}
+.veille-card {
+  position: relative;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: var(--surface);
+  transition:
+    border-color 220ms ease,
+    box-shadow 220ms ease;
+}
+.veille-card:hover {
+  border-color: var(--accent);
+  box-shadow: 0 14px 34px rgb(18 24 40 / 10%);
+}
+.veille-card > a {
+  display: block;
+  padding: 12px 12px 16px;
+}
+.veille-cover {
+  display: grid;
+  place-items: center;
+  height: 108px;
+  margin-bottom: 14px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--bg);
+}
+.veille-cover-violet {
+  background: color-mix(in srgb, var(--accent) 10%, var(--bg));
+}
+.veille-cover-green {
+  background: color-mix(in srgb, #3ecf8e 12%, var(--bg));
+}
+.veille-cover-blue {
+  background: color-mix(in srgb, #6d8cff 12%, var(--bg));
+}
+.veille-cover-coral {
+  background: color-mix(in srgb, #ff7a6b 12%, var(--bg));
+}
+.veille-cover-cyan {
+  background: color-mix(in srgb, #3ec8cf 12%, var(--bg));
+}
+.veille-cover-mono {
+  background: color-mix(in srgb, var(--muted) 10%, var(--bg));
+}
+.veille-cover img {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+}
+
+/* Aperçu Open Graph : l'image remplit la vignette, le favicon reste centré. */
+.veille-cover-preview {
+  overflow: hidden;
+  padding: 0;
+  background: var(--bg);
+}
+.veille-cover-preview img {
+  width: 100%;
+  height: 100%;
+  border-radius: 0;
+  object-fit: cover;
+}
+.veille-spinner {
+  animation: veille-spin 900ms linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .veille-spinner {
+    animation: none;
+  }
+}
+@keyframes veille-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.veille-card > a > p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+.veille-card h2 {
+  margin: 4px 0 10px;
+  overflow: hidden;
+  font-size: 15px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.veille-tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.veille-tag-list span {
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--surface-2, var(--bg));
+  color: var(--muted);
+  font-size: 12px;
+}
+.veille-remove {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  display: grid;
+  place-items: center;
+  width: 24px;
+  height: 24px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--muted);
+  opacity: 0;
+  cursor: pointer;
+  transition: opacity 180ms ease;
+}
+.veille-card:hover .veille-remove,
+.veille-remove:focus-visible {
+  opacity: 1;
+}
+.veille-empty {
+  padding: 40px 0;
+  color: var(--muted);
+  text-align: center;
+}
+
+/* À propos — profile, stats, skills */

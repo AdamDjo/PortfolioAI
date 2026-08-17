@@ -21,18 +21,27 @@ This agent works ONLY on `apps/frontend/`. Never modify files outside this direc
 src/
 ├── app/
 │   ├── (site)/         # Public portfolio, own layout.tsx
+│   │   └── <route>/
+│   │       ├── _components/  # Components only this route uses
+│   │       ├── _content.ts   # Copy + metadata for this route
+│   │       └── _styles.css   # Styles only this route uses
 │   ├── (payload)/      # Payload admin + API — GENERATED, do not edit
-│   └── globals.css     # Shared by both route groups
+│   └── globals.css     # Tokens + import list, one entry point
+├── styles/             # Stylesheets shared by several routes
 ├── collections/        # Payload collections (users, media)
 ├── migrations/         # Payload migrations — reviewed and versioned
 ├── payload.config.ts   # Payload configuration
-├── components/
-│   ├── ui/             # Generic UI (buttons, modals, cards)
-│   └── ...             # Add domain-specific components here
-├── hooks/              # Custom React hooks
-├── stores/             # Zustand stores
-└── lib/                # Utils, API client, constants
+├── components/         # Components used by two or more routes
+└── lib/                # Utils, data access, constants
 ```
+
+A component, a stylesheet or a piece of copy lives next to the route that uses
+it. It moves up to `src/components/` or `src/styles/` the moment a second route
+needs it — not before, so that shared code is shared on purpose.
+
+`globals.css` holds the design tokens and the list of imports. The import order
+reproduces the order the rules had when they lived in one file: the cascade
+breaks ties by source order, so reordering those lines changes which rule wins.
 
 Files under `src/app/(payload)/` and `src/payload-types.ts` are produced by the
 Payload CLI. Never edit them by hand — regeneration overwrites the changes. They
@@ -59,7 +68,7 @@ are excluded from linting for that reason.
 - **Server data**: read in server components through `src/lib/site-content.ts` or
   `src/lib/bookmarks.ts`, never fetched from the browser.
 - **Zustand stores**: UI state only (modals, panels). Theme is handled by
-  `next-themes`.
+  `next-themes`. No store exists yet; the first one goes in `src/stores/`.
 - Never duplicate server state on the client.
 
 ## Testing
