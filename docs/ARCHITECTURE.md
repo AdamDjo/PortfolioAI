@@ -35,7 +35,7 @@ Le routeur est découpé en deux groupes, qui n'ajoutent aucun segment d'URL :
 | -------------- | ---------------------------------------------- |
 | `/`            | Hero conversationnelle et sélection de projets |
 | `/projets`     | Liste des projets                              |
-| `/veille`      | Articles et notes techniques                   |
+| `/veille`      | Liens de veille servis par Payload             |
 | `/a-propos`    | Parcours et principes                          |
 | `/contact`     | Formulaire local prêt à connecter              |
 | `/liens`       | Démonstration du gestionnaire de favoris       |
@@ -49,19 +49,35 @@ Le routeur est découpé en deux groupes, qui n'ajoutent aucun segment d'URL :
 - `users` — collection d'authentification, propriétaire de l'accès à `/admin`.
 - `media` — uploads, lecture publique, écriture réservée aux utilisateurs connectés.
 - `projects` — projets du portfolio, décrits par leur URL, lecture publique.
+- `bookmarks` — liens de veille, décrits par leur URL, lecture publique.
+- `tags` — étiquettes de classement des liens, lecture publique.
 
-Les collections restantes (liens, tags) arriveront dans des lots suivants.
+### Aperçu automatique par l'URL
 
-### Aperçu automatique des projets
+Un projet comme un lien de veille se saisit avec une seule information : son URL.
+Un hook `beforeChange` lit alors les balises Open Graph de la page distante pour
+remplir le titre, la description et l'image d'aperçu. Cela évite de téléverser un
+visuel pour chaque entrée ; `projects` garde en plus le champ `cover` comme repli
+quand le site cible n'expose pas d'image exploitable.
 
-Un projet se saisit avec une seule information : son URL. Un hook `beforeChange`
-lit alors les balises Open Graph de la page distante pour remplir le titre, la
-description et l'image d'aperçu. Cela évite de téléverser un visuel pour chaque
-projet, tout en gardant le champ `cover` comme repli quand le site cible n'expose
-pas d'image exploitable.
+Ce hook est écrit une seule fois, dans `src/lib/open-graph-hook.ts`, et
+paramétré par les noms de champs de la collection appelante : les deux
+collections partagent le comportement au lieu d'en dupliquer deux variantes.
 
 Le hook n'interroge le site distant que lorsque l'URL change, et les valeurs
 saisies à la main ne sont jamais écrasées.
+
+### Canonicalisation des URL
+
+Avant tout enregistrement, l'URL passe par `src/lib/canonical-url.ts` : schéma
+complété, hôte en minuscules, `www.` et fragment retirés, paramètres de suivi
+(`utm_*`, `fbclid`, `gclid`…) supprimés, paramètres restants triés, barre oblique
+finale enlevée.
+
+Sans cette étape, l'index unique sur `url` ne servirait à rien : la même page
+collée depuis deux sources différentes produirait deux fiches. Les paramètres
+porteurs de sens, eux, sont conservés — `?v=abc` distingue bien deux vidéos.
+`src/lib/canonical-url.test.ts` verrouille les deux côtés de cette frontière.
 
 Comme cette requête part du serveur vers une adresse fournie par un utilisateur,
 elle constitue un risque de SSRF. `src/lib/open-graph.ts` la contient :
@@ -95,8 +111,26 @@ un volume persistant, sinon les médias disparaissent à chaque redéploiement.
 ## Sécurité des accès
 
 Les permissions vivent dans les fonctions `access` des collections Payload, donc
-côté serveur : `users` exige une session pour toute opération, `media` autorise la
-lecture publique mais réserve l'écriture aux utilisateurs connectés.
+côté serveur : `users` exige une session pour toute opération, `media`, `projects`,
+`bookmarks` et `tags` autorisent la lecture publique mais réservent l'écriture aux
+utilisateurs connectés.
+
+### Ajout d'un lien depuis la page publique
+
+`/veille` affiche un champ d'ajout, mais uniquement au propriétaire : la page est
+un composant serveur qui appelle `payload.auth()` sur les en-têtes de la requête et
+ne rend le formulaire que si la session est valide. Le formulaire envoie ensuite un
+`POST /api/bookmarks` avec le cookie de session.
+
+Ce champ existe pour un usage précis : coller un lien depuis un téléphone sans
+passer par `/admin`. Il n'ouvre aucune porte pour autant — la barrière est le
+`access.create` de la collection, pas l'absence du formulaire. Un visiteur qui
+appelle l'API directement reçoit un `403`, et le masquage du formulaire n'est qu'un
+confort d'affichage.
+
+Les visiteurs n'ont donc aucun moyen d'écrire : la grille publique ne propose ni
+ajout ni suppression, et l'ancien stockage `localStorage` de la page a été retiré
+en même temps que le formulaire public.
 
 Le RLS (Row Level Security) de PostgreSQL est **volontairement désactivé**. Il
 protège le cas où le navigateur interroge Postgres directement via la clé publique

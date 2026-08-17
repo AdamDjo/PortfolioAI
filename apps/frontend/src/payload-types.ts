@@ -70,6 +70,8 @@ export interface Config {
     users: User
     media: Media
     projects: Project
+    tags: Tag
+    bookmarks: Bookmark
     'payload-kv': PayloadKv
     'payload-locked-documents': PayloadLockedDocument
     'payload-preferences': PayloadPreference
@@ -80,6 +82,8 @@ export interface Config {
     users: UsersSelect<false> | UsersSelect<true>
     media: MediaSelect<false> | MediaSelect<true>
     projects: ProjectsSelect<false> | ProjectsSelect<true>
+    tags: TagsSelect<false> | TagsSelect<true>
+    bookmarks: BookmarksSelect<false> | BookmarksSelect<true>
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>
     'payload-locked-documents':
       | PayloadLockedDocumentsSelect<false>
@@ -200,6 +204,59 @@ export interface Project {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "tags".
+ */
+export interface Tag {
+  id: number
+  name: string
+  /**
+   * Généré depuis le nom, utilisé dans les URL de filtre.
+   */
+  slug?: string | null
+  updatedAt: string
+  createdAt: string
+}
+/**
+ * Collez l'URL : le reste est récupéré automatiquement.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "bookmarks".
+ */
+export interface Bookmark {
+  id: number
+  /**
+   * Normalisée automatiquement : les paramètres de suivi sont retirés.
+   */
+  url: string
+  /**
+   * Laissez vide pour reprendre le titre de la page distante.
+   */
+  title?: string | null
+  /**
+   * Laissez vide pour reprendre la description de la page distante.
+   */
+  description?: string | null
+  /**
+   * Déduit de l'URL, utilisé pour l'affichage et le favicon.
+   */
+  domain?: string | null
+  /**
+   * Extraite des balises Open Graph à chaque modification de l'URL.
+   */
+  previewImageUrl?: string | null
+  /**
+   * Sert aux filtres de la page Veille.
+   */
+  tags?: (number | Tag)[] | null
+  /**
+   * Décochez pour retirer le lien du site sans le supprimer.
+   */
+  active?: boolean | null
+  updatedAt: string
+  createdAt: string
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -233,6 +290,14 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'projects'
         value: number | Project
+      } | null)
+    | ({
+        relationTo: 'tags'
+        value: number | Tag
+      } | null)
+    | ({
+        relationTo: 'bookmarks'
+        value: number | Bookmark
       } | null)
   globalSlug?: string | null
   user: {
@@ -328,6 +393,31 @@ export interface ProjectsSelect<T extends boolean = true> {
   previewImageUrl?: T
   cover?: T
   featured?: T
+  updatedAt?: T
+  createdAt?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "tags_select".
+ */
+export interface TagsSelect<T extends boolean = true> {
+  name?: T
+  slug?: T
+  updatedAt?: T
+  createdAt?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "bookmarks_select".
+ */
+export interface BookmarksSelect<T extends boolean = true> {
+  url?: T
+  title?: T
+  description?: T
+  domain?: T
+  previewImageUrl?: T
+  tags?: T
+  active?: T
   updatedAt?: T
   createdAt?: T
 }

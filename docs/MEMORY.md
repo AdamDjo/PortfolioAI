@@ -17,6 +17,8 @@
 - Deux assets hero dédiés : `hero-brain-light.png` et `hero-brain-dark.png`.
 - Payload CMS monté dans Next.js (issue #2) : admin sur `/admin`, API sur `/api/*`.
 - Le backend Express a été supprimé ; `apps/frontend` est la seule application.
+- Liens de veille servis par Payload (issue #6) : collections `bookmarks` et `tags`,
+  `/veille` rendu côté serveur, ajout réservé au propriétaire connecté.
 
 ## Confirmed direction
 
@@ -24,8 +26,13 @@
   Les deux passent par la même variable `DATABASE_URI`.
 - Coolify pilotera les déploiements, les domaines et les sauvegardes.
 - La spécification fonctionnelle de référence est `docs/FEATURE_SPEC_CMS_AI.md`.
-- Les collections métier (projets, liens, tags) viendront dans des lots suivants ;
-  l'issue #2 ne pose que le socle `users` + `media`.
+- Les collections métier arrivent par lots : `users` + `media` en #2, `projects`,
+  `bookmarks` et `tags` en #6.
+- Le visiteur ne publie jamais de lien. L'écriture est réservée au propriétaire
+  connecté, pour que personne ne puisse polluer la grille de veille.
+- L'ajout d'un lien doit rester possible depuis un téléphone, sur la page publique,
+  sans ouvrir `/admin` : c'est la raison d'être du champ d'ajout dans `/veille`.
+- Un lien se saisit par son URL seule, jamais en téléversant une image.
 
 ## Product boundaries
 
@@ -47,6 +54,17 @@
   « Transaction » (6543) casse les migrations Payload.
 - Next 16 a supprimé la clé `eslint` de `NextConfig` ; elle a été retirée de
   `next.config.ts`.
+- La CLI Payload (`migrate:create`) exige un TTY. Depuis un agent, l'envelopper :
+  `script -q /dev/null pnpm --filter @portfolio/frontend migrate:create`.
+- Le hook d'aperçu Open Graph est partagé entre `projects` et `bookmarks`
+  (`src/lib/open-graph-hook.ts`), paramétré par les noms de champs.
+- Toute URL est canonicalisée avant enregistrement (`src/lib/canonical-url.ts`),
+  sinon l'index unique sur `url` laisserait passer des doublons.
+- Prettier et ESLint doivent être lancés depuis le workspace
+  (`pnpm --filter @portfolio/frontend exec …`), pas depuis la racine.
+- Un écran `500` sur toutes les routes `/api/*` et `/admin` après plusieurs
+  modifications vient en général du cache `.next` périmé, pas du code :
+  arrêter le serveur, `rm -rf apps/frontend/.next`, redémarrer.
 
 ## Validation
 
@@ -54,4 +72,7 @@
 - `pnpm lint`
 - `pnpm build`
 - `pnpm --filter @portfolio/frontend migrate` (nécessite `DATABASE_URI`)
-- Vérification navigateur sur `/`, `/liens`, `/demo` et `/admin`.
+- `pnpm test`
+- Vérification navigateur sur `/`, `/liens`, `/demo`, `/veille` et `/admin`.
+- Contrôle d'accès vérifié à l'API, seule vraie barrière : `GET /api/bookmarks`
+  répond `200`, tandis que `POST`/`DELETE` sans session répondent `403`.
