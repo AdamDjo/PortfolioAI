@@ -28,7 +28,6 @@
     "@payloadcms/next": "^3.88.0",
     "@payloadcms/richtext-lexical": "^3.88.0",
     "@portfolio/shared": "workspace:*",
-    "@supabase/supabase-js": "^2.47.0",
     "@tanstack/react-query": "^5.55.0",
     "axios": "^1.15.0",
     "graphql": "^16.14.2",

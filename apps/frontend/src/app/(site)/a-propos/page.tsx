@@ -24,7 +24,7 @@ const skills = [
   { label: 'CSS & Design System', level: 90, note: 'Tokens, thèmes' },
   { label: 'Motion & Interaction', level: 84, note: 'Motion, transitions' },
   { label: 'Accessibilité', level: 80, note: 'WCAG AA' },
-  { label: 'Node & API', level: 72, note: 'Express, Supabase' },
+  { label: 'Node & API', level: 72, note: 'Payload, PostgreSQL' },
 ]
 
 const principles = [

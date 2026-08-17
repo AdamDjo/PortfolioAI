@@ -52,3 +52,8 @@ coverage/
 apps/frontend/playwright-report/
 apps/frontend/test-results/
 apps/frontend/.playwright-cache/
+
+# Fichiers téléversés depuis l'administration Payload : ce sont des données,
+# pas du code. Les migrations, elles, restent versionnées.
+# En production, ce dossier doit être un volume persistant.
+apps/frontend/media/

@@ -67,6 +67,27 @@ pnpm --filter @portfolio/frontend migrate:create
 pnpm --filter @portfolio/frontend migrate
 ```
 
+Les migrations sont versionnées : elles sont la seule description reproductible du
+schéma. Les fichiers téléversés, eux, sont des données et restent hors du dépôt
+(`apps/frontend/media/` est ignoré par Git). En production, ce dossier doit être
+un volume persistant, sinon les médias disparaissent à chaque redéploiement.
+
+## Sécurité des accès
+
+Les permissions vivent dans les fonctions `access` des collections Payload, donc
+côté serveur : `users` exige une session pour toute opération, `media` autorise la
+lecture publique mais réserve l'écriture aux utilisateurs connectés.
+
+Le RLS (Row Level Security) de PostgreSQL est **volontairement désactivé**. Il
+protège le cas où le navigateur interroge Postgres directement via la clé publique
+Supabase — ce que cette application ne fait jamais : le SDK `@supabase/supabase-js`
+a été retiré, et le seul accès à la base est `DATABASE_URI`, côté serveur, derrière
+les règles Payload. Activer le RLS ajouterait une seconde couche de permissions,
+écrite en SQL et ignorante des utilisateurs Payload.
+
+Cette décision devra être revue si le navigateur accède un jour directement à
+Supabase (Auth, Storage ou Realtime) : dans ce cas le RLS redevient indispensable.
+
 ## Key decisions
 
 - Les routes marketing restent statiques.
