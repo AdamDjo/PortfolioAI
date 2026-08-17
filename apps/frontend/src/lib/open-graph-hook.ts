@@ -91,4 +91,4 @@ const withOpenGraphPreview = (fields: OpenGraphPreviewFields): CollectionBeforeC
   }
 }
 
-export { readTrimmedString, withOpenGraphPreview }
+export { withOpenGraphPreview }

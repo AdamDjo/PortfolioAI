@@ -7,10 +7,13 @@ import { buildConfig } from 'payload'
 import sharp from 'sharp'
 
 import { Bookmarks } from './collections/bookmarks'
+import { Experiences } from './collections/experiences'
 import { Media } from './collections/media'
 import { Projects } from './collections/projects'
 import { Tags } from './collections/tags'
 import { Users } from './collections/users'
+import { Profile } from './globals/profile'
+import { SiteIdentity } from './globals/site-identity'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -22,7 +25,8 @@ export default buildConfig({
       titleSuffix: '— Adem',
     },
   },
-  collections: [Users, Media, Projects, Tags, Bookmarks],
+  collections: [Users, Media, Projects, Experiences, Tags, Bookmarks],
+  globals: [SiteIdentity, Profile],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET ?? '',
   typescript: {

@@ -1,4 +1,10 @@
+import { CONTENT_TAGS, revalidateCollection } from '../lib/content-cache'
+
 import type { CollectionConfig } from 'payload'
+
+// Les noms de tags sont résolus dans la vue des liens : les renommer change
+// l'affichage sans toucher aux documents `bookmarks`.
+const revalidate = revalidateCollection(CONTENT_TAGS.bookmarks)
 
 /**
  * Tags de classement des liens de veille.
@@ -57,6 +63,10 @@ const Tags: CollectionConfig = {
       },
     },
   ],
+  hooks: {
+    afterChange: [revalidate.afterChange],
+    afterDelete: [revalidate.afterDelete],
+  },
 }
 
 export { Tags }

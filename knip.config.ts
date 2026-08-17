@@ -3,33 +3,19 @@ import type { KnipConfig } from "knip";
 const config: KnipConfig = {
   workspaces: {
     "apps/frontend": {
+      // Knip resolves Next.js and Vitest entry points on its own through their
+      // plugins: only the entry points it cannot infer are listed here.
       entry: [
-        "src/app/**/page.tsx",
-        "src/app/**/layout.tsx",
-        "src/app/**/route.ts",
-        "src/app/**/route.tsx",
-        "src/app/**/loading.tsx",
-        "src/app/**/error.tsx",
-        "src/app/**/not-found.tsx",
-        "src/test/setup.ts",
-        "vitest.config.ts",
-        "playwright.config.ts",
-        "e2e/**/*.spec.ts",
-        "next.config.ts",
+        // Run through `pnpm seed`, not imported by the app.
+        "src/seed/index.ts",
       ],
-      ignore: [
-        ".next/**",
-        "coverage/**",
-        "playwright-report/**",
-        "test-results/**",
-      ],
+      // Invoked by `.lintstagedrc.js` as a workspace binary rather than imported,
+      // so Knip cannot trace it. The dependency is real: dropping it would break
+      // formatting on commit.
+      ignoreDependencies: ["prettier"],
     },
-    "packages/shared": {
-      entry: ["src/index.ts"],
-      ignore: ["dist/**"],
-    },
+    "packages/shared": {},
   },
-  ignore: ["**/*.d.ts"],
 };
 
 export default config;

@@ -1,6 +1,9 @@
+import { CONTENT_TAGS, revalidateCollection } from '../lib/content-cache'
 import { withOpenGraphPreview } from '../lib/open-graph-hook'
 
 import type { CollectionConfig } from 'payload'
+
+const revalidate = revalidateCollection(CONTENT_TAGS.projects)
 
 /**
  * Projets du portfolio, décrits d'abord par leur URL.
@@ -73,10 +76,38 @@ const Projects: CollectionConfig = {
       },
     },
     {
+      name: 'repositoryUrl',
+      type: 'text',
+      label: 'Dépôt source',
+      admin: {
+        description: 'Optionnel. Affiché à côté du lien de démonstration.',
+      },
+    },
+    {
+      name: 'technologies',
+      type: 'text',
+      label: 'Technologies',
+      hasMany: true,
+      admin: {
+        description: 'Affichées en surtitre de la carte projet.',
+      },
+    },
+    {
       name: 'featured',
       type: 'checkbox',
       label: "Mettre en avant sur l'accueil",
       defaultValue: false,
+    },
+    {
+      name: 'order',
+      type: 'number',
+      label: 'Ordre d’affichage',
+      defaultValue: 0,
+      index: true,
+      admin: {
+        description:
+          'Croissant : 0 en premier. À valeur égale, les projets les plus récents passent devant.',
+      },
     },
   ],
   hooks: {
@@ -88,6 +119,8 @@ const Projects: CollectionConfig = {
         imageUrl: 'previewImageUrl',
       }),
     ],
+    afterChange: [revalidate.afterChange],
+    afterDelete: [revalidate.afterDelete],
   },
 }
 

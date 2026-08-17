@@ -21,15 +21,13 @@
     "migrate": "NODE_OPTIONS=--no-deprecation payload migrate",
     "migrate:create": "NODE_OPTIONS=--no-deprecation payload migrate:create",
     "migrate:status": "NODE_OPTIONS=--no-deprecation payload migrate:status",
-    "generate:types": "NODE_OPTIONS=--no-deprecation payload generate:types"
+    "generate:types": "NODE_OPTIONS=--no-deprecation payload generate:types",
+    "seed": "NODE_OPTIONS=--no-deprecation payload run src/seed/index.ts"
   },
   "dependencies": {
     "@payloadcms/db-postgres": "^3.88.0",
     "@payloadcms/next": "^3.88.0",
     "@payloadcms/richtext-lexical": "^3.88.0",
-    "@portfolio/shared": "workspace:*",
-    "@tanstack/react-query": "^5.55.0",
-    "axios": "^1.15.0",
     "graphql": "^16.14.2",
     "lucide-react": "^0.460.0",
     "motion": "^13.1.0",
@@ -37,10 +35,7 @@
     "payload": "^3.88.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
-    "react-hook-form": "^7.54.0",
-    "sharp": "^0.35.3",
-    "zod": "^3.24.0",
-    "zustand": "^5.0.0"
+    "sharp": "^0.35.3"
   },
   "devDependencies": {
     "@next/bundle-analyzer": "^15",
@@ -49,8 +44,6 @@
     "@portfolio/prettier-config": "workspace:*",
     "@tailwindcss/postcss": "^4",
     "@testing-library/jest-dom": "^6",
-    "@testing-library/react": "^16",
-    "@testing-library/user-event": "^14",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",
@@ -58,10 +51,7 @@
     "@vitest/coverage-v8": "^2",
     "@vitest/ui": "^2",
     "eslint": "^9",
-    "eslint-config-next": "^15.0.0",
-    "eslint-plugin-react-hooks": "^5.0.0",
     "jsdom": "^25",
-    "lighthouse": "^13.4.1",
     "postcss": "^8",
     "prettier": "^3.4.0",
     "tailwindcss": "^4",

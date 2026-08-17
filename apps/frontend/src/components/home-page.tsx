@@ -4,9 +4,9 @@ import {
   ArrowRight,
   Bot,
   Gauge,
-  LayoutDashboard,
   Link2,
   MessageSquare,
+  PenLine,
   Send,
   ShieldCheck,
   Smartphone,
@@ -17,7 +17,6 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useRef, useState, type FormEvent } from 'react'
 
-import { AnimatedCounter } from '@/components/motion/animated-counter'
 import { AvailabilityBadge } from '@/components/motion/availability-badge'
 import {
   EASE_OUT_QUINT,
@@ -28,29 +27,19 @@ import {
   staggerContainer,
 } from '@/components/motion/primitives'
 import { Tilt } from '@/components/motion/tilt'
+import { ProjectVisual } from '@/components/project-visual'
 import { useDarkMode } from '@/components/site-shell'
-import { projects } from '@/data/portfolio'
+
+import type { BookmarkView } from '@/lib/bookmarks'
+import type { ProjectView } from '@/lib/site-content'
 
 const features = [
   { id: 'ia', label: 'IA Conversationnelle', icon: Bot },
   { id: 'links', label: 'Collection de liens', icon: Link2 },
-  { id: 'admin', label: 'Admin Dashboard', icon: LayoutDashboard },
+  { id: 'admin', label: 'Contenu éditorial', icon: PenLine },
 ] as const
 
 type FeatureId = (typeof features)[number]['id']
-
-const linkPreview = [
-  { name: 'Awwwards', category: 'Inspiration', tone: 'lime' },
-  { name: 'Tailwind CSS', category: 'Outils Dev', tone: 'cyan' },
-  { name: 'Vercel', category: 'Outils Dev', tone: 'mono' },
-]
-
-const dashboardPreview = [
-  { label: 'Projets', value: '12', delta: '+20%' },
-  { label: 'Liens', value: '248', delta: '+15%' },
-  { label: 'Vues', value: '12.4K', delta: '+8%' },
-  { label: 'Messages', value: '32', delta: '+12%' },
-]
 
 const qualityItems = [
   { label: 'Rapide', icon: Gauge },
@@ -59,7 +48,17 @@ const qualityItems = [
   { label: 'SEO Friendly', icon: MessageSquare },
 ]
 
-export function HomePage() {
+/**
+ * Ce composant est client (chat, onglets, parallaxe) : il ne peut pas interroger
+ * Payload. Tout le contenu réel arrive donc en props depuis `app/(site)/page.tsx`.
+ */
+interface HomePageProps {
+  identity: { role: string; location: string | null }
+  projects: ProjectView[]
+  bookmarks: BookmarkView[]
+}
+
+export function HomePage({ identity, projects, bookmarks }: HomePageProps) {
   const darkMode = useDarkMode()
   const [question, setQuestion] = useState('')
   const [answer, setAnswer] = useState('')
@@ -135,7 +134,10 @@ export function HomePage() {
             </div>
           </StaggerItem>
           <StaggerItem variant="rise-visible">
-            <p className="hero-location">Frontend Engineer basé en France</p>
+            <p className="hero-location">
+              {identity.role}
+              {identity.location ? ` · ${identity.location}` : ''}
+            </p>
           </StaggerItem>
         </Stagger>
 
@@ -330,18 +332,18 @@ export function HomePage() {
                     <p className="eyebrow">Bibliothèque personnelle</p>
                     <h2>Les références que je garde sous la main.</h2>
                   </div>
-                  <Link className="text-link" href="/liens">
+                  <Link className="text-link" href="/veille">
                     Ouvrir la collection <ArrowRight size={15} />
                   </Link>
                 </m.div>
                 <div className="link-preview-grid">
-                  {linkPreview.map((link) => (
-                    <m.article key={link.name} variants={riseItem}>
-                      <span className={`link-preview-cover preview-${link.tone}`}>
-                        {link.name.slice(0, 1)}
+                  {bookmarks.map((bookmark) => (
+                    <m.article key={bookmark.id} variants={riseItem}>
+                      <span className="link-preview-cover" aria-hidden="true">
+                        {bookmark.title.slice(0, 1)}
                       </span>
-                      <strong>{link.name}</strong>
-                      <small>{link.category}</small>
+                      <strong>{bookmark.title}</strong>
+                      <small>{bookmark.tags[0] ?? bookmark.domain}</small>
                     </m.article>
                   ))}
                 </div>
@@ -358,24 +360,24 @@ export function HomePage() {
               >
                 <m.div className="feature-panel-heading" variants={riseItem}>
                   <div>
-                    <p className="eyebrow">Vue d’ensemble</p>
-                    <h2>Un panneau simple pour piloter le contenu.</h2>
+                    <p className="eyebrow">Sous le capot</p>
+                    <h2>Tout ce site est éditable, rien n’est écrit en dur.</h2>
                   </div>
-                  <Link className="text-link" href="/demo">
-                    Voir le dashboard <ArrowRight size={15} />
+                  <Link className="text-link" href="/projets">
+                    Voir le résultat <ArrowRight size={15} />
                   </Link>
                 </m.div>
-                <div className="dashboard-preview-grid">
-                  {dashboardPreview.map((metric, index) => (
-                    <m.article key={metric.label} variants={riseItem}>
-                      <span>{metric.label}</span>
-                      <strong>
-                        <AnimatedCounter value={metric.value} delay={index * 0.08} />
-                      </strong>
-                      <small>{metric.delta}</small>
-                    </m.article>
-                  ))}
-                </div>
+                <m.p variants={riseItem}>
+                  Parcours, projets et veille viennent d’un CMS Payload monté dans la même
+                  application Next.js. Les pages restent des composants serveur : le contenu est
+                  rendu côté serveur, pas récupéré depuis le navigateur.
+                </m.p>
+                <m.ul className="skill-chips" variants={riseItem}>
+                  <li>Payload 3</li>
+                  <li>PostgreSQL</li>
+                  <li>Migrations versionnées</li>
+                  <li>Écriture réservée à l’administrateur</li>
+                </m.ul>
               </m.div>
             ) : null}
           </AnimatePresence>
@@ -388,8 +390,8 @@ export function HomePage() {
             <p className="eyebrow">À propos de moi</p>
             <h2>Je transforme des idées en interfaces nettes.</h2>
             <p>
-              J’aide les marques et les startups à créer des produits modernes, performants et
-              centrés utilisateur.
+              Développeur frontend senior en R&D chez un éditeur logiciel : refonte d’un produit
+              legacy en React, design system partagé et outillage IA pour l’équipe.
             </p>
             <Link className="text-link" href="/a-propos">
               Découvrir mon parcours <ArrowRight size={15} />
@@ -409,16 +411,25 @@ export function HomePage() {
             </div>
           </Reveal>
           <Stagger className="project-grid project-grid-home" stagger={0.09}>
-            {projects.map((project) => (
-              <StaggerItem key={project.title} variant="scale" className="card-fill">
+            {projects.map((project, index) => (
+              <StaggerItem key={project.id} variant="scale" className="card-fill">
                 <Tilt max={6} className="card-fill">
-                  <Link className="project-card" href={project.url}>
-                    <span className={`project-visual tone-${project.tone}`}>
-                      <span>{project.title}</span>
-                    </span>
+                  {/* Les projets sont hébergés ailleurs : lien externe, pas de
+                      navigation interne vers une ancre. */}
+                  <a
+                    className="project-card"
+                    href={project.url}
+                    rel="noreferrer noopener"
+                    target="_blank"
+                  >
+                    <ProjectVisual
+                      imageUrl={project.coverUrl ?? project.previewImageUrl}
+                      title={project.title}
+                      index={index}
+                    />
                     <strong>{project.title}</strong>
-                    <small>{project.tags.join(' / ')}</small>
-                  </Link>
+                    <small>{project.technologies.join(' / ')}</small>
+                  </a>
                 </Tilt>
               </StaggerItem>
             ))}

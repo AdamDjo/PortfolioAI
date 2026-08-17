@@ -28,6 +28,10 @@ services:
       # pour pointer vers Supabase ou toute autre instance PostgreSQL.
       DATABASE_URI: ${DATABASE_URI:-postgresql://portfolio:${POSTGRES_PASSWORD}@postgres:5432/portfolio}
       NEXT_PUBLIC_SERVER_URL: ${NEXT_PUBLIC_SERVER_URL}
+    # Les fichiers téléversés depuis /admin sont des données, pas une partie de
+    # l'image : sans ce volume ils disparaîtraient à chaque redéploiement.
+    volumes:
+      - media-data:/app/apps/frontend/media
     ports:
       - "3000:3000"
     depends_on:
@@ -36,3 +40,4 @@ services:
 
 volumes:
   postgres-data:
+  media-data:

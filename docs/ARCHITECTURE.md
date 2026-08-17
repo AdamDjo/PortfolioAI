@@ -31,26 +31,52 @@ Le routeur est découpé en deux groupes, qui n'ajoutent aucun segment d'URL :
 
 ## Frontend routes
 
-| Route          | Purpose                                        |
-| -------------- | ---------------------------------------------- |
-| `/`            | Hero conversationnelle et sélection de projets |
-| `/projets`     | Liste des projets                              |
-| `/veille`      | Liens de veille servis par Payload             |
-| `/a-propos`    | Parcours et principes                          |
-| `/contact`     | Formulaire local prêt à connecter              |
-| `/liens`       | Démonstration du gestionnaire de favoris       |
-| `/demo`        | Démonstration du panneau d'administration      |
-| `/admin`       | Administration Payload                         |
-| `/api/*`       | API REST Payload                               |
-| `/api/graphql` | API GraphQL Payload                            |
+| Route               | Purpose                                        | Rendu                     |
+| ------------------- | ---------------------------------------------- | ------------------------- |
+| `/`                 | Hero conversationnelle et sélection de projets | Statique                  |
+| `/projets`          | Projets personnels publics                     | Statique                  |
+| `/a-propos`         | Profil, compétences, parcours et principes     | Statique                  |
+| `/contact`          | Formulaire de contact                          | Statique                  |
+| `/mentions-legales` | Mentions légales                               | Statique                  |
+| `/veille`           | Liens de veille servis par Payload             | Dynamique (voir ci-après) |
+| `/admin`            | Administration Payload                         | Dynamique                 |
+| `/api/*`            | API REST Payload                               | Dynamique                 |
+| `/api/graphql`      | API GraphQL Payload                            | Dynamique                 |
 
-## Collections
+Les pages `/liens` et `/demo`, héritées de la template, ont été retirées : elles
+démontraient un gestionnaire de favoris et un panneau d'administration désormais
+remplacés par `/veille` et `/admin`.
+
+`/veille` est la seule page de contenu rendue à la demande, et pour une raison
+précise : elle dépend de la session. Le champ d'ajout n'apparaît qu'au
+propriétaire, donc la page ne peut pas être prérendue une fois pour tous les
+visiteurs. Les autres pages de contenu sont identiques pour tout le monde et
+restent statiques.
+
+## Collections et globals
+
+**Globals** — contenu à instance unique :
+
+- `site-identity` — nom, rôle, contact, liens sociaux, informations légales.
+- `profile` — accroche, biographie, années d'expérience, compétences, principes.
+
+**Collections** :
 
 - `users` — collection d'authentification, propriétaire de l'accès à `/admin`.
 - `media` — uploads, lecture publique, écriture réservée aux utilisateurs connectés.
+- `experiences` — parcours professionnel, lecture publique.
 - `projects` — projets du portfolio, décrits par leur URL, lecture publique.
 - `bookmarks` — liens de veille, décrits par leur URL, lecture publique.
 - `tags` — étiquettes de classement des liens, lecture publique.
+
+Les types TypeScript de ce contenu ne sont pas écrits à la main : Payload les
+génère dans `src/payload-types.ts` à partir des collections. Le frontend les
+importe depuis là, et non depuis `@portfolio/shared` — un type recopié à la main
+serait une seconde source de vérité, condamnée à divorcer du schéma.
+
+Chaque lecture expose malgré tout une vue minimale (`ProjectView`,
+`ExperienceView`…) construite dans `src/lib/site-content.ts` : les composants
+n'ont pas à connaître les `null` et les relations de Payload.
 
 ### Aperçu automatique par l'URL
 
@@ -86,6 +112,86 @@ vérifiée contre les plages privées, loopback, link-local et CGNAT (y compris 
 adresses IPv4 encapsulées en IPv6), délai maximal et taille de réponse plafonnée.
 Ces garde-fous sont couverts par `src/lib/open-graph.test.ts` : ce sont des règles
 de sécurité, elles doivent échouer bruyamment si quelqu'un les affaiblit.
+
+## Cache du contenu et invalidation à la publication
+
+Les pages lisent Payload dans des composants serveur. Deux écueils se présentent :
+sans cache, Next rejoue les mêmes requêtes SQL à chaque visite pour un contenu
+identique pour tous ; avec un simple `export const revalidate = 300` dans chaque
+page, elles restent statiques mais périmées jusqu'à l'expiration du délai — une
+correction publiée dans `/admin` n'apparaîtrait pas avant cinq minutes.
+
+Tout est donc centralisé dans `src/lib/content-cache.ts` : les lectures sont mises
+en cache sans expiration, et des hooks Payload régénèrent les pages concernées dès
+qu'un document change. Le cache vit dans la couche données, pas dupliqué en
+configuration de segment dans chaque page — aucune page du site ne déclare de
+`revalidate`.
+
+### Un tag par nature de contenu
+
+`CONTENT_TAGS` définit cinq tags (`identity`, `profile`, `experiences`,
+`projects`, `bookmarks`) et `cachedRead` enveloppe chaque lecture dans
+`unstable_cache` sous son tag, avec `revalidate: false`. L'expiration ne vient pas
+de l'horloge mais des hooks. Les fonctions de lecture brutes restent privées :
+seule leur version mise en cache est exportée, pour qu'aucun appelant ne
+contourne le cache par mégarde.
+
+### L'invalidation vise les chemins, pas les tags
+
+`PAGES_BY_TAG` associe chaque tag aux pages qui l'affichent, et `purge` appelle
+`revalidatePath` sur chacune. Ce choix est contre-intuitif — on s'attendrait à
+`revalidateTag` puisque les entrées sont taggées — et il vient d'une vérification
+en production, pas d'une préférence :
+
+> Dans Next 16, `revalidateTag(tag, profile)` marque l'entrée comme périmée pour
+> une revalidation en arrière-plan. Mais une page entièrement prérendue à la
+> compilation porte `initialRevalidateSeconds: false` dans
+> `.next/prerender-manifest.json` : elle n'a aucune échéance de revalidation, donc
+> personne ne ramasse jamais le travail. Le tag est bien attaché à la page
+> (`.next/server/app/a-propos.meta` liste `x-next-cache-tags`), mais purger le tag
+> laissait la page servir l'ancien contenu indéfiniment. Seul `revalidatePath`
+> remplace son HTML — vérifié : la nouvelle valeur apparaît dès la requête
+> suivante, une seconde après l'écriture.
+
+`updateTag`, qui expire immédiatement au lieu de marquer périmé, n'est pas une
+option : il lève une exception hors d'une Server Action, et ces hooks tournent
+dans le contexte d'une requête Payload.
+
+Les tags restent utiles pour autant : ils isolent les entrées de cache les unes
+des autres et dispensent `/veille`, rendue dynamiquement, de rejouer sa requête à
+chaque visite.
+
+L'identité alimente l'en-tête et le pied de page définis dans le layout commun :
+toutes les pages en dépendent, d'où la racine invalidée en mode `layout`.
+
+### Les hooks, et le filet pour les scripts
+
+Les deux globals portent un `afterChange`, les collections `experiences`,
+`projects`, `media`, `bookmarks` et `tags` portent `afterChange` et `afterDelete`.
+`afterChange` et non `beforeChange` : on n'invalide qu'une fois l'écriture passée
+en base, sinon un échec de validation régénérerait les pages pour rien. Les hooks
+ne renvoient rien — Payload ne remplace le document que si un hook retourne une
+valeur, et invalider un cache n'a pas à le modifier.
+
+`media` et `tags` sont dans la liste parce qu'ils sont lus à travers une relation :
+le visuel d'un projet et le nom d'un tag apparaissent dans les vues, donc les
+modifier doit régénérer les pages correspondantes.
+
+`revalidatePath` exige un contexte de requête Next et lève
+`Invariant: static generation store missing` en dehors. Or ces hooks tournent
+aussi hors du serveur web : `pnpm seed`, une migration ou tout script lancé par
+`payload run` écrit dans les mêmes collections. Sans filet, l'écriture échouerait
+alors qu'il n'y a précisément aucune page à régénérer dans un processus CLI.
+`purge` intercepte donc cette erreur, et seulement celle-là, pour ne pas masquer
+un vrai défaut côté serveur.
+
+### Conséquence pratique pour les builds
+
+`unstable_cache` persiste ses entrées dans `.next/cache/fetch-cache`, qui survit à
+un `pnpm build`. Un build peut donc prérendre une valeur périmée si le cache local
+contient une entrée plus ancienne que la base. En cas de doute sur un
+environnement de développement, supprimer `.next/cache/fetch-cache` avant de
+reconstruire.
 
 ## Base de données
 
@@ -142,8 +248,23 @@ les règles Payload. Activer le RLS ajouterait une seconde couche de permissions
 Cette décision devra être revue si le navigateur accède un jour directement à
 Supabase (Auth, Storage ou Realtime) : dans ce cas le RLS redevient indispensable.
 
+## État client
+
+Le portfolio ne gère aucun état serveur côté navigateur : les pages sont des
+composants serveur qui lisent Payload directement. React Query et son
+`QueryClientProvider` ont donc été retirés — ils n'avaient plus rien à mettre en
+cache, le cache vivant désormais côté serveur (voir plus haut). Zustand reste
+disponible pour l'état d'interface, mais aucun store n'est nécessaire à ce jour :
+la préférence de thème est gérée par `next-themes`.
+
+Les composants clients restants sont ceux qui ont une vraie raison de l'être :
+formulaire de contact, ajout de lien, animations au défilement, bascule de thème.
+
 ## Key decisions
 
 - Les routes marketing restent statiques.
+- Le contenu est mis en cache côté serveur et invalidé par chemin à la publication,
+  jamais par un délai d'expiration en configuration de page.
 - Le schéma de base est piloté par les migrations, jamais par `push`.
+- Les types de contenu viennent de `src/payload-types.ts`, généré par Payload.
 - Les assets cerveau clair et sombre sont distincts pour préserver lumière, matière et contraste.

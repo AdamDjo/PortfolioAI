@@ -1,5 +1,6 @@
 import { getPayload } from 'payload'
 
+import { CONTENT_TAGS, cachedRead } from '@/lib/content-cache'
 import config from '@payload-config'
 
 import type { Bookmark } from '@/payload-types'
@@ -10,6 +11,11 @@ import type { Bookmark } from '@/payload-types'
  * On interroge Payload en local (`getPayload`) plutôt que par HTTP : la page est un
  * composant serveur rendu dans le même processus, un aller-retour réseau vers sa
  * propre API n'apporterait rien.
+ *
+ * La lecture est mise en cache sous un tag purgé à l'écriture (voir
+ * `lib/content-cache.ts`) : la liste est publique et identique pour tous, donc
+ * elle n'a pas à être recalculée à chaque visite. Elle reste immédiatement à jour
+ * après un ajout depuis `/veille`.
  */
 
 /** Forme minimale dont la vue a besoin, découplée des types générés par Payload. */
@@ -80,7 +86,7 @@ const toView = (doc: Bookmark): BookmarkView => {
  * Les liens décochés (`active: false`) sont exclus ici, et non filtrés dans la
  * vue : ils ne doivent pas être envoyés au navigateur du tout.
  */
-const listPublicBookmarks = async (): Promise<BookmarkView[]> => {
+const readPublicBookmarks = async (): Promise<BookmarkView[]> => {
   const payload = await getPayload({ config })
 
   const result = await payload.find({
@@ -96,5 +102,7 @@ const listPublicBookmarks = async (): Promise<BookmarkView[]> => {
 
   return result.docs.map(toView)
 }
+
+const listPublicBookmarks = cachedRead(CONTENT_TAGS.bookmarks, readPublicBookmarks)
 
 export { listPublicBookmarks, type BookmarkView }
