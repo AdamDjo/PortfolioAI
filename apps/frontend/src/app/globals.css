@@ -1,5 +1,53 @@
 @import 'tailwindcss';
 
+/*
+ * Design tokens.
+ *
+ * Declared in `@theme` so each one is both a Tailwind utility and a plain CSS
+ * variable: `text-sm` and `var(--text-sm)` resolve to the same value, which lets
+ * the stylesheet below migrate progressively without a second source of truth.
+ *
+ * The scales collapse values that had drifted apart while looking identical on
+ * screen — radii spanned 7/8/9/10/11/12/14px, and twelve distinct font sizes
+ * covered what four steps express.
+ */
+@theme {
+  --text-2xs: 12px;
+  --text-xs: 13px;
+  --text-sm: 14px;
+  --text-base: 16px;
+  --text-lg: 19px;
+  --text-xl: 26px;
+  --text-2xl: clamp(26px, 3vw, 40px);
+  --text-3xl: clamp(38px, 4.4vw, 58px);
+  --text-4xl: clamp(48px, 8vw, 90px);
+
+  --radius-xs: 8px;
+  --radius-sm: 10px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --radius-full: 999px;
+
+  --spacing-3xs: 4px;
+  --spacing-2xs: 6px;
+  --spacing-xs: 8px;
+  --spacing-sm: 12px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-2xl: 48px;
+  --spacing-3xl: 72px;
+
+  /* Mirrors EASE_OUT_QUINT in components/motion/primitives.tsx. */
+  --ease-out-quint: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-out-expo: cubic-bezier(0.2, 0, 0, 1);
+
+  --duration-fast: 180ms;
+  --duration-base: 220ms;
+  --duration-slow: 300ms;
+}
+
 :root {
   --bg: #fbfdfe;
   --surface: #ffffff;
@@ -1328,9 +1376,40 @@ img {
   }
 }
 
+/*
+ * Both icons are always rendered and CSS picks the visible one from
+ * `data-theme`, which the theme script sets before the first paint. Choosing in
+ * JS instead would need the mounted-state dance to stay hydration-safe, and the
+ * icon would pop in after the header had already painted.
+ */
 .theme-icon {
   display: grid;
+  grid-template-areas: 'icon';
   place-items: center;
+}
+
+.theme-icon > * {
+  grid-area: icon;
+  transition:
+    opacity var(--duration-base) var(--ease-out-quint),
+    transform var(--duration-base) var(--ease-out-quint);
+}
+
+.theme-icon-dark,
+[data-theme='dark'] .theme-icon-light {
+  opacity: 0;
+  transform: rotate(70deg) scale(0.6);
+}
+
+[data-theme='dark'] .theme-icon-dark {
+  opacity: 1;
+  transform: rotate(0deg) scale(1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .theme-icon > * {
+    transition: none;
+  }
 }
 
 /* Motion wrappers inside CSS grids must stretch to the cell. */
@@ -1609,16 +1688,22 @@ img {
   width: 100%;
   height: auto;
 }
-.about-portrait .brain-light {
+/*
+ * Theme-dependent images are swapped in CSS rather than picked in JS: reading the
+ * theme from React state would leave the wrong variant painted until hydration.
+ * Both variants ship in the markup and the inactive one is never fetched, since
+ * `display: none` suppresses the request.
+ */
+.brain-light {
   display: block;
 }
-.about-portrait .brain-dark {
+.brain-dark {
   display: none;
 }
-[data-theme='dark'] .about-portrait .brain-light {
+[data-theme='dark'] .brain-light {
   display: none;
 }
-[data-theme='dark'] .about-portrait .brain-dark {
+[data-theme='dark'] .brain-dark {
   display: block;
 }
 .about-meta {

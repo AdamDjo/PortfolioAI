@@ -35,6 +35,14 @@ const config: KnipConfig = {
       },
     },
     "packages/shared": {},
+    "packages/eslint-config": {
+      // Loaded by name through the `import-x/resolver` setting in `index.js`, so no
+      // file imports it and Knip cannot trace the link. The dependency is real:
+      // without it every `import-x` rule fails to run with "invalid interface loaded
+      // as resolver", which CI catches even though a stale local `node_modules` can
+      // still resolve it. Declared here rather than dropped from package.json.
+      ignoreDependencies: ["eslint-import-resolver-typescript"],
+    },
   },
 };
 
