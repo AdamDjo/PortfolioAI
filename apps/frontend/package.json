@@ -22,7 +22,7 @@
     "migrate:create": "NODE_OPTIONS=--no-deprecation payload migrate:create",
     "migrate:status": "NODE_OPTIONS=--no-deprecation payload migrate:status",
     "generate:types": "NODE_OPTIONS=--no-deprecation payload generate:types",
-    "seed": "NODE_OPTIONS=--no-deprecation payload run src/seed/index.ts"
+    "seed": "NODE_OPTIONS=--no-deprecation payload run src/cms/seed/index.ts"
   },
   "dependencies": {
     "@payloadcms/db-postgres": "^3.88.0",

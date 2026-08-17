@@ -1,4 +1,4 @@
-import { CONTENT_TAGS, revalidateCollection } from '../lib/content-cache'
+import { CONTENT_TAGS, revalidateCollection } from '@/lib/content-cache'
 
 import type { CollectionConfig } from 'payload'
 

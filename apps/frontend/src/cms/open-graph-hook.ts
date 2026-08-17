@@ -1,4 +1,5 @@
-import { canonicalizeUrl, deriveNameFromDomain } from './canonical-url'
+import { canonicalizeUrl, deriveNameFromDomain } from '@/lib/canonical-url'
+
 import { fetchOpenGraphMetadata } from './open-graph'
 
 import type { CollectionBeforeChangeHook } from 'payload'

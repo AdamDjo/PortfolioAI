@@ -1,6 +1,7 @@
-import { canonicalizeUrl } from '../lib/canonical-url'
-import { CONTENT_TAGS, revalidateCollection } from '../lib/content-cache'
-import { withOpenGraphPreview } from '../lib/open-graph-hook'
+import { canonicalizeUrl } from '@/lib/canonical-url'
+import { CONTENT_TAGS, revalidateCollection } from '@/lib/content-cache'
+
+import { withOpenGraphPreview } from '../open-graph-hook'
 
 import type { CollectionConfig } from 'payload'
 
