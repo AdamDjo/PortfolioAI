@@ -48,8 +48,28 @@ Le routeur est découpé en deux groupes, qui n'ajoutent aucun segment d'URL :
 
 - `users` — collection d'authentification, propriétaire de l'accès à `/admin`.
 - `media` — uploads, lecture publique, écriture réservée aux utilisateurs connectés.
+- `projects` — projets du portfolio, décrits par leur URL, lecture publique.
 
-Les collections métier (projets, liens, tags) arriveront dans des lots suivants.
+Les collections restantes (liens, tags) arriveront dans des lots suivants.
+
+### Aperçu automatique des projets
+
+Un projet se saisit avec une seule information : son URL. Un hook `beforeChange`
+lit alors les balises Open Graph de la page distante pour remplir le titre, la
+description et l'image d'aperçu. Cela évite de téléverser un visuel pour chaque
+projet, tout en gardant le champ `cover` comme repli quand le site cible n'expose
+pas d'image exploitable.
+
+Le hook n'interroge le site distant que lorsque l'URL change, et les valeurs
+saisies à la main ne sont jamais écrasées.
+
+Comme cette requête part du serveur vers une adresse fournie par un utilisateur,
+elle constitue un risque de SSRF. `src/lib/open-graph.ts` la contient :
+schémas `http(s)` uniquement, refus des identifiants dans l'URL, résolution DNS
+vérifiée contre les plages privées, loopback, link-local et CGNAT (y compris les
+adresses IPv4 encapsulées en IPv6), délai maximal et taille de réponse plafonnée.
+Ces garde-fous sont couverts par `src/lib/open-graph.test.ts` : ce sont des règles
+de sécurité, elles doivent échouer bruyamment si quelqu'un les affaiblit.
 
 ## Base de données
 

@@ -69,6 +69,7 @@ export interface Config {
   collections: {
     users: User
     media: Media
+    projects: Project
     'payload-kv': PayloadKv
     'payload-locked-documents': PayloadLockedDocument
     'payload-preferences': PayloadPreference
@@ -78,6 +79,7 @@ export interface Config {
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>
     media: MediaSelect<false> | MediaSelect<true>
+    projects: ProjectsSelect<false> | ProjectsSelect<true>
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>
     'payload-locked-documents':
       | PayloadLockedDocumentsSelect<false>
@@ -165,6 +167,38 @@ export interface Media {
   focalY?: number | null
 }
 /**
+ * Renseignez l'URL : le titre, la description et l'image d'aperçu sont récupérés automatiquement.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "projects".
+ */
+export interface Project {
+  id: number
+  /**
+   * Adresse publique du projet, en https.
+   */
+  url: string
+  /**
+   * Laissez vide pour reprendre le titre de la page distante.
+   */
+  title?: string | null
+  /**
+   * Laissez vide pour reprendre la description de la page distante.
+   */
+  description?: string | null
+  /**
+   * Extraite des balises Open Graph à chaque modification de l'URL.
+   */
+  previewImageUrl?: string | null
+  /**
+   * Optionnel. Prend le pas sur l'image d'aperçu automatique quand il est renseigné.
+   */
+  cover?: (number | null) | Media
+  featured?: boolean | null
+  updatedAt: string
+  createdAt: string
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
@@ -195,6 +229,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'media'
         value: number | Media
+      } | null)
+    | ({
+        relationTo: 'projects'
+        value: number | Project
       } | null)
   globalSlug?: string | null
   user: {
@@ -278,6 +316,20 @@ export interface MediaSelect<T extends boolean = true> {
   height?: T
   focalX?: T
   focalY?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "projects_select".
+ */
+export interface ProjectsSelect<T extends boolean = true> {
+  url?: T
+  title?: T
+  description?: T
+  previewImageUrl?: T
+  cover?: T
+  featured?: T
+  updatedAt?: T
+  createdAt?: T
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
