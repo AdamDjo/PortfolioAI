@@ -28,11 +28,6 @@
       "groupName": "frontend dependencies"
     },
     {
-      "description": "Group backend deps",
-      "matchFileNames": ["apps/backend/package.json"],
-      "groupName": "backend dependencies"
-    },
-    {
       "description": "Group tooling deps",
       "matchFileNames": ["package.json"],
       "groupName": "tooling dependencies"

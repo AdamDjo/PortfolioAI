@@ -8,3 +8,9 @@ pnpm-lock.yaml
 
 # Claude Code config — not source code, skip formatting
 .claude/
+
+# Fichiers générés par les CLI Next et Payload : tout reformatage serait écrasé
+# à la prochaine génération. Les migrations, elles, restent formatées.
+apps/frontend/next-env.d.ts
+apps/frontend/src/app/(payload)/
+apps/frontend/src/payload-types.ts

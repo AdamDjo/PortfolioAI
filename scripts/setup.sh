@@ -58,8 +58,7 @@ copy_env() {
   fi
 }
 
-copy_env "apps/backend/.env.example"  "apps/backend/.env"       "apps/backend/.env"
-copy_env "apps/frontend/.env.example" "apps/frontend/.env.local" "apps/frontend/.env.local"
+copy_env ".env.example" "apps/frontend/.env.local" "apps/frontend/.env.local"
 echo ""
 
 # ── 4. Setup Husky git hooks ──────────────────────────────────────────────────
@@ -79,8 +78,8 @@ echo -e " ${GREEN}Setup complete!${NC}"
 echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 echo ""
 echo " Next steps:"
-echo "   1. Fill in your secrets in apps/backend/.env"
-echo "   2. Fill in your secrets in apps/frontend/.env.local"
+echo "   1. Fill in PAYLOAD_SECRET and DATABASE_URI in apps/frontend/.env.local"
+echo "   2. Run: pnpm --filter frontend migrate"
 echo "   3. Run: pnpm dev"
-echo "   4. Open Claude Code and type: go new-project"
+echo "   4. Open http://localhost:3000/admin to create the first admin user"
 echo ""

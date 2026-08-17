@@ -18,17 +18,17 @@ modifier le code à chaque ajout de contenu. Le produit doit réunir :
 
 ## 2. Architecture envisagée
 
-| Couche               | Choix                                           |
-| -------------------- | ----------------------------------------------- |
-| Application          | Next.js et Payload CMS dans la même application |
-| Administration       | Interface privée Payload sous `/admin`          |
-| Base de données      | PostgreSQL auto-hébergé sur le VPS              |
-| Déploiement          | Docker piloté par Coolify sur le VPS            |
-| Email transactionnel | Resend                                          |
-| IA gratuite initiale | Groq avec `openai/gpt-oss-20b`                  |
+| Couche               | Choix                                                              |
+| -------------------- | ------------------------------------------------------------------ |
+| Application          | Next.js et Payload CMS dans la même application                    |
+| Administration       | Interface privée Payload sous `/admin`                             |
+| Base de données      | Supabase en démo, PostgreSQL auto-hébergé sur le VPS en production |
+| Déploiement          | Docker piloté par Coolify sur le VPS                               |
+| Email transactionnel | Resend                                                             |
+| IA gratuite initiale | Groq avec `openai/gpt-oss-20b`                                     |
 
-Le backend Express actuel sera retiré lorsque Payload prendra en charge les
-besoins serveur. Aucun compte public ni système d’inscription ne sont prévus.
+Le backend Express a été retiré : Payload prend en charge les besoins serveur.
+Aucun compte public ni système d’inscription ne sont prévus.
 L’administration est réservée à un compte administrateur unique.
 
 ## 3. Gestion du portfolio

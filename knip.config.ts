@@ -24,10 +24,6 @@ const config: KnipConfig = {
         "test-results/**",
       ],
     },
-    "apps/backend": {
-      entry: ["src/index.ts"],
-      ignore: ["dist/**", "coverage/**"],
-    },
     "packages/shared": {
       entry: ["src/index.ts"],
       ignore: ["dist/**"],
