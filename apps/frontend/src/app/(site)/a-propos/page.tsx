@@ -7,27 +7,26 @@ import { getIdentity, getProfile, listExperiences } from '@/lib/site-content'
 import { AnimatedCounter } from './_components/animated-counter'
 import { CareerTimeline } from './_components/career-timeline'
 import { SkillGroups } from './_components/skill-groups'
+import { ABOUT_CONTENT } from './_content'
 
 import type { Metadata } from 'next'
 
-export const metadata: Metadata = {
-  title: 'À propos',
-  description: 'Le parcours, les compétences et l’approche frontend d’Adem.',
-}
+export const metadata: Metadata = ABOUT_CONTENT.metadata
 
 async function AboutPage() {
-  // Trois lectures indépendantes : elles partent en parallèle plutôt qu'en série.
+  // Three independent reads: they go out in parallel rather than in series.
   const [identity, profile, experiences] = await Promise.all([
     getIdentity(),
     getProfile(),
     listExperiences(),
   ])
+  const { hero, stats, skills, career, principles } = ABOUT_CONTENT
 
   return (
     <div className="page shell about-page">
       <div className="about-hero">
         <div>
-          <p className="eyebrow">À propos</p>
+          <p className="eyebrow">{hero.eyebrow}</p>
           <h1>{profile.headline}</h1>
           <p>{profile.bio}</p>
           <p className="about-meta">
@@ -41,7 +40,7 @@ async function AboutPage() {
             src="/images/hero-brain-light.webp"
             width={1080}
             height={720}
-            alt="Illustration d’un cerveau relié par un réseau neuronal"
+            alt={hero.portraitAlt}
           />
           <Image
             className="brain-dark"
@@ -64,7 +63,7 @@ async function AboutPage() {
               <strong>
                 <AnimatedCounter value={String(profile.yearsOfExperience)} delay={0.2} />
               </strong>
-              <span className="about-stat-label">Années d’expérience</span>
+              <span className="about-stat-label">{stats.yearsLabel}</span>
             </div>
           </StaggerItem>
         </Stagger>
@@ -72,11 +71,11 @@ async function AboutPage() {
 
       {profile.skillGroups.length > 0 ? (
         <section className="content-section">
-          {/* Cette section est encore dans le premier écran : elle s'anime au montage,
-              sinon elle réserve sa hauteur sans jamais s'afficher. */}
+          {/* This section still sits in the first screen: it animates on mount,
+              otherwise it reserves its height without ever showing. */}
           <Reveal onMount>
-            <p className="eyebrow">Compétences</p>
-            <h2>Ce que j’utilise au quotidien.</h2>
+            <p className="eyebrow">{skills.eyebrow}</p>
+            <h2>{skills.heading}</h2>
           </Reveal>
           <SkillGroups groups={profile.skillGroups} onMount />
         </section>
@@ -85,8 +84,8 @@ async function AboutPage() {
       {experiences.length > 0 ? (
         <section className="content-section">
           <Reveal>
-            <p className="eyebrow">Parcours</p>
-            <h2>Où j’ai travaillé, et sur quoi.</h2>
+            <p className="eyebrow">{career.eyebrow}</p>
+            <h2>{career.heading}</h2>
           </Reveal>
           <CareerTimeline experiences={experiences} />
         </section>
@@ -95,8 +94,8 @@ async function AboutPage() {
       {profile.principles.length > 0 ? (
         <section className="content-section">
           <Reveal>
-            <p className="eyebrow">Principes</p>
-            <h2>Comment je travaille.</h2>
+            <p className="eyebrow">{principles.eyebrow}</p>
+            <h2>{principles.heading}</h2>
           </Reveal>
           <Stagger className="principles-grid" stagger={0.08}>
             {profile.principles.map((principle, index) => (

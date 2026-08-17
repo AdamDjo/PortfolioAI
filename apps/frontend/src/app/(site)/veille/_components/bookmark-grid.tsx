@@ -6,9 +6,11 @@ import { useMemo, useState } from 'react'
 
 import { EASE_OUT_QUINT } from '@/components/motion/primitives'
 
+import { VEILLE_CONTENT } from '../_content'
+
 import type { BookmarkView } from '@/lib/bookmarks'
 
-const ALL_TAGS = 'Tous'
+const ALL_TAGS = VEILLE_CONTENT.filter.allTag
 const COVER_TONES = ['violet', 'coral', 'blue', 'green', 'cyan', 'mono'] as const
 
 /** Stable hue per domain: the same card keeps its colour from render to render. */
@@ -30,7 +32,7 @@ interface BookmarkGridProps {
  * writing goes through the form reserved for the admin.
  */
 function BookmarkGrid({ bookmarks }: BookmarkGridProps) {
-  const [activeTag, setActiveTag] = useState(ALL_TAGS)
+  const [activeTag, setActiveTag] = useState<string>(ALL_TAGS)
 
   const tags = useMemo(() => {
     const all = new Set<string>()
@@ -47,12 +49,16 @@ function BookmarkGrid({ bookmarks }: BookmarkGridProps) {
   )
 
   if (bookmarks.length === 0) {
-    return <p className="veille-empty">Aucun lien publié pour l’instant.</p>
+    return <p className="veille-empty">{VEILLE_CONTENT.grid.emptyState}</p>
   }
 
   return (
     <>
-      <div className="filter-row veille-tags" role="group" aria-label="Filtrer par tag">
+      <div
+        className="filter-row veille-tags"
+        role="group"
+        aria-label={VEILLE_CONTENT.filter.ariaLabel}
+      >
         {tags.map((tag) => (
           <button
             className={tag === activeTag ? 'is-active' : undefined}
@@ -94,7 +100,7 @@ function BookmarkGrid({ bookmarks }: BookmarkGridProps) {
         </AnimatePresence>
       </div>
       {visibleBookmarks.length === 0 ? (
-        <p className="veille-empty">Aucun lien avec ce tag pour l’instant.</p>
+        <p className="veille-empty">{VEILLE_CONTENT.grid.emptyFilteredState}</p>
       ) : null}
     </>
   )

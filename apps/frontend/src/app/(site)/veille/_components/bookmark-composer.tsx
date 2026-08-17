@@ -8,6 +8,8 @@ import { useState, type FormEvent } from 'react'
 import { EASE_OUT_QUINT } from '@/components/motion/primitives'
 import { canonicalizeUrl } from '@/lib/canonical-url'
 
+import { VEILLE_CONTENT } from '../_content'
+
 /**
  * Add form reserved for the signed-in admin.
  *
@@ -23,11 +25,12 @@ function BookmarkComposer() {
   const [draft, setDraft] = useState('')
   const [status, setStatus] = useState<'idle' | 'saving'>('idle')
   const [message, setMessage] = useState<string | null>(null)
+  const { composer } = VEILLE_CONTENT
 
   async function addBookmark(raw: string) {
     const url = canonicalizeUrl(raw)
     if (!url) {
-      setMessage('Ce lien ne ressemble pas à une URL valide.')
+      setMessage(composer.invalidUrl)
       return
     }
 
@@ -44,13 +47,13 @@ function BookmarkComposer() {
       })
 
       if (response.status === 403 || response.status === 401) {
-        setMessage('Session expirée. Reconnecte-toi depuis /admin.')
+        setMessage(composer.sessionExpired)
         return
       }
 
       if (!response.ok) {
         // The most frequent case is the uniqueness violation on the URL.
-        setMessage('Ce lien existe déjà ou n’a pas pu être enregistré.')
+        setMessage(composer.saveFailed)
         return
       }
 
@@ -59,7 +62,7 @@ function BookmarkComposer() {
       // duplicating the collection state in the browser.
       router.refresh()
     } catch {
-      setMessage('Enregistrement impossible. Vérifie ta connexion.')
+      setMessage(composer.networkError)
     } finally {
       setStatus('idle')
     }
@@ -78,7 +81,7 @@ function BookmarkComposer() {
       <form className="search-bar veille-add-bar" onSubmit={submit}>
         <Link2 size={17} />
         <label className="sr-only" htmlFor="veille-url">
-          Ajouter un lien
+          {composer.inputLabel}
         </label>
         <input
           id="veille-url"
@@ -95,7 +98,7 @@ function BookmarkComposer() {
               void addBookmark(pasted)
             }
           }}
-          placeholder="Collez votre lien ici…"
+          placeholder={composer.placeholder}
           inputMode="url"
           autoComplete="off"
           aria-invalid={message !== null}
@@ -104,11 +107,11 @@ function BookmarkComposer() {
         <button type="submit" disabled={saving}>
           {saving ? (
             <>
-              <Loader2 className="veille-spinner" size={14} /> Ajout…
+              <Loader2 className="veille-spinner" size={14} /> {composer.submitSaving}
             </>
           ) : (
             <>
-              <Plus size={14} /> Ajouter
+              <Plus size={14} /> {composer.submitIdle}
             </>
           )}
         </button>

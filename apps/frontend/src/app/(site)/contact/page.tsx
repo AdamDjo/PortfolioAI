@@ -3,33 +3,29 @@ import { Mail, MapPin } from 'lucide-react'
 import { getIdentity } from '@/lib/site-content'
 
 import { ContactForm } from './_components/contact-form'
+import { CONTACT_CONTENT } from './_content'
 
 import type { Metadata } from 'next'
 
-export const metadata: Metadata = {
-  title: 'Contact',
-  description: 'Me joindre pour une mission frontend ou une question technique.',
-}
+export const metadata: Metadata = CONTACT_CONTENT.metadata
 
 async function ContactPage() {
   const identity = await getIdentity()
+  const { heading, details } = CONTACT_CONTENT
 
   return (
     <div className="page shell">
       <header className="page-heading">
-        <p className="eyebrow">Contact</p>
-        <h1>Parlons de ce que tu veux construire.</h1>
-        <p>
-          Une mission frontend, un produit à restructurer ou simplement une question technique :
-          écris-moi.
-        </p>
+        <p className="eyebrow">{heading.eyebrow}</p>
+        <h1>{heading.title}</h1>
+        <p>{heading.lead}</p>
       </header>
       <div className="contact-layout">
         <aside>
           <div className="contact-detail">
             <Mail size={18} />
             <div>
-              <span>Email</span>
+              <span>{details.emailLabel}</span>
               <a href={`mailto:${identity.email}`}>{identity.email}</a>
             </div>
           </div>
@@ -37,7 +33,7 @@ async function ContactPage() {
             <div className="contact-detail">
               <MapPin size={18} />
               <div>
-                <span>Localisation</span>
+                <span>{details.locationLabel}</span>
                 <p>{identity.location}</p>
               </div>
             </div>

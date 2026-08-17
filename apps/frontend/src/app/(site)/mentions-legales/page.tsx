@@ -1,29 +1,29 @@
 import { getIdentity } from '@/lib/site-content'
 
+import { LEGAL_CONTENT } from './_content'
+
 import type { Metadata } from 'next'
 
-export const metadata: Metadata = {
-  title: 'Mentions légales',
-  description: 'Éditeur, hébergeur et traitement des données de ce site.',
-}
+export const metadata: Metadata = LEGAL_CONTENT.metadata
 
 async function LegalPage() {
   const identity = await getIdentity()
   const { legal } = identity
+  const { heading, sections } = LEGAL_CONTENT
 
   return (
     <div className="page shell legal-page">
       <header className="page-heading">
-        <p className="eyebrow">Informations</p>
-        <h1>Mentions légales</h1>
+        <p className="eyebrow">{heading.eyebrow}</p>
+        <h1>{heading.title}</h1>
       </header>
       <section className="content-section">
-        <h2>Éditeur</h2>
+        <h2>{sections.publisher.title}</h2>
         {/*
-          Seule page à nommer l'éditeur en entier : la loi exige une identité
-          complète ici, alors que le reste du site s'en tient au nom d'affichage.
-          Pas de repli sur ce dernier — un prénom seul ne satisfait pas
-          l'obligation, autant annoncer le champ manquant.
+          Only page to name the publisher in full: the law requires a complete
+          identity here, while the rest of the site sticks to the display name.
+          No fallback to the latter — a first name alone does not satisfy the
+          obligation, better to announce the missing field.
         */}
         {legal.publisher ? (
           <p>
@@ -31,13 +31,14 @@ async function LegalPage() {
             {identity.location ? `, ${identity.location}` : ''}.
           </p>
         ) : (
-          <p>L’identité de l’éditeur sera précisée ici avant la mise en ligne publique du site.</p>
+          <p>{sections.publisher.fallback}</p>
         )}
         <p>
-          Contact : <a href={`mailto:${identity.email}`}>{identity.email}</a>
+          {sections.publisher.contactLabel} :{' '}
+          <a href={`mailto:${identity.email}`}>{identity.email}</a>
         </p>
 
-        <h2>Hébergement</h2>
+        <h2>{sections.hosting.title}</h2>
         {legal.hostName ? (
           <p>
             {legal.hostName}
@@ -51,21 +52,13 @@ async function LegalPage() {
         ) : (
           // Field not filled in: say so rather than write an approximate host
           // into a notice that legally binds the publisher.
-          <p>L’hébergeur sera précisé ici avant la mise en ligne publique du site.</p>
+          <p>{sections.hosting.fallback}</p>
         )}
 
-        <h2>Données personnelles</h2>
-        {legal.dataPolicy ? (
-          <p>{legal.dataPolicy}</p>
-        ) : (
-          <p>
-            Ce site ne dépose aucun cookie de mesure d’audience et ne collecte aucune donnée de
-            navigation. Le seul choix conservé est la préférence de thème clair ou sombre, stockée
-            localement dans le navigateur et jamais transmise.
-          </p>
-        )}
+        <h2>{sections.dataPolicy.title}</h2>
+        <p>{legal.dataPolicy ?? sections.dataPolicy.fallback}</p>
 
-        <h2>Propriété intellectuelle</h2>
+        <h2>{sections.intellectualProperty.title}</h2>
         <p>
           Les textes et visuels de ce site sont la propriété de{' '}
           {legal.publisher ?? identity.displayName}, sauf mention contraire. Le code source des

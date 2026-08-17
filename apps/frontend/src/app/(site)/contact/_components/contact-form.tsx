@@ -6,6 +6,8 @@ import { useState, type FormEvent } from 'react'
 
 import { EASE_OUT_QUINT } from '@/components/motion/primitives'
 
+import { CONTACT_CONTENT } from '../_content'
+
 /**
  * Contact form.
  *
@@ -14,6 +16,7 @@ import { EASE_OUT_QUINT } from '@/components/motion/primitives'
  */
 export function ContactForm({ email }: { email: string }) {
   const [sent, setSent] = useState(false)
+  const { form } = CONTACT_CONTENT
 
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -24,20 +27,20 @@ export function ContactForm({ email }: { email: string }) {
     <form className="contact-form" onSubmit={submit}>
       <div className="field-row">
         <label htmlFor="contact-name">
-          Nom
+          {form.nameLabel}
           <input id="contact-name" name="name" required autoComplete="name" />
         </label>
         <label htmlFor="contact-email">
-          Email
+          {form.emailLabel}
           <input id="contact-email" name="email" type="email" required autoComplete="email" />
         </label>
       </div>
       <label htmlFor="contact-subject">
-        Sujet
+        {form.subjectLabel}
         <input id="contact-subject" name="subject" required />
       </label>
       <label htmlFor="contact-message">
-        Message
+        {form.messageLabel}
         <textarea id="contact-message" name="message" required rows={6} />
       </label>
       <m.button
@@ -47,7 +50,7 @@ export function ContactForm({ email }: { email: string }) {
         whileTap={{ scale: 0.97 }}
         transition={{ type: 'spring', stiffness: 420, damping: 24 }}
       >
-        Envoyer le message <Send size={15} />
+        {form.submitLabel} <Send size={15} />
       </m.button>
       <AnimatePresence>
         {sent ? (
@@ -59,8 +62,7 @@ export function ContactForm({ email }: { email: string }) {
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.45, ease: EASE_OUT_QUINT }}
           >
-            Le service d’envoi n’est pas encore branché. En attendant, écris-moi directement à{' '}
-            <a href={`mailto:${email}`}>{email}</a>.
+            {form.successMessage} <a href={`mailto:${email}`}>{email}</a>.
           </m.p>
         ) : null}
       </AnimatePresence>
