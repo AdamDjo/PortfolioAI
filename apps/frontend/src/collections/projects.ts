@@ -6,12 +6,12 @@ import type { CollectionConfig } from 'payload'
 const revalidate = revalidateCollection(CONTENT_TAGS.projects)
 
 /**
- * Projets du portfolio, décrits d'abord par leur URL.
+ * Portfolio projects, described first and foremost by their URL.
  *
- * L'aperçu visuel est récupéré automatiquement depuis les balises Open Graph de
- * la page cible : aucun téléversement n'est nécessaire dans le cas courant. Le
- * champ `cover` reste disponible quand le site distant n'expose pas d'image
- * exploitable, et il a toujours la priorité à l'affichage.
+ * The visual preview is fetched automatically from the target page's Open Graph
+ * tags, so no upload is needed in the common case. The `cover` field stays
+ * available when the remote site exposes no usable image, and it always wins at
+ * display time.
  */
 const Projects: CollectionConfig = {
   slug: 'projects',
@@ -23,7 +23,7 @@ const Projects: CollectionConfig = {
       "Renseignez l'URL : le titre, la description et l'image d'aperçu sont récupérés automatiquement.",
   },
   access: {
-    // Le site public lit les projets ; seule l'administration les modifie.
+    // The public site reads projects; only the admin modifies them.
     read: () => true,
     create: ({ req }) => Boolean(req.user),
     update: ({ req }) => Boolean(req.user),

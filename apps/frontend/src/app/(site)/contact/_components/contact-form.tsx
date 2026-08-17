@@ -7,10 +7,10 @@ import { useState, type FormEvent } from 'react'
 import { EASE_OUT_QUINT } from '@/components/motion/primitives'
 
 /**
- * Formulaire de contact.
+ * Contact form.
  *
- * Aucun service d'envoi n'est encore branché : la soumission n'envoie rien et le
- * message affiché le dit, plutôt que de laisser croire à un message parti.
+ * No sending service is wired up yet: submitting sends nothing and the message
+ * shown says so, rather than letting the visitor believe a message went out.
  */
 export function ContactForm({ email }: { email: string }) {
   const [sent, setSent] = useState(false)

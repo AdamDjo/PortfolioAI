@@ -3,10 +3,10 @@ import { Reveal } from '@/components/motion/primitives'
 import type { ExperienceView } from '@/lib/site-content'
 
 /**
- * Parcours professionnel en liste chronologique inversée.
+ * Career path as a reverse-chronological list.
  *
- * Aucun lien n'est proposé : ces missions sont des back-offices internes, sans
- * adresse publique. Prétendre le contraire avec un lien mort desservirait la page.
+ * No link is offered: these missions are internal back offices with no public
+ * address. Pretending otherwise with a dead link would work against the page.
  */
 export function CareerTimeline({ experiences }: { experiences: ExperienceView[] }) {
   return (

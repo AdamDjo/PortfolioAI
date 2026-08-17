@@ -9,26 +9,26 @@ import type { SkillGroupView } from '@/lib/site-content'
 import type { LucideIcon } from 'lucide-react'
 
 /**
- * Compétences présentées par domaine, sans niveau chiffré.
+ * Skills presented by domain, without a numeric level.
  *
- * Ce composant remplace les anciennes barres de progression : un pourcentage de
- * maîtrise se lit comme une mesure alors qu'il n'en est pas une. Une liste
- * d'outils par domaine dit la même chose et reste vérifiable.
+ * This component replaces the former progress bars: a mastery percentage reads as
+ * a measurement while being none. A list of tools per domain says the same thing
+ * and stays verifiable.
  *
- * Le balisage est une liste de définitions — le domaine est le terme, les outils
- * sa définition — plutôt que les primitives `Stagger` génériques, qui rendraient
- * des `div` entre `dl` et `dt` et casseraient cette sémantique.
+ * The markup is a definition list — the domain is the term, the tools its
+ * definition — rather than the generic `Stagger` primitives, which would render
+ * `div`s between `dl` and `dt` and break that semantics.
  */
 
 const VIEWPORT = { once: true, margin: '0px 0px -14% 0px' } as const
 
 /**
- * Icône par domaine.
+ * Icon per domain.
  *
- * Les libellés viennent de Payload et restent éditables : la table est indexée sur
- * un mot-clé contenu dans le libellé, pas sur une égalité stricte, et tout domaine
- * non reconnu retombe sur une icône neutre. Renommer un groupe dans l'admin ne peut
- * donc pas casser l'affichage.
+ * Labels come from Payload and stay editable: the table is keyed on a keyword
+ * contained in the label, not on strict equality, and any unrecognised domain
+ * falls back to a neutral icon. Renaming a group in the admin therefore cannot
+ * break the display.
  */
 const DOMAIN_ICONS: readonly (readonly [RegExp, LucideIcon])[] = [
   [/front|react|web/i, LayoutTemplate],

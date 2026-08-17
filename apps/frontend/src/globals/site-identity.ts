@@ -3,15 +3,15 @@ import { CONTENT_TAGS, revalidateGlobal } from '@/lib/content-cache'
 import type { GlobalConfig } from 'payload'
 
 /**
- * Identité du site : coordonnées, liens sociaux, mentions légales.
+ * Site identity: contact details, social links, legal notice.
  *
- * C'est un global et non une collection parce qu'il n'en existe qu'un seul
- * exemplaire par nature. Une collection obligerait les pages à choisir « le
- * premier document » — une convention implicite qui casse au premier doublon.
+ * A global rather than a collection because only one of it exists by nature. A
+ * collection would force pages to pick "the first document" — an implicit
+ * convention that breaks on the first duplicate.
  *
- * Ces valeurs étaient auparavant codées en dur dans les composants, ce qui a
- * laissé passer des liens sociaux pointant vers les pages d'accueil de GitHub et
- * LinkedIn. Les centraliser rend l'erreur visible et corrigeable en un endroit.
+ * These values used to be hardcoded in the components, which let social links
+ * pointing at the GitHub and LinkedIn home pages slip through. Centralising them
+ * makes such a mistake visible and fixable in one place.
  */
 const SiteIdentity: GlobalConfig = {
   slug: 'site-identity',
@@ -20,7 +20,7 @@ const SiteIdentity: GlobalConfig = {
     description: 'Coordonnées, liens sociaux et informations légales.',
   },
   access: {
-    // Le site public lit l'identité ; seul l'administrateur connecté la modifie.
+    // The public site reads identity; only the signed-in admin updates it.
     read: () => true,
     update: ({ req }) => Boolean(req.user),
   },
@@ -118,8 +118,8 @@ const SiteIdentity: GlobalConfig = {
     },
   ],
   hooks: {
-    // L'identité alimente l'en-tête, le pied de page et les mentions légales :
-    // sa sauvegarde purge le cache de toutes les pages qui la lisent.
+    // Identity feeds the header, the footer and the legal notice, so saving it
+    // purges the cache of every page that reads it.
     afterChange: [revalidateGlobal(CONTENT_TAGS.identity)],
   },
 }

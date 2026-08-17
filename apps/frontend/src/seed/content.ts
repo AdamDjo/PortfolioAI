@@ -51,9 +51,9 @@ const identity: Omit<SiteIdentity, 'id' | 'createdAt' | 'updatedAt'> = {
     linkedinUrl: 'https://www.linkedin.com/in/adem-benmessaoud-dev',
   },
   legal: {
-    // Le site se présente sous le prénom seul ; la loi exige en revanche une
-    // identité complète pour l'éditeur, et les mentions légales sont la seule
-    // page à l'afficher.
+    // The site presents itself under the first name alone; the law, however,
+    // requires a full identity for the publisher, and the legal notice is the
+    // only page that displays it.
     publisher: 'Adem Ben Messaoud',
   },
 }

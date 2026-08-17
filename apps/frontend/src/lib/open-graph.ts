@@ -1,15 +1,14 @@
 import { lookup } from 'dns/promises'
 
 /**
- * Extraction des métadonnées Open Graph d'une page distante.
+ * Extraction of a remote page's Open Graph metadata.
  *
- * Cette fonction récupère une URL fournie depuis l'administration : elle est donc
- * un vecteur SSRF potentiel. Les garde-fous ci-dessous sont volontairement
- * restrictifs — mieux vaut refuser une URL exotique que laisser le serveur
- * atteindre une ressource interne.
+ * This function fetches a URL supplied from the admin, which makes it a potential
+ * SSRF vector. The guards below are deliberately restrictive — better to refuse
+ * an exotic URL than to let the server reach an internal resource.
  */
 
-/** Métadonnées exploitables extraites d'une page distante. */
+/** Usable metadata extracted from a remote page. */
 interface OpenGraphMetadata {
   title: string | null
   description: string | null
@@ -18,12 +17,12 @@ interface OpenGraphMetadata {
 
 const FETCH_TIMEOUT_MS = 8_000
 
-/** Au-delà, on arrête la lecture : les balises `<head>` arrivent bien avant. */
+/** Reading stops past this point: the `<head>` tags arrive well before it. */
 const MAX_BYTES = 512 * 1_024
 
 /**
- * Plages réservées ou privées (RFC 1918, loopback, link-local, CGNAT…).
- * Une URL qui résout vers l'une d'elles est refusée.
+ * Reserved or private ranges (RFC 1918, loopback, link-local, CGNAT…).
+ * A URL resolving to one of them is refused.
  */
 const BLOCKED_IPV4_RANGES: readonly (readonly [string, number])[] = [
   ['0.0.0.0', 8],
@@ -68,17 +67,18 @@ const isBlockedIpv4 = (address: string): boolean => {
 const isBlockedIpv6 = (address: string): boolean => {
   const normalized = address.toLowerCase().replace(/^\[|\]$/g, '')
 
-  // Loopback, non spécifiée, link-local (fe80::/10) et unique-local (fc00::/7).
+  // Loopback, unspecified, link-local (fe80::/10) and unique-local (fc00::/7).
   if (normalized === '::1' || normalized === '::') return true
   if (/^fe[89ab]/.test(normalized)) return true
   if (/^f[cd]/.test(normalized)) return true
 
-  // Adresse IPv4 encapsulée, notation décimale (`::ffff:127.0.0.1`).
+  // IPv4-mapped address, decimal notation (`::ffff:127.0.0.1`).
   const mappedDecimal = /^::ffff:(\d+\.\d+\.\d+\.\d+)$/.exec(normalized)
   if (mappedDecimal) return isBlockedIpv4(mappedDecimal[1])
 
-  // Même adresse après normalisation par `new URL()`, qui la réécrit en
-  // hexadécimal (`::ffff:7f00:1`). Sans ce cas, un loopback déguisé passait.
+  // Same address after normalisation by `new URL()`, which rewrites it in
+  // hexadecimal (`::ffff:7f00:1`). Without this case, a disguised loopback got
+  // through.
   const mappedHex = /^::ffff:([0-9a-f]{1,4}):([0-9a-f]{1,4})$/.exec(normalized)
   if (mappedHex) {
     const high = Number.parseInt(mappedHex[1], 16)
@@ -87,15 +87,15 @@ const isBlockedIpv6 = (address: string): boolean => {
     return isBlockedIpv4(ipv4)
   }
 
-  // Toute autre forme encapsulant de l'IPv4 est refusée par prudence.
+  // Any other IPv4-mapped form is refused out of caution.
   if (normalized.startsWith('::ffff:')) return true
 
   return false
 }
 
 /**
- * Valide l'URL puis vérifie que son hôte ne résout pas vers une adresse interne.
- * Retourne l'URL analysée, ou `null` si elle doit être refusée.
+ * Validates the URL, then checks that its host does not resolve to an internal
+ * address. Returns the parsed URL, or `null` when it must be refused.
  */
 const resolveSafeUrl = async (rawUrl: string): Promise<URL | null> => {
   let url: URL
@@ -105,15 +105,15 @@ const resolveSafeUrl = async (rawUrl: string): Promise<URL | null> => {
     return null
   }
 
-  // Seul HTTP(S) est autorisé : écarte file:, ftp:, gopher:, data:…
+  // HTTP(S) only: rules out file:, ftp:, gopher:, data:…
   if (url.protocol !== 'https:' && url.protocol !== 'http:') return null
 
-  // Les identifiants dans l'URL n'ont aucune raison d'être ici.
+  // Credentials in the URL have no reason to be here.
   if (url.username || url.password) return null
 
   const hostname = url.hostname.replace(/^\[|\]$/g, '')
 
-  // Hôte déjà littéral : on tranche sans résolution DNS.
+  // Host already a literal: decided without DNS resolution.
   if (/^\d{1,3}(\.\d{1,3}){3}$/.test(hostname)) {
     return isBlockedIpv4(hostname) ? null : url
   }
@@ -122,7 +122,7 @@ const resolveSafeUrl = async (rawUrl: string): Promise<URL | null> => {
   }
   if (hostname === 'localhost' || hostname.endsWith('.localhost')) return null
 
-  // Nom de domaine : toutes les adresses résolues doivent être publiques.
+  // Domain name: every resolved address must be public.
   try {
     const records = await lookup(hostname, { all: true, verbatim: true })
     if (records.length === 0) return null
@@ -136,7 +136,7 @@ const resolveSafeUrl = async (rawUrl: string): Promise<URL | null> => {
   }
 }
 
-/** Lit la réponse en s'arrêtant à `MAX_BYTES`, sans charger tout le corps. */
+/** Reads the response, stopping at `MAX_BYTES`, without loading the whole body. */
 const readCappedText = async (response: Response): Promise<string> => {
   const body = response.body
   if (!body) return ''
@@ -164,8 +164,8 @@ const readCappedText = async (response: Response): Promise<string> => {
 }
 
 /**
- * Cherche le contenu d'une balise meta, que `property`/`name` précède ou suive
- * l'attribut `content`.
+ * Looks for a meta tag's content, whether `property`/`name` comes before or
+ * after the `content` attribute.
  */
 const findMetaContent = (html: string, names: readonly string[]): string | null => {
   for (const name of names) {
@@ -189,14 +189,14 @@ const findMetaContent = (html: string, names: readonly string[]): string | null 
   return null
 }
 
-/** Extrait le contenu de la balise `<title>`, utilisé en dernier recours. */
+/** Extracts the `<title>` tag content, used as a last resort. */
 const findTitleTag = (html: string): string | null => {
   const match = /<title[^>]*>([^<]+)</i.exec(html)
   const value = match?.[1]?.trim()
   return value ? decodeHtmlEntities(value) : null
 }
 
-/** Résout une URL éventuellement relative contre l'URL de la page. */
+/** Resolves a possibly relative URL against the page URL. */
 const toAbsoluteUrl = (value: string, base: string): string | null => {
   try {
     return new URL(value, base).href
@@ -205,7 +205,7 @@ const toAbsoluteUrl = (value: string, base: string): string | null => {
   }
 }
 
-/** Décode les quelques entités que l'on rencontre dans les balises meta. */
+/** Decodes the few entities encountered in meta tags. */
 const decodeHtmlEntities = (value: string): string =>
   value
     .replace(/&quot;/g, '"')
@@ -217,11 +217,10 @@ const decodeHtmlEntities = (value: string): string =>
     .replace(/&amp;/g, '&')
 
 /**
- * Récupère les métadonnées Open Graph d'une URL publique.
+ * Fetches the Open Graph metadata of a public URL.
  *
- * Ne lève jamais : toute erreur (URL refusée, hôte injoignable, page sans balises)
- * se traduit par des champs `null`, laissant l'administrateur renseigner un visuel
- * manuellement.
+ * Never throws: any error (refused URL, unreachable host, page without tags)
+ * turns into `null` fields, leaving the admin free to supply a visual by hand.
  */
 const fetchOpenGraphMetadata = async (rawUrl: string): Promise<OpenGraphMetadata> => {
   const empty: OpenGraphMetadata = { title: null, description: null, imageUrl: null }
@@ -237,7 +236,7 @@ const fetchOpenGraphMetadata = async (rawUrl: string): Promise<OpenGraphMetadata
       signal: controller.signal,
       redirect: 'follow',
       headers: {
-        // Certains sites ne servent les balises Open Graph qu'aux agents connus.
+        // Some sites only serve Open Graph tags to known agents.
         'User-Agent': 'Mozilla/5.0 (compatible; PortfolioPreviewBot/1.0)',
         Accept: 'text/html,application/xhtml+xml',
       },
@@ -255,7 +254,7 @@ const fetchOpenGraphMetadata = async (rawUrl: string): Promise<OpenGraphMetadata
     return {
       title: findMetaContent(html, ['og:title', 'twitter:title']) ?? findTitleTag(html),
       description: findMetaContent(html, ['og:description', 'twitter:description', 'description']),
-      // Une image relative est résolue contre l'URL de la page.
+      // A relative image is resolved against the page URL.
       imageUrl: imageUrl ? toAbsoluteUrl(imageUrl, url.href) : null,
     }
   } catch {
@@ -265,6 +264,6 @@ const fetchOpenGraphMetadata = async (rawUrl: string): Promise<OpenGraphMetadata
   }
 }
 
-// `resolveSafeUrl` porte la décision de sécurité : il est exporté pour être
-// testé directement, et non pour être appelé ailleurs dans l'application.
+// `resolveSafeUrl` carries the security decision: it is exported to be tested
+// directly, not to be called elsewhere in the application.
 export { fetchOpenGraphMetadata, resolveSafeUrl }

@@ -5,15 +5,15 @@ import type { CollectionConfig } from 'payload'
 const revalidate = revalidateCollection(CONTENT_TAGS.experiences)
 
 /**
- * Parcours professionnel.
+ * Professional career path.
  *
- * Une collection plutôt qu'un tableau dans un global : chaque poste a son propre
- * cycle de vie éditorial, et le tri chronologique se fait alors côté base plutôt
- * qu'à la main dans l'interface.
+ * A collection rather than an array inside a global: each role has its own
+ * editorial lifecycle, and chronological sorting then happens in the database
+ * instead of by hand in the interface.
  *
- * Aucun champ URL ici, volontairement : ces missions sont des back-offices
- * internes, sans adresse publique à montrer. Les projets démontrables vivent dans
- * la collection `projects`.
+ * No URL field here, deliberately: these assignments are internal back-offices
+ * with no public address to show. Demonstrable work lives in the `projects`
+ * collection.
  */
 const Experiences: CollectionConfig = {
   slug: 'experiences',
@@ -115,8 +115,8 @@ const Experiences: CollectionConfig = {
     },
   ],
   hooks: {
-    // La suppression compte autant que l'ajout : un poste retiré doit disparaître
-    // du parcours sans attendre.
+    // Deletion matters as much as creation: a removed role must disappear from
+    // the career path right away.
     afterChange: [revalidate.afterChange],
     afterDelete: [revalidate.afterDelete],
   },

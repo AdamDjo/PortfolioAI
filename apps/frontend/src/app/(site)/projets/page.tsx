@@ -27,7 +27,7 @@ async function ProjectsPage() {
       </header>
       <Stagger className="project-grid projects-page-grid" stagger={0.12}>
         {projects.map((project, index) => {
-          // Le visuel téléversé prend le pas sur l'aperçu automatique.
+          // The uploaded visual takes precedence over the automatic preview.
           const image = project.coverUrl ?? project.previewImageUrl
 
           return (

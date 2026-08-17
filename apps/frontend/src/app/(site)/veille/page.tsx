@@ -15,12 +15,12 @@ export const metadata: Metadata = {
 }
 
 /**
- * La liste change dès qu'un lien est ajouté : on rend à la demande plutôt que de
- * figer la page au build.
+ * The list changes as soon as a link is added: render on demand rather than
+ * freezing the page at build time.
  */
 export const dynamic = 'force-dynamic'
 
-/** Vrai uniquement si la requête porte une session Payload valide. */
+/** True only when the request carries a valid Payload session. */
 async function isOwner(): Promise<boolean> {
   const payload = await getPayload({ config })
   const { user } = await payload.auth({ headers: await headers() })
@@ -28,8 +28,8 @@ async function isOwner(): Promise<boolean> {
 }
 
 async function WatchPage() {
-  // La lecture est publique, la session ne sert qu'à décider d'afficher le
-  // formulaire : les deux requêtes sont indépendantes.
+  // Reading is public and the session only decides whether to show the form:
+  // the two queries are independent.
   const [bookmarks, owner] = await Promise.all([listPublicBookmarks(), isOwner()])
 
   return (

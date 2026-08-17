@@ -5,8 +5,8 @@ import type { CollectionConfig } from 'payload'
 const revalidate = revalidateCollection(CONTENT_TAGS.projects)
 
 /**
- * Fichiers téléversés depuis l'administration.
- * La lecture est publique afin que les pages du site puissent afficher les visuels.
+ * Files uploaded from the admin.
+ * Reading is public so the site pages can display the visuals.
  */
 const Media: CollectionConfig = {
   slug: 'media',
@@ -35,9 +35,9 @@ const Media: CollectionConfig = {
     },
   ],
   hooks: {
-    // Les visuels de projets sont lus à travers la relation `cover` : remplacer un
-    // fichier ne modifie pas le document projet, donc son cache ne serait jamais
-    // purgé et la page continuerait de servir l'ancienne URL.
+    // Project visuals are read through the `cover` relation: replacing a file
+    // does not modify the project document, so its cache would never be purged
+    // and the page would keep serving the old URL.
     afterChange: [revalidate.afterChange],
     afterDelete: [revalidate.afterDelete],
   },

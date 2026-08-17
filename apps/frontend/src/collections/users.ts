@@ -1,8 +1,8 @@
 import type { CollectionConfig } from 'payload'
 
 /**
- * Compte administrateur unique du portfolio.
- * Aucune inscription publique : les comptes sont créés depuis l'administration.
+ * The portfolio's single admin account.
+ * No public sign-up: accounts are created from the admin.
  */
 const Users: CollectionConfig = {
   slug: 'users',
@@ -16,7 +16,7 @@ const Users: CollectionConfig = {
     defaultColumns: ['email', 'name', 'updatedAt'],
   },
   access: {
-    // Seuls les utilisateurs authentifiés gèrent les comptes.
+    // Only authenticated users manage accounts.
     create: ({ req }) => Boolean(req.user),
     read: ({ req }) => Boolean(req.user),
     update: ({ req }) => Boolean(req.user),

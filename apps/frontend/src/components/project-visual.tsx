@@ -4,12 +4,12 @@ import Image from 'next/image'
 import { useState } from 'react'
 
 /**
- * Visuel d'une carte projet : l'aperçu distant quand il existe, sinon un repli
- * typographique.
+ * Visual for a project card: the remote preview when there is one, a
+ * typographic fallback otherwise.
  *
- * L'image vient du site déployé du projet et peut disparaître après coup ; en cas
- * d'erreur de chargement on retombe sur le repli plutôt que de laisser un cadre
- * vide. Même raisonnement que pour les cartes de veille.
+ * The image comes from the project's deployed site and can disappear later, so a
+ * load error falls back rather than leaving an empty frame — same reasoning as
+ * the veille cards.
  */
 export function ProjectVisual({
   imageUrl,
@@ -32,8 +32,8 @@ export function ProjectVisual({
           fill
           sizes="(max-width: 768px) 100vw, 50vw"
           onError={() => setFailed(true)}
-          // Les domaines distants ne sont pas connus à l'avance : l'optimiseur
-          // Next exigerait une liste blanche que l'on ne peut pas maintenir.
+          // Remote domains are not known in advance: Next's optimiser would
+          // require an allowlist that cannot be maintained.
           unoptimized
         />
       ) : (

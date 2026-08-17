@@ -3,10 +3,10 @@ import { describe, expect, it } from 'vitest'
 import { resolveSafeUrl } from './open-graph'
 
 /**
- * Ces tests protègent un garde-fou de sécurité : `resolveSafeUrl` est ce qui
- * empêche une URL saisie dans l'administration d'atteindre une ressource interne
- * (SSRF). Une régression ici serait silencieuse en production, d'où la couverture
- * explicite de chaque forme d'évasion connue.
+ * These tests protect a security guard: `resolveSafeUrl` is what keeps a URL
+ * entered in the admin from reaching an internal resource (SSRF). A regression
+ * here would be silent in production, hence the explicit coverage of every known
+ * escape form.
  */
 describe('resolveSafeUrl', () => {
   it('accepte une URL publique en https', async () => {

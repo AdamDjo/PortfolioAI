@@ -49,8 +49,8 @@ async function LegalPage() {
             ) : null}
           </p>
         ) : (
-          // Champ non renseigné : on le dit plutôt que d'inscrire un hébergeur
-          // approximatif dans une mention qui engage juridiquement l'éditeur.
+          // Field not filled in: say so rather than write an approximate host
+          // into a notice that legally binds the publisher.
           <p>L’hébergeur sera précisé ici avant la mise en ligne publique du site.</p>
         )}
 

@@ -36,8 +36,8 @@ export default buildConfig({
     pool: {
       connectionString: process.env.DATABASE_URI ?? '',
     },
-    // Les migrations sont la seule source de vérité du schéma :
-    // « push » est désactivé pour ne jamais désynchroniser dev et production.
+    // Migrations are the single source of truth for the schema: `push` is
+    // disabled so dev and production can never drift apart.
     push: false,
     migrationDir: path.resolve(dirname, 'migrations'),
   }),

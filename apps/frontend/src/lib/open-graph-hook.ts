@@ -4,35 +4,34 @@ import { fetchOpenGraphMetadata } from './open-graph'
 import type { CollectionBeforeChangeHook } from 'payload'
 
 /**
- * Hook `beforeChange` partagé : renseigne un aperçu depuis les balises Open Graph
- * de l'URL saisie.
+ * Shared `beforeChange` hook: fills in a preview from the Open Graph tags of the
+ * URL that was entered.
  *
- * Deux collections en dépendent (`projects` et `bookmarks`) et le comportement
- * attendu est identique : normaliser l'URL, aller chercher titre/description/image
- * une seule fois, et ne jamais écraser ce qui a été saisi à la main. Le hook est
- * donc paramétré par les noms de champs plutôt que dupliqué.
+ * Two collections depend on it (`projects` and `bookmarks`) and the expected
+ * behaviour is identical: normalise the URL, fetch title/description/image once,
+ * and never overwrite what was typed by hand. The hook is therefore parameterised
+ * by field names rather than duplicated.
  */
 
-/** Noms des champs alimentés par le hook dans la collection appelante. */
+/** Names of the fields the hook feeds in the calling collection. */
 interface OpenGraphPreviewFields {
-  /** Champ portant l'URL saisie. Il est réécrit sous sa forme canonique. */
+  /** Field holding the entered URL. It is rewritten in canonical form. */
   url: string
-  /** Champ titre, complété si laissé vide. */
+  /** Title field, filled in when left empty. */
   title: string
-  /** Champ description, complété si laissé vide. */
+  /** Description field, filled in when left empty. */
   description?: string
-  /** Champ recevant l'URL de l'image d'aperçu. */
+  /** Field receiving the preview image URL. */
   imageUrl: string
-  /** Champ recevant le domaine, utile pour l'affichage et le favicon. */
+  /** Field receiving the domain, useful for display and the favicon. */
   domain?: string
 }
 
 /**
- * Lit une valeur de formulaire comme texte utile.
+ * Reads a form value as usable text.
  *
- * Un champ vidé depuis l'administration arrive comme chaîne vide, pas comme
- * `null` : on le traite donc comme absent afin que la valeur automatique
- * reprenne la main.
+ * A field cleared from the admin arrives as an empty string, not as `null`, so it
+ * is treated as absent in order to let the automatic value take over again.
  */
 const readTrimmedString = (value: unknown): string | undefined => {
   if (typeof value !== 'string') return undefined
@@ -41,10 +40,10 @@ const readTrimmedString = (value: unknown): string | undefined => {
 }
 
 /**
- * Construit le hook `beforeChange` pour une collection décrite par ses champs.
+ * Builds the `beforeChange` hook for a collection described by its fields.
  *
- * L'appel réseau n'a lieu que si l'URL est nouvelle ou a changé : une simple
- * modification de tag ou de titre ne redéclenche pas de requête sortante.
+ * The network call only happens when the URL is new or has changed: editing a tag
+ * or a title alone does not trigger another outgoing request.
  */
 const withOpenGraphPreview = (fields: OpenGraphPreviewFields): CollectionBeforeChangeHook => {
   return async ({ data, originalDoc, operation }) => {
@@ -53,15 +52,15 @@ const withOpenGraphPreview = (fields: OpenGraphPreviewFields): CollectionBeforeC
     if (!raw) return data
 
     const url = canonicalizeUrl(raw)
-    // URL inexploitable : on laisse la validation du champ produire l'erreur
-    // plutôt que d'écrire une valeur à moitié normalisée.
+    // Unusable URL: field validation is left to produce the error rather than
+    // writing a half-normalised value.
     if (!url) return data
 
     const domain = new URL(url).hostname
     const previous = originalDoc as Record<string, unknown> | undefined
     const previousUrl = readTrimmedString(previous?.[fields.url])
 
-    // Rien de nouveau côté URL : on garde l'aperçu déjà en base.
+    // Nothing new about the URL: the preview already in the database is kept.
     if (operation !== 'create' && url === previousUrl) {
       return { ...data, [fields.url]: url }
     }
@@ -72,8 +71,8 @@ const withOpenGraphPreview = (fields: OpenGraphPreviewFields): CollectionBeforeC
       ...record,
       [fields.url]: url,
       [fields.imageUrl]: metadata.imageUrl,
-      // Les valeurs saisies à la main ne sont jamais écrasées. En dernier
-      // recours, le nom déduit du domaine reste plus lisible que l'URL brute.
+      // Hand-typed values are never overwritten. As a last resort, the name
+      // derived from the domain stays more readable than the raw URL.
       [fields.title]:
         readTrimmedString(record[fields.title]) ?? metadata.title ?? deriveNameFromDomain(domain),
     }

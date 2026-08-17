@@ -2,16 +2,16 @@ import { CONTENT_TAGS, revalidateCollection } from '../lib/content-cache'
 
 import type { CollectionConfig } from 'payload'
 
-// Les noms de tags sont résolus dans la vue des liens : les renommer change
-// l'affichage sans toucher aux documents `bookmarks`.
+// Tag names are resolved in the bookmark view: renaming one changes what is
+// displayed without touching the `bookmarks` documents.
 const revalidate = revalidateCollection(CONTENT_TAGS.bookmarks)
 
 /**
- * Tags de classement des liens de veille.
+ * Tags used to classify veille links.
  *
- * Ils sont une collection à part et non un champ texte libre : c'est ce qui permet
- * de renommer un tag une seule fois et de le voir changer partout, et d'éviter les
- * quasi-doublons (« React » / « react » / « ReactJS »).
+ * A collection of their own rather than a free-text field: that is what lets a
+ * tag be renamed once and change everywhere, and what keeps near-duplicates
+ * ("React" / "react" / "ReactJS") from piling up.
  */
 const Tags: CollectionConfig = {
   slug: 'tags',
@@ -21,7 +21,7 @@ const Tags: CollectionConfig = {
     defaultColumns: ['name', 'slug', 'updatedAt'],
   },
   access: {
-    // Le site public lit les tags pour proposer les filtres ; seul l'administrateur les modifie.
+    // The public site reads tags to offer the filters; only the admin edits them.
     read: () => true,
     create: ({ req }) => Boolean(req.user),
     update: ({ req }) => Boolean(req.user),
@@ -52,7 +52,7 @@ const Tags: CollectionConfig = {
             return (
               name
                 .normalize('NFD')
-                // Retire les diacritiques : « Accessibilité » devient « accessibilite ».
+                // Strips diacritics: "Accessibilité" becomes "accessibilite".
                 .replace(/[\u0300-\u036f]/g, '')
                 .toLowerCase()
                 .replace(/[^a-z0-9]+/g, '-')

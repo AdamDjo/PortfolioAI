@@ -7,15 +7,15 @@ import type { CollectionConfig } from 'payload'
 const revalidate = revalidateCollection(CONTENT_TAGS.bookmarks)
 
 /**
- * Liens de veille.
+ * Veille links.
  *
- * Le geste visé est minimal : coller une URL, rien d'autre. Le titre, la
- * description, l'image d'aperçu et le domaine sont récupérés depuis les balises
- * Open Graph de la page cible, donc aucun téléversement n'est nécessaire.
+ * The intended gesture is minimal: paste a URL, nothing else. Title,
+ * description, preview image and domain are pulled from the target page's Open
+ * Graph tags, so no upload is needed.
  *
- * L'écriture est réservée à l'administrateur connecté : les visiteurs consultent
- * la liste mais ne peuvent pas l'alimenter. C'est délibéré — un formulaire ouvert
- * serait une porte à spam sur une page publique.
+ * Writing is restricted to the signed-in admin: visitors read the list but
+ * cannot feed it. That is deliberate — an open form would be a spam door on a
+ * public page.
  */
 const Bookmarks: CollectionConfig = {
   slug: 'bookmarks',
@@ -113,7 +113,7 @@ const Bookmarks: CollectionConfig = {
         domain: 'domain',
       }),
     ],
-    // Un lien ajouté depuis `/veille` doit apparaître sur l'accueil sans délai.
+    // A link added from `/veille` must show up on the home page without delay.
     afterChange: [revalidate.afterChange],
     afterDelete: [revalidate.afterDelete],
   },

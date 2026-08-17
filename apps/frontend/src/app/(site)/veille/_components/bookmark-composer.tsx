@@ -9,14 +9,14 @@ import { EASE_OUT_QUINT } from '@/components/motion/primitives'
 import { canonicalizeUrl } from '@/lib/canonical-url'
 
 /**
- * Formulaire d'ajout réservé à l'administrateur connecté.
+ * Add form reserved for the signed-in admin.
  *
- * Il n'est rendu que lorsque la session Payload est valide, et l'API refuse de
- * toute façon l'écriture sans session : le contrôle visuel est un confort, pas la
- * barrière de sécurité.
+ * It is only rendered when the Payload session is valid, and the API refuses the
+ * write without a session anyway: the visual check is a convenience, not the
+ * security barrier.
  *
- * L'intérêt de l'avoir ici plutôt que dans `/admin` est le geste sur téléphone :
- * coller un lien depuis la page publique, sans détour par l'administration.
+ * Having it here rather than in `/admin` is about the gesture on a phone: pasting
+ * a link from the public page, without a detour through the admin.
  */
 function BookmarkComposer() {
   const router = useRouter()
@@ -38,7 +38,7 @@ function BookmarkComposer() {
       const response = await fetch('/api/bookmarks', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        // La session Payload voyage par cookie : rien à porter à la main.
+        // The Payload session travels by cookie: nothing to carry by hand.
         credentials: 'include',
         body: JSON.stringify({ url }),
       })
@@ -49,14 +49,14 @@ function BookmarkComposer() {
       }
 
       if (!response.ok) {
-        // Le cas le plus fréquent est la violation d'unicité sur l'URL.
+        // The most frequent case is the uniqueness violation on the URL.
         setMessage('Ce lien existe déjà ou n’a pas pu être enregistré.')
         return
       }
 
       setDraft('')
-      // La liste est rendue côté serveur : on demande un nouveau rendu plutôt
-      // que de dupliquer l'état de la collection dans le navigateur.
+      // The list is rendered server-side: ask for a re-render rather than
+      // duplicating the collection state in the browser.
       router.refresh()
     } catch {
       setMessage('Enregistrement impossible. Vérifie ta connexion.')

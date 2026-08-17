@@ -6,19 +6,19 @@ import config from '@payload-config'
 import type { Bookmark } from '@/payload-types'
 
 /**
- * Accès serveur aux liens de veille.
+ * Server-side access to the veille links.
  *
- * On interroge Payload en local (`getPayload`) plutôt que par HTTP : la page est un
- * composant serveur rendu dans le même processus, un aller-retour réseau vers sa
- * propre API n'apporterait rien.
+ * Payload is queried locally (`getPayload`) rather than over HTTP: the page is a
+ * server component rendered in the same process, so a network round trip to its
+ * own API would buy nothing.
  *
- * La lecture est mise en cache sous un tag purgé à l'écriture (voir
- * `lib/content-cache.ts`) : la liste est publique et identique pour tous, donc
- * elle n'a pas à être recalculée à chaque visite. Elle reste immédiatement à jour
- * après un ajout depuis `/veille`.
+ * The read is cached under a tag purged on write (see `lib/content-cache.ts`):
+ * the list is public and identical for everyone, so it does not have to be
+ * recomputed on every visit. It stays immediately up to date after an addition
+ * from `/veille`.
  */
 
-/** Forme minimale dont la vue a besoin, découplée des types générés par Payload. */
+/** Minimal shape the view needs, decoupled from the Payload-generated types. */
 interface BookmarkView {
   id: string
   url: string
@@ -36,11 +36,11 @@ const asText = (value: string | null | undefined): string | null => {
 }
 
 /**
- * Extrait les noms de tags d'une relation Payload.
+ * Extracts tag names from a Payload relation.
  *
- * Selon la profondeur de la requête, la relation contient soit des identifiants,
- * soit les documents complets. Ici la profondeur vaut 1, donc on attend des objets
- * et on ignore les identifiants nus.
+ * Depending on the query depth, the relation holds either identifiers or the full
+ * documents. Depth is 1 here, so objects are expected and bare identifiers are
+ * ignored.
  */
 const readTagNames = (relation: Bookmark['tags']): string[] => {
   if (!relation) return []
@@ -54,7 +54,7 @@ const readTagNames = (relation: Bookmark['tags']): string[] => {
   return names
 }
 
-/** Domaine stocké, ou déduit de l'URL si le champ automatique est vide. */
+/** Stored domain, or derived from the URL when the automatic field is empty. */
 const readDomain = (doc: Bookmark): string => {
   const stored = asText(doc.domain)
   if (stored) return stored
@@ -81,10 +81,10 @@ const toView = (doc: Bookmark): BookmarkView => {
 }
 
 /**
- * Liste les liens visibles sur le site, du plus récent au plus ancien.
+ * Lists the links visible on the site, most recent first.
  *
- * Les liens décochés (`active: false`) sont exclus ici, et non filtrés dans la
- * vue : ils ne doivent pas être envoyés au navigateur du tout.
+ * Unchecked links (`active: false`) are excluded here rather than filtered in the
+ * view: they must not reach the browser at all.
  */
 const readPublicBookmarks = async (): Promise<BookmarkView[]> => {
   const payload = await getPayload({ config })
@@ -95,8 +95,8 @@ const readPublicBookmarks = async (): Promise<BookmarkView[]> => {
     sort: '-createdAt',
     limit: 200,
     depth: 1,
-    // On passe par le contrôle d'accès normal : la lecture est publique, donc
-    // aucune raison de le contourner depuis le rendu serveur.
+    // Normal access control applies: reading is public, so there is no reason to
+    // bypass it from server rendering.
     overrideAccess: false,
   })
 

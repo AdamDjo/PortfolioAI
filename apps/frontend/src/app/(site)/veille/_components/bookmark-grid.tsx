@@ -11,7 +11,7 @@ import type { BookmarkView } from '@/lib/bookmarks'
 const ALL_TAGS = 'Tous'
 const COVER_TONES = ['violet', 'coral', 'blue', 'green', 'cyan', 'mono'] as const
 
-/** Teinte stable par domaine : la même carte garde sa couleur d'un rendu à l'autre. */
+/** Stable hue per domain: the same card keeps its colour from render to render. */
 function coverTone(domain: string) {
   let hash = 0
   for (const char of domain) hash = (hash * 31 + char.codePointAt(0)!) % 997
@@ -23,11 +23,11 @@ interface BookmarkGridProps {
 }
 
 /**
- * Grille filtrable des liens de veille.
+ * Filterable grid of the veille links.
  *
- * Les données arrivent déjà rendues par le serveur ; ce composant ne gère que le
- * filtre par tag et les transitions. Il ne peut ni ajouter ni supprimer un lien :
- * l'écriture passe par le formulaire réservé à l'administrateur.
+ * The data arrives already rendered by the server; this component only handles
+ * the tag filter and the transitions. It can neither add nor delete a link:
+ * writing goes through the form reserved for the admin.
  */
 function BookmarkGrid({ bookmarks }: BookmarkGridProps) {
   const [activeTag, setActiveTag] = useState(ALL_TAGS)
@@ -101,10 +101,10 @@ function BookmarkGrid({ bookmarks }: BookmarkGridProps) {
 }
 
 /**
- * Visuel de la carte : l'aperçu Open Graph quand il existe, sinon le favicon.
+ * Card visual: the Open Graph preview when there is one, the favicon otherwise.
  *
- * L'image distante peut disparaître après coup ; en cas d'erreur de chargement on
- * bascule sur le favicon plutôt que de laisser un cadre vide.
+ * The remote image can disappear later; on a load error it falls back to the
+ * favicon rather than leaving an empty frame.
  */
 function BookmarkCover({ bookmark }: { bookmark: BookmarkView }) {
   const [previewFailed, setPreviewFailed] = useState(false)
@@ -119,8 +119,8 @@ function BookmarkCover({ bookmark }: { bookmark: BookmarkView }) {
           width={480}
           height={252}
           onError={() => setPreviewFailed(true)}
-          // Les domaines distants ne sont pas connus à l'avance : l'optimiseur
-          // Next exigerait une liste blanche que l'on ne peut pas maintenir.
+          // Remote domains are not known in advance: Next's optimiser would
+          // require an allowlist that cannot be maintained.
           unoptimized
         />
       </span>

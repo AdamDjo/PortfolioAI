@@ -3,12 +3,12 @@ import { CONTENT_TAGS, revalidateGlobal } from '@/lib/content-cache'
 import type { GlobalConfig } from 'payload'
 
 /**
- * Contenu éditorial de la page À propos : biographie, principes, compétences.
+ * Editorial content of the About page: biography, principles, skills.
  *
- * Les compétences sont décrites par catégorie et par liste d'outils, sans
- * pourcentage de maîtrise. Un niveau chiffré ne repose sur aucune mesure — il se
- * lit comme une donnée alors qu'il n'en est pas une, et il est indéfendable en
- * entretien. Les regrouper par domaine dit la même chose sans inventer un chiffre.
+ * Skills are described by category and by list of tools, without a mastery
+ * percentage. A numeric level rests on no measurement — it reads as data while
+ * being nothing of the sort, and it is indefensible in an interview. Grouping by
+ * domain says the same thing without inventing a figure.
  */
 const Profile: GlobalConfig = {
   slug: 'profile',

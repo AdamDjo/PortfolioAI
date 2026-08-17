@@ -3,9 +3,9 @@ import { describe, expect, it } from 'vitest'
 import { canonicalizeUrl, deriveNameFromDomain, extractDomain } from './canonical-url'
 
 /**
- * La forme canonique est la clé d'unicité en base : ces tests fixent à la fois ce
- * qui doit être considéré comme un doublon et, tout aussi important, ce qui doit
- * rester distinct.
+ * The canonical form is the uniqueness key in the database: these tests pin down
+ * both what must count as a duplicate and, just as importantly, what must stay
+ * distinct.
  */
 describe('canonicalizeUrl', () => {
   it('complète un schéma absent', () => {
