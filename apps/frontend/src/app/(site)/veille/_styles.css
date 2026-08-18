@@ -208,7 +208,12 @@
   border-radius: 8px;
   background: var(--bg);
   color: var(--muted);
-  opacity: 0;
+  /*
+    Always visible, never hover-only: a control revealed on hover is invisible
+    to a first-time look and unreachable on touch. It stays dimmed so it does
+    not compete with the card, and comes to full strength on interaction.
+  */
+  opacity: 0.55;
   cursor: pointer;
   transition:
     opacity 180ms ease,
@@ -216,6 +221,7 @@
     border-color 180ms ease;
 }
 .veille-card:hover .veille-tag-editor-trigger,
+.veille-tag-editor-trigger:hover,
 .veille-tag-editor-trigger:focus-visible,
 .veille-tag-editor-trigger[aria-expanded='true'] {
   opacity: 1;
