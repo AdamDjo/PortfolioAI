@@ -209,31 +209,20 @@
   place-items: center;
   width: 26px;
   height: 26px;
-  border: 1px solid var(--accent-solid);
-  border-radius: 8px;
+  /*
+    Same primary fill as the site's other accent buttons. Fully opaque on
+    purpose: any opacity here blends the fill into the card behind it, and the
+    button then reads as a lighter, washed-out violet next to them.
+  */
+  border: 0;
+  border-radius: 7px;
   background: var(--accent-solid);
   color: white;
-  /*
-    Always visible, never hover-only: a control revealed on hover is invisible
-    to a first-time look and unreachable on touch. It stays slightly dimmed so
-    it does not compete with the card, and reaches full strength on interaction.
-  */
-  opacity: 0.75;
   cursor: pointer;
-  transition:
-    opacity 180ms ease,
-    background-color 180ms ease,
-    border-color 180ms ease;
-}
-.veille-card:hover .veille-tag-editor-trigger,
-.veille-tag-editor-trigger:hover,
-.veille-tag-editor-trigger:focus-visible,
-.veille-tag-editor-trigger[aria-expanded='true'] {
-  opacity: 1;
+  transition: background-color 180ms ease;
 }
 .veille-tag-editor-trigger:hover,
 .veille-tag-editor-trigger[aria-expanded='true'] {
-  border-color: var(--accent-2);
   background: var(--accent-2);
 }
 .veille-tag-editor-popover {
