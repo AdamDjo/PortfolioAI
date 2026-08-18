@@ -39,6 +39,9 @@ jobs:
 
       - name: Build
         run: pnpm build
+        env:
+          PAYLOAD_SECRET: ${{ secrets.PAYLOAD_SECRET }}
+          DATABASE_URI: ${{ secrets.DATABASE_URI }}
 
       - name: Extract and validate version
         id: version
