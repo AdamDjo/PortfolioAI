@@ -26,6 +26,16 @@
   font-size: 12px;
   box-shadow: 0 8px 28px rgb(36 42 63 / 5%);
 }
+/* Unavailable: same badge, red signal. Grey would read as "disabled"; red reads
+   as a status. The dot drives the whole colour, so only the token changes — no
+   second set of rules to keep in sync. */
+.availability-idle .availability-core,
+.availability-idle .availability-ping {
+  background: var(--danger);
+}
+.availability-idle .availability-core {
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--danger) 13%, transparent);
+}
 .availability-dot {
   position: relative;
   display: grid;

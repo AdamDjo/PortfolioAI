@@ -6,12 +6,22 @@ import { EASE_OUT_QUINT } from '@/components/motion/primitives'
 
 import type { ReactNode } from 'react'
 
-export function AvailabilityBadge({ children }: { children: ReactNode }) {
+interface AvailabilityBadgeProps {
+  /**
+   * Drives the colour token: green when open, red when closed. Both states
+   * pulse — a still dot would read as "disabled" rather than as a status.
+   */
+  available: boolean
+  children: ReactNode
+}
+
+export function AvailabilityBadge({ available, children }: AvailabilityBadgeProps) {
   const reduceMotion = useReducedMotion()
+  const className = available ? 'availability' : 'availability availability-idle'
 
   if (reduceMotion) {
     return (
-      <span className="availability">
+      <span className={className}>
         <span className="availability-dot">
           <span className="availability-core" />
         </span>
@@ -22,7 +32,7 @@ export function AvailabilityBadge({ children }: { children: ReactNode }) {
 
   return (
     <m.span
-      className="availability"
+      className={className}
       whileHover={{ y: -2 }}
       transition={{ duration: 0.35, ease: EASE_OUT_QUINT }}
     >
@@ -39,12 +49,16 @@ export function AvailabilityBadge({ children }: { children: ReactNode }) {
         />
       </span>
       {children}
-      <m.span
-        className="availability-sweep"
-        aria-hidden="true"
-        animate={{ x: ['-120%', '220%'] }}
-        transition={{ duration: 2.6, repeat: Infinity, repeatDelay: 3.4, ease: 'easeInOut' }}
-      />
+      {/* Decorative highlight, not a status signal: it draws the eye to an open
+          slot, so it stays out of the unavailable state. */}
+      {available ? (
+        <m.span
+          className="availability-sweep"
+          aria-hidden="true"
+          animate={{ x: ['-120%', '220%'] }}
+          transition={{ duration: 2.6, repeat: Infinity, repeatDelay: 3.4, ease: 'easeInOut' }}
+        />
+      ) : null}
     </m.span>
   )
 }
