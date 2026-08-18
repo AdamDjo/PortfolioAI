@@ -116,6 +116,8 @@ jobs:
         env:
           BASE_URL: http://127.0.0.1:3100
           PLAYWRIGHT_PORT: "3100"
+          PAYLOAD_SECRET: ${{ secrets.PAYLOAD_SECRET }}
+          DATABASE_URI: ${{ secrets.DATABASE_URI }}
 
       - name: Upload Playwright report
         uses: actions/upload-artifact@v4
