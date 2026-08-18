@@ -1,0 +1,171 @@
+@media (max-width: 900px) {
+  .shell {
+    width: min(100% - 32px, 720px);
+  }
+  .header-inner {
+    grid-template-columns: 1fr auto;
+  }
+  .nav-links {
+    position: fixed;
+    inset: 72px 16px auto;
+    display: none;
+    padding: 10px;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: var(--surface);
+    box-shadow: var(--shadow);
+  }
+  .nav-links.is-open {
+    display: block;
+  }
+  .nav-link {
+    min-height: 44px;
+    padding: 0 12px;
+  }
+  .menu-trigger {
+    display: inline-grid;
+  }
+  .hero {
+    grid-template-columns: 1fr;
+    padding-top: 16px;
+  }
+  .hero-copy {
+    padding-top: 28px;
+  }
+  .hero-visual {
+    min-height: 540px;
+  }
+  .brain {
+    top: -80px;
+    right: auto;
+    left: 50%;
+    width: 680px;
+    margin-left: -340px;
+  }
+  /* Motion drives .chat-card's transform, so centring must not use translateX. */
+  .chat-card {
+    right: 0;
+    left: 0;
+    width: auto;
+    max-width: 520px;
+    margin-inline: auto;
+  }
+  .hero-location {
+    margin-top: 38px;
+  }
+  .intro-projects {
+    grid-template-columns: 1fr;
+  }
+  .about-teaser {
+    padding: 0 0 42px;
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .feature-panel-ai {
+    grid-template-columns: 1fr;
+    gap: 22px;
+  }
+}
+
+@media (max-width: 640px) {
+  .hide-mobile {
+    display: none;
+  }
+  .hero {
+    min-height: auto;
+    padding-bottom: 46px;
+  }
+  .hero h1 {
+    font-size: 48px;
+  }
+  .hero-lead {
+    font-size: 14px;
+  }
+  .hero-actions {
+    align-items: stretch;
+    flex-direction: column;
+  }
+  .hero-location {
+    margin-top: 30px;
+  }
+  .hero-visual {
+    min-height: 490px;
+  }
+  .brain {
+    top: -42px;
+    width: 550px;
+    margin-left: -275px;
+  }
+  .chat-card {
+    bottom: 0;
+  }
+  .feature-heading p {
+    letter-spacing: 0.18em;
+  }
+  .feature-tabs {
+    overflow-x: auto;
+    grid-template-columns: repeat(3, minmax(170px, 1fr));
+  }
+  .feature-stage {
+    padding-block: 24px 38px;
+  }
+  .feature-panel {
+    padding: 23px;
+  }
+  .feature-panel-heading {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+  .link-preview-grid {
+    grid-template-columns: 1fr;
+  }
+  .project-grid,
+  .content-grid {
+    grid-template-columns: 1fr;
+  }
+  .projects-page-grid,
+  .field-row,
+  .contact-layout {
+    grid-template-columns: 1fr;
+  }
+  .quality-grid {
+    grid-template-columns: repeat(2, 1fr);
+    padding-block: 18px;
+    gap: 18px;
+  }
+  .footer-inner {
+    align-items: flex-start;
+    flex-direction: column;
+    padding-block: 28px;
+  }
+}
+
+/*
+ * Both icons are always rendered and CSS picks the visible one from
+ * `data-theme`, which the theme script sets before the first paint. Choosing in
+ * JS instead would need the mounted-state dance to stay hydration-safe, and the
+ * icon would pop in after the header had already painted.
+ */
+.theme-icon {
+  display: grid;
+  grid-template-areas: 'icon';
+  place-items: center;
+}
+
+.theme-icon > * {
+  grid-area: icon;
+  transition:
+    opacity var(--duration-base) var(--ease-out-quint),
+    transform var(--duration-base) var(--ease-out-quint);
+}
+
+.theme-icon-dark,
+[data-theme='dark'] .theme-icon-light {
+  opacity: 0;
+  transform: rotate(70deg) scale(0.6);
+}
+
+[data-theme='dark'] .theme-icon-dark {
+  opacity: 1;
+  transform: rotate(0deg) scale(1);
+}

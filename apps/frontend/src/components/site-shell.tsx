@@ -1,119 +1,85 @@
-'use client'
-
-import { Github, Linkedin, Menu, Moon, Sun, X } from 'lucide-react'
+import { Github, Linkedin } from 'lucide-react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
 
-const navItems = [
-  { href: '/', label: 'Accueil' },
-  { href: '/projets', label: 'Projets' },
-  { href: '/veille', label: 'Veille' },
-  { href: '/a-propos', label: 'À propos' },
-  { href: '/contact', label: 'Contact' },
-]
+import { AmbientField } from '@/components/motion/ambient-field'
+import { SiteHeaderShell } from '@/components/site-header-shell'
+import { SiteNav } from '@/components/site-nav'
+import { ThemeToggle } from '@/components/theme-toggle'
+import { getIdentity } from '@/lib/site-content'
 
-const DarkModeContext = createContext(true)
+import type { ReactNode } from 'react'
 
-export function useDarkMode() {
-  return useContext(DarkModeContext)
-}
-
-export function SiteShell({ children }: { children: ReactNode }) {
-  const pathname = usePathname()
-  const [darkMode, setDarkMode] = useState(true)
-  const [menuOpen, setMenuOpen] = useState(false)
-
-  useEffect(() => {
-    const savedTheme = window.localStorage.getItem('adem-theme')
-    const nextDarkMode = savedTheme ? savedTheme === 'dark' : true
-    setDarkMode(nextDarkMode)
-    document.documentElement.dataset.theme = nextDarkMode ? 'dark' : 'light'
-  }, [])
-
-  function toggleTheme() {
-    setDarkMode((current) => {
-      const next = !current
-      document.documentElement.dataset.theme = next ? 'dark' : 'light'
-      window.localStorage.setItem('adem-theme', next ? 'dark' : 'light')
-      return next
-    })
-  }
+/**
+ * Header, footer and page frame shared by every route.
+ *
+ * A server component: only the three pieces that need browser state are client
+ * islands — `SiteNav` for the active link and the mobile menu, `ThemeToggle` for
+ * the theme, `SiteHeaderShell` for the entry animation. The wordmark, the social
+ * links and the whole footer never reach the browser as JavaScript.
+ */
+export async function SiteShell({ children }: { children: ReactNode }) {
+  const { role, location, githubUrl, linkedinUrl } = await getIdentity()
 
   return (
-    <DarkModeContext.Provider value={darkMode}>
+    <>
       <a className="skip-link" href="#main-content">
         Aller au contenu
       </a>
-      <header className="site-header">
+      <AmbientField />
+      <SiteHeaderShell>
         <div className="shell header-inner">
           <Link className="wordmark" href="/">
             ADEM<span>.</span>
           </Link>
-          <nav
-            className={menuOpen ? 'nav-links is-open' : 'nav-links'}
-            aria-label="Navigation principale"
-          >
-            {navItems.map((item) => {
-              const active = pathname === item.href
-              return (
-                <Link
-                  aria-current={active ? 'page' : undefined}
-                  className={active ? 'nav-link is-active' : 'nav-link'}
-                  href={item.href}
-                  key={item.href}
-                  onClick={() => setMenuOpen(false)}
-                >
-                  <span className="active-dot" aria-hidden="true" />
-                  <span className="nav-label">{item.label}</span>
-                </Link>
-              )
-            })}
-          </nav>
-          <div className="header-actions">
-            <a className="icon-link hide-mobile" href="https://github.com" aria-label="GitHub">
-              <Github size={17} strokeWidth={1.7} />
-            </a>
-            <a className="icon-link hide-mobile" href="https://linkedin.com" aria-label="LinkedIn">
-              <Linkedin size={17} strokeWidth={1.7} />
-            </a>
-            <button
-              className="icon-link"
-              onClick={toggleTheme}
-              aria-label="Changer de thème"
-              type="button"
-            >
-              {darkMode ? (
-                <Sun size={18} strokeWidth={1.7} />
-              ) : (
-                <Moon size={18} strokeWidth={1.7} />
-              )}
-            </button>
-            <button
-              className="icon-link menu-trigger"
-              onClick={() => setMenuOpen((current) => !current)}
-              aria-label="Ouvrir le menu"
-              aria-expanded={menuOpen}
-              type="button"
-            >
-              {menuOpen ? <X size={19} /> : <Menu size={19} />}
-            </button>
-          </div>
+          <SiteNav
+            actions={
+              <>
+                {githubUrl ? (
+                  <a
+                    className="icon-link hide-mobile"
+                    href={githubUrl}
+                    aria-label="GitHub"
+                    rel="noreferrer noopener"
+                    target="_blank"
+                  >
+                    <Github size={17} strokeWidth={1.7} />
+                  </a>
+                ) : null}
+                {linkedinUrl ? (
+                  <a
+                    className="icon-link hide-mobile"
+                    href={linkedinUrl}
+                    aria-label="LinkedIn"
+                    rel="noreferrer noopener"
+                    target="_blank"
+                  >
+                    <Linkedin size={17} strokeWidth={1.7} />
+                  </a>
+                ) : null}
+                <ThemeToggle />
+              </>
+            }
+          />
         </div>
-      </header>
-      <main id="main-content">{children}</main>
-      <footer className="site-footer">
+      </SiteHeaderShell>
+      <main className="site-shell-content" id="main-content">
+        {children}
+      </main>
+      <footer className="site-footer site-shell-content">
         <div className="shell footer-inner">
           <span className="wordmark wordmark-small">
             ADEM<span>.</span>
           </span>
-          <p>Frontend engineer basé en France.</p>
+          <p>
+            {role}
+            {location ? ` · ${location}` : ''}
+          </p>
           <div className="footer-links">
             <Link href="/contact">Me contacter</Link>
             <Link href="/mentions-legales">Mentions légales</Link>
           </div>
         </div>
       </footer>
-    </DarkModeContext.Provider>
+    </>
   )
 }

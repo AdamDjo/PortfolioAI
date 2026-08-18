@@ -4,7 +4,9 @@
 
 "domain: backend":
   - changed-files:
-      - any-glob-to-any-file: ["apps/backend/**"]
+      - any-glob-to-any-file:
+          - "apps/frontend/src/cms/**"
+          - "apps/frontend/src/app/(payload)/**"
 
 "domain: shared":
   - changed-files:
