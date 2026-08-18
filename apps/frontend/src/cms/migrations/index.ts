@@ -3,6 +3,7 @@ import * as migration_20260817_100546_projects from './20260817_100546_projects'
 import * as migration_20260817_104541_bookmarks from './20260817_104541_bookmarks'
 import * as migration_20260817_124153_real_content from './20260817_124153_real_content'
 import * as migration_20260817_155900_display_name from './20260817_155900_display_name'
+import * as migration_20260818_135519_availability from './20260818_135519_availability'
 
 export const migrations = [
   {
@@ -29,5 +30,10 @@ export const migrations = [
     up: migration_20260817_155900_display_name.up,
     down: migration_20260817_155900_display_name.down,
     name: '20260817_155900_display_name',
+  },
+  {
+    up: migration_20260818_135519_availability.up,
+    down: migration_20260818_135519_availability.down,
+    name: '20260818_135519_availability',
   },
 ]

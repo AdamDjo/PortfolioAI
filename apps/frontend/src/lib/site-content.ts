@@ -3,7 +3,7 @@ import { getPayload } from 'payload'
 import { CONTENT_TAGS, cachedRead } from '@/lib/content-cache'
 import config from '@payload-config'
 
-import type { Experience, Profile, Project, SiteIdentity } from '@/payload-types'
+import type { Availability, Experience, Profile, Project, SiteIdentity } from '@/payload-types'
 
 /**
  * Server-side access to the site content: identity, profile, career, projects.
@@ -54,6 +54,18 @@ interface IdentityView {
     hostAddress: string | null
     dataPolicy: string | null
   }
+}
+
+/**
+ * Availability as the site and the assistant both consume it.
+ *
+ * `detail` is meant for the assistant rather than the badge: the hero has room
+ * for a short label, a conversation has room for the nuance.
+ */
+interface AvailabilityView {
+  available: boolean
+  label: string
+  detail: string | null
 }
 
 interface SkillGroupView {
@@ -182,6 +194,12 @@ const toProjectView = (doc: Project): ProjectView => ({
   featured: Boolean(doc.featured),
 })
 
+const toAvailabilityView = (doc: Availability): AvailabilityView => ({
+  available: Boolean(doc.available),
+  label: asText(doc.label) ?? 'Disponibilité à préciser',
+  detail: asText(doc.detail),
+})
+
 /**
  * Reads go through normal access control (`overrideAccess: false`): this content
  * is public by definition, so there is no reason to bypass it.
@@ -193,6 +211,12 @@ const readIdentity = async (): Promise<IdentityView> => {
   const payload = await getPayload({ config })
   const doc = await payload.findGlobal({ slug: 'site-identity', overrideAccess: false })
   return toIdentityView(doc)
+}
+
+const readAvailability = async (): Promise<AvailabilityView> => {
+  const payload = await getPayload({ config })
+  const doc = await payload.findGlobal({ slug: 'availability', overrideAccess: false })
+  return toAvailabilityView(doc)
 }
 
 const readProfile = async (): Promise<ProfileView> => {
@@ -227,15 +251,18 @@ const readProjects = async (): Promise<ProjectView[]> => {
 }
 
 const getIdentity = cachedRead(CONTENT_TAGS.identity, 'identity', readIdentity)
+const getAvailability = cachedRead(CONTENT_TAGS.availability, 'availability', readAvailability)
 const getProfile = cachedRead(CONTENT_TAGS.profile, 'profile', readProfile)
 const listExperiences = cachedRead(CONTENT_TAGS.experiences, 'experiences', readExperiences)
 const listProjects = cachedRead(CONTENT_TAGS.projects, 'projects', readProjects)
 
 export {
+  getAvailability,
   getIdentity,
   getProfile,
   listExperiences,
   listProjects,
+  type AvailabilityView,
   type ExperienceView,
   type ProjectView,
   type SkillGroupView,

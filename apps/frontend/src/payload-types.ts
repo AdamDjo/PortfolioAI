@@ -99,10 +99,12 @@ export interface Config {
   fallbackLocale: null
   globals: {
     'site-identity': SiteIdentity
+    availability: Availability
     profile: Profile
   }
   globalsSelect: {
     'site-identity': SiteIdentitySelect<false> | SiteIdentitySelect<true>
+    availability: AvailabilitySelect<false> | AvailabilitySelect<true>
     profile: ProfileSelect<false> | ProfileSelect<true>
   }
   locale: null
@@ -595,6 +597,29 @@ export interface SiteIdentity {
   createdAt?: string | null
 }
 /**
+ * Statut affiché sur l’accueil et utilisé par l’assistant. Modifiable sans redéploiement.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "availability".
+ */
+export interface Availability {
+  id: number
+  /**
+   * Décoché, le badge de l’accueil s’affiche en état indisponible et l’assistant répond en conséquence.
+   */
+  available?: boolean | null
+  /**
+   * Phrase courte montrée dans le badge de l’accueil.
+   */
+  label: string
+  /**
+   * Optionnel. Contexte que l’assistant peut donner : type de mission recherché, date de disponibilité, préférence sur le télétravail.
+   */
+  detail?: string | null
+  updatedAt?: string | null
+  createdAt?: string | null
+}
+/**
  * Biographie, compétences et principes affichés sur la page À propos.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -658,6 +683,18 @@ export interface SiteIdentitySelect<T extends boolean = true> {
         hostAddress?: T
         dataPolicy?: T
       }
+  updatedAt?: T
+  createdAt?: T
+  globalType?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "availability_select".
+ */
+export interface AvailabilitySelect<T extends boolean = true> {
+  available?: T
+  label?: T
+  detail?: T
   updatedAt?: T
   createdAt?: T
   globalType?: T

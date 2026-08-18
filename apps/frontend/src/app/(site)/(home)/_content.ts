@@ -7,7 +7,6 @@
  */
 export const HOME_CONTENT = {
   hero: {
-    availability: 'Disponible pour des opportunités',
     titleLeading: 'Discute avec',
     titleTrailing: 'mon ',
     titleAccent: 'cerveau',
