@@ -142,25 +142,105 @@
   color: var(--muted);
   font-size: 12px;
 }
-.veille-remove {
+/* Checkable tag list, shared by the composer and the per-card editor. */
+.veille-tag-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.veille-tag-picker button {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 11px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 12px;
+  cursor: pointer;
+  transition:
+    color 180ms ease,
+    border-color 180ms ease,
+    background-color 180ms ease;
+}
+.veille-tag-picker button:hover:not(:disabled) {
+  border-color: var(--accent);
+  color: var(--text);
+}
+.veille-tag-picker button.is-selected {
+  border-color: var(--accent-solid);
+  background: var(--accent-solid);
+  color: white;
+}
+.veille-tag-picker button:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+.veille-tag-picker-empty {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+/* Composer: the picker sits under the paste bar, never inside it. */
+.veille-add-bar + .veille-tag-picker,
+.veille-add-bar + .veille-tag-picker-empty {
+  margin-bottom: 22px;
+}
+
+/*
+  Per-card editor. Anchored outside the card's <a>: a button nested in a link is
+  invalid markup and every click would navigate instead of opening the popover.
+*/
+.veille-tag-editor {
   position: absolute;
   top: 8px;
   right: 8px;
+  z-index: 2;
+}
+.veille-tag-editor-trigger {
   display: grid;
   place-items: center;
-  width: 24px;
-  height: 24px;
+  width: 26px;
+  height: 26px;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: var(--bg);
   color: var(--muted);
   opacity: 0;
   cursor: pointer;
-  transition: opacity 180ms ease;
+  transition:
+    opacity 180ms ease,
+    color 180ms ease,
+    border-color 180ms ease;
 }
-.veille-card:hover .veille-remove,
-.veille-remove:focus-visible {
+.veille-card:hover .veille-tag-editor-trigger,
+.veille-tag-editor-trigger:focus-visible,
+.veille-tag-editor-trigger[aria-expanded='true'] {
   opacity: 1;
+}
+.veille-tag-editor-trigger:hover,
+.veille-tag-editor-trigger[aria-expanded='true'] {
+  border-color: var(--accent);
+  color: var(--text);
+}
+.veille-tag-editor-popover {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  width: max-content;
+  max-width: 240px;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--surface);
+  box-shadow: 0 16px 38px rgb(18 24 40 / 16%);
+}
+.veille-tag-editor-error {
+  margin: 8px 0 0;
+  color: #e5484d;
+  font-size: 12px;
 }
 .veille-empty {
   padding: 40px 0;

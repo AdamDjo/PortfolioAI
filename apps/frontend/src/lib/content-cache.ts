@@ -55,15 +55,20 @@ const PAGES_BY_TAG: Record<ContentTag, { path: string; type?: 'layout' | 'page' 
  * Caches a read under its tag.
  *
  * `revalidate: false` because invalidation comes from the hooks, not from a
- * clock: a periodic refresh would only hit the database for nothing. The tag
- * doubles as the cache key, each read having its own and taking no argument.
+ * clock: a periodic refresh would only hit the database for nothing.
+ *
+ * `key` identifies the cache entry and must be unique across all reads, while
+ * `tag` decides what invalidates it. They are separate because several reads can
+ * legitimately share one tag — bookmarks and the tag vocabulary are always shown
+ * together and are purged together, but each needs its own entry. Passing the tag
+ * as the key too would make the second read overwrite the first.
  *
  * The tag still earns its keep even though invalidation goes through paths: it
  * isolates cache entries from each other and spares `/veille`, rendered
  * dynamically, from replaying the query on every visit.
  */
-const cachedRead = <T>(tag: ContentTag, read: () => Promise<T>): (() => Promise<T>) =>
-  unstable_cache(read, [tag], { tags: [tag], revalidate: false })
+const cachedRead = <T>(tag: ContentTag, key: string, read: () => Promise<T>): (() => Promise<T>) =>
+  unstable_cache(read, [key], { tags: [tag], revalidate: false })
 
 /**
  * Regenerates the pages that display this content.

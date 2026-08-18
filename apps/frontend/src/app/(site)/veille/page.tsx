@@ -2,6 +2,7 @@ import { headers } from 'next/headers'
 import { getPayload } from 'payload'
 
 import { listPublicBookmarks } from '@/lib/bookmarks'
+import { listAllTags } from '@/lib/tags'
 import config from '@payload-config'
 
 import { BookmarkComposer } from './_components/bookmark-composer'
@@ -26,9 +27,13 @@ async function isOwner(): Promise<boolean> {
 }
 
 async function WatchPage() {
-  // Reading is public and the session only decides whether to show the form:
-  // the two queries are independent.
-  const [bookmarks, owner] = await Promise.all([listPublicBookmarks(), isOwner()])
+  // Reading is public and the session only decides whether the editing controls
+  // are rendered: the queries are independent.
+  const [bookmarks, owner, allTags] = await Promise.all([
+    listPublicBookmarks(),
+    isOwner(),
+    listAllTags(),
+  ])
   const { heading } = VEILLE_CONTENT
 
   return (
@@ -38,8 +43,8 @@ async function WatchPage() {
         <h1>{heading.title}</h1>
         <p>{heading.lead}</p>
       </header>
-      {owner ? <BookmarkComposer /> : null}
-      <BookmarkGrid bookmarks={bookmarks} />
+      {owner ? <BookmarkComposer tags={allTags} /> : null}
+      <BookmarkGrid bookmarks={bookmarks} allTags={allTags} canEdit={owner} />
     </div>
   )
 }
