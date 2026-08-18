@@ -1,0 +1,226 @@
+.about-hero {
+  display: grid;
+  grid-template-columns: 1.15fr 0.85fr;
+  align-items: center;
+  gap: 40px;
+  margin-bottom: 56px;
+}
+.about-hero h1 {
+  margin: 10px 0 18px;
+  font-size: clamp(38px, 4.4vw, 58px);
+}
+.about-hero p {
+  max-width: 52ch;
+  color: var(--muted);
+  font-size: 16px;
+}
+.about-portrait {
+  position: relative;
+  display: grid;
+  place-items: center;
+  padding: 22px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: var(--surface);
+}
+.about-portrait img {
+  width: 100%;
+  height: auto;
+}
+/*
+ * Theme-dependent images are swapped in CSS rather than picked in JS: reading the
+ * theme from React state would leave the wrong variant painted until hydration.
+ * Both variants ship in the markup and the inactive one is never fetched, since
+ * `display: none` suppresses the request.
+ */
+.brain-light {
+  display: block;
+}
+.brain-dark {
+  display: none;
+}
+[data-theme='dark'] .brain-light {
+  display: none;
+}
+[data-theme='dark'] .brain-dark {
+  display: block;
+}
+.about-meta {
+  margin-top: 14px;
+  color: var(--muted);
+  font-size: 14px;
+}
+.about-stats {
+  display: grid;
+  /* Une seule statistique défendable : elle occupe une colonne, pas toute la
+     largeur, sinon le bloc se lit comme une bannière. */
+  grid-template-columns: repeat(auto-fit, minmax(190px, 220px));
+  gap: 18px;
+  margin-bottom: 56px;
+}
+.about-stat {
+  padding: 22px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  /* Un dégradé très léger depuis l'accent : la carte se détache du fond sans
+     devenir une bannière colorée. */
+  background: linear-gradient(150deg, var(--accent-soft) 0%, transparent 65%), var(--surface);
+}
+.about-stat-icon {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  margin-bottom: 14px;
+  border-radius: 10px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  color: var(--accent);
+}
+.about-stat strong {
+  display: block;
+  color: var(--accent);
+  font-size: 34px;
+  font-weight: 700;
+  line-height: 1.1;
+}
+.about-stat-label {
+  color: var(--muted);
+  font-size: 13px;
+}
+/* Compétences groupées par domaine : liste de définitions, le domaine est le
+   terme et les technologies la définition. */
+.skill-groups {
+  display: grid;
+  /* Deux colonnes dès qu'il y a la place, une seule sinon : le nombre de domaines
+     est éditable, la grille ne peut donc pas le présupposer. Le minimum est large
+     pour qu'un libellé de domaine tienne sur une ligne. */
+  grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+  gap: 16px;
+}
+.skill-group {
+  padding: 20px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  background: var(--surface);
+  transition:
+    border-color 0.3s cubic-bezier(0.22, 1, 0.36, 1),
+    transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.skill-group:hover {
+  border-color: color-mix(in srgb, var(--accent) 42%, var(--line));
+  transform: translateY(-2px);
+}
+.skill-group dt {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 14px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text);
+}
+.skill-group-icon {
+  display: grid;
+  place-items: center;
+  flex: none;
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+.skill-group dd {
+  margin: 0;
+}
+.skill-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.skill-chips li {
+  padding: 5px 11px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--bg);
+  color: var(--muted);
+  font-size: 13px;
+}
+
+/* Parcours professionnel. */
+.career-list {
+  display: grid;
+  gap: 1px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  background: var(--line);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  overflow: hidden;
+}
+.career-entry {
+  padding: 26px;
+  background: var(--bg);
+}
+.career-entry-head h3 {
+  margin: 6px 0 0;
+  font-size: 18px;
+  letter-spacing: -0.01em;
+}
+.career-location {
+  margin-top: 4px;
+  color: var(--muted);
+  font-size: 13px;
+}
+.career-project {
+  margin-top: 14px;
+  max-width: 68ch;
+}
+.career-entry > p {
+  max-width: 68ch;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.65;
+}
+.career-achievements {
+  display: grid;
+  gap: 8px;
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.career-achievements li {
+  position: relative;
+  max-width: 68ch;
+  padding-left: 18px;
+  font-size: 14px;
+  line-height: 1.6;
+}
+.career-achievements li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 9px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+}
+.career-entry .skill-chips {
+  margin-top: 18px;
+}
+
+/* Actions externes des cartes projet : même écartement que `.hero-actions`,
+   puisque ce sont les mêmes boutons. */
+.project-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-top: 22px;
+}

@@ -6,18 +6,16 @@ import config from '@payload-config'
 import type { Experience, Profile, Project, SiteIdentity } from '@/payload-types'
 
 /**
- * Accès serveur au contenu du site : identité, profil, parcours, projets.
+ * Server-side access to the site content: identity, profile, career, projects.
  *
- * Comme pour la veille, on interroge Payload en local (`getPayload`) : les pages
- * sont des composants serveur rendus dans le même processus, un aller-retour HTTP
- * vers sa propre API n'apporterait rien.
+ * Payload is queried locally through `getPayload`, as the veille reads do: the
+ * pages are server components rendered in this same process, so an HTTP round
+ * trip to our own API would buy nothing.
  *
- * Chaque lecture expose une forme minimale, découplée des types générés : la vue
- * ne doit pas avoir à connaître les `null` et les relations de Payload.
- *
- * Toutes sont mises en cache sous un tag invalidé à la publication : voir
- * `lib/content-cache.ts`. Les pages n'ont donc aucune configuration de cache à
- * déclarer — elles appellent ces fonctions et restent servies en statique.
+ * Each read exposes a minimal shape decoupled from the generated types, so views
+ * never have to know about Payload's `null`s and relations. All of them are
+ * cached under a tag invalidated on publish — see `lib/content-cache.ts`, which
+ * is why no page declares any cache config of its own.
  */
 
 const asText = (value: string | null | undefined): string | null => {
@@ -26,7 +24,7 @@ const asText = (value: string | null | undefined): string | null => {
   return trimmed === '' ? null : trimmed
 }
 
-/** Nettoie un champ `hasMany` texte, dont les entrées peuvent être vides. */
+/** Cleans a text `hasMany` field, whose entries can be empty. */
 const asTextList = (value: (string | null)[] | null | undefined): string[] => {
   if (!value) return []
 
@@ -40,9 +38,9 @@ const asTextList = (value: (string | null)[] | null | undefined): string[] => {
 
 interface IdentityView {
   /**
-   * Prénom seul, ou tout autre nom d'usage : c'est le nom montré sur le site.
-   * L'identité légale complète vit dans `legal.publisher`, que seules les
-   * mentions légales affichent.
+   * First name alone, or any other everyday name: this is what the site shows.
+   * The full legal identity lives in `legal.publisher`, displayed only by the
+   * legal notice.
    */
   displayName: string
   role: string
@@ -130,17 +128,17 @@ const toProfileView = (doc: Profile): ProfileView => ({
 })
 
 /**
- * Met une date au format « août 2025 ».
+ * Formats a date as "août 2025".
  *
- * Les dates sont saisies au mois près : le jour n'a aucun sens ici et n'est donc
- * pas affiché.
+ * Dates are entered to the month: the day carries no meaning here, so it is not
+ * displayed.
  */
 const formatMonth = (value: string): string =>
   new Intl.DateTimeFormat('fr-FR', { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(
     new Date(value)
   )
 
-/** « août 2025 — aujourd'hui » pour un poste en cours, sinon la période fermée. */
+/** "août 2025 — aujourd’hui" for a current role, otherwise the closed period. */
 const formatPeriod = (doc: Experience): string => {
   const start = formatMonth(doc.startDate)
   if (doc.current) return `${start} — aujourd’hui`
@@ -162,10 +160,10 @@ const toExperienceView = (doc: Experience): ExperienceView => ({
 })
 
 /**
- * Résout l'URL du visuel téléversé.
+ * Resolves the URL of the uploaded visual.
  *
- * À profondeur 1 la relation contient le document média ; un identifiant nu
- * signifie qu'aucune image n'est exploitable et on retombe sur l'aperçu Open Graph.
+ * At depth 1 the relation holds the media document; a bare id means no usable
+ * image, and the Open Graph preview takes over.
  */
 const readCoverUrl = (cover: Project['cover']): string | null => {
   if (!cover || typeof cover === 'number') return null
@@ -185,12 +183,11 @@ const toProjectView = (doc: Project): ProjectView => ({
 })
 
 /**
- * Les lectures passent par le contrôle d'accès normal (`overrideAccess: false`) :
- * ce contenu est public par définition, donc aucune raison de le contourner.
+ * Reads go through normal access control (`overrideAccess: false`): this content
+ * is public by definition, so there is no reason to bypass it.
  *
- * Chacune est enveloppée dans `cachedRead` : la fonction brute reste privée, seule
- * sa version mise en cache est exportée, afin qu'aucun appelant ne puisse
- * contourner le cache par mégarde.
+ * Each raw read stays private and only its `cachedRead` wrapper is exported, so
+ * no caller can sidestep the cache by accident.
  */
 const readIdentity = async (): Promise<IdentityView> => {
   const payload = await getPayload({ config })
@@ -204,7 +201,7 @@ const readProfile = async (): Promise<ProfileView> => {
   return toProfileView(doc)
 }
 
-/** Parcours du plus récent au plus ancien. */
+/** Career path, most recent first. */
 const readExperiences = async (): Promise<ExperienceView[]> => {
   const payload = await getPayload({ config })
   const result = await payload.find({
@@ -216,7 +213,7 @@ const readExperiences = async (): Promise<ExperienceView[]> => {
   return result.docs.map(toExperienceView)
 }
 
-/** Projets par ordre d'affichage croissant, les plus récents d'abord à égalité. */
+/** Projects by ascending display order, most recent first on a tie. */
 const readProjects = async (): Promise<ProjectView[]> => {
   const payload = await getPayload({ config })
   const result = await payload.find({

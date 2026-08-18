@@ -4,30 +4,26 @@ import { Stagger, StaggerItem } from '@/components/motion/primitives'
 import { ProjectVisual } from '@/components/project-visual'
 import { listProjects } from '@/lib/site-content'
 
+import { PROJECTS_CONTENT } from './_content'
+
 import type { Metadata } from 'next'
 
-export const metadata: Metadata = {
-  title: 'Projets',
-  description: 'Une sélection de projets personnels, en ligne et consultables.',
-}
+export const metadata: Metadata = PROJECTS_CONTENT.metadata
 
 async function ProjectsPage() {
   const projects = await listProjects()
+  const { heading, card } = PROJECTS_CONTENT
 
   return (
     <div className="page shell">
       <header className="page-heading">
-        <p className="eyebrow">Projets personnels</p>
-        <h1>Des projets en ligne, pas des maquettes.</h1>
-        <p>
-          Chaque projet ci-dessous est déployé et son code est ouvert. Mes missions en entreprise
-          portent sur des back-offices internes : elles sont décrites dans mon parcours, sans lien
-          public à montrer.
-        </p>
+        <p className="eyebrow">{heading.eyebrow}</p>
+        <h1>{heading.title}</h1>
+        <p>{heading.lead}</p>
       </header>
       <Stagger className="project-grid projects-page-grid" stagger={0.12}>
         {projects.map((project, index) => {
-          // Le visuel téléversé prend le pas sur l'aperçu automatique.
+          // The uploaded visual takes precedence over the automatic preview.
           const image = project.coverUrl ?? project.previewImageUrl
 
           return (
@@ -53,7 +49,7 @@ async function ProjectsPage() {
                       rel="noreferrer noopener"
                       target="_blank"
                     >
-                      Voir le projet <ArrowUpRight size={16} />
+                      {card.viewAction} <ArrowUpRight size={16} />
                     </a>
                     {project.repositoryUrl ? (
                       <a
@@ -62,7 +58,7 @@ async function ProjectsPage() {
                         rel="noreferrer noopener"
                         target="_blank"
                       >
-                        <Github size={16} /> Code source
+                        <Github size={16} /> {card.codeAction}
                       </a>
                     ) : null}
                   </div>

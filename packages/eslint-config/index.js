@@ -41,6 +41,10 @@ function createBaseConfig({ tsconfigRootDir }) {
         },
       },
       settings: {
+        // Resolved by name at runtime, which loads `eslint-import-resolver-typescript`.
+        // No file imports that package, so dependency analysis reports it as unused —
+        // it is not. Removing it makes every `import-x` rule fail with "invalid
+        // interface loaded as resolver", so it stays declared in package.json.
         "import-x/resolver": {
           typescript: {
             project: `${tsconfigRootDir}/tsconfig.json`,

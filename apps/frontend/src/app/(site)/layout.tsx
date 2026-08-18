@@ -2,7 +2,7 @@ import { Inter } from 'next/font/google'
 
 import { MotionProvider } from '@/components/motion/motion-provider'
 import { SiteShell } from '@/components/site-shell'
-import { getIdentity } from '@/lib/site-content'
+import { ThemeProvider } from '@/components/theme-provider'
 
 import type { Metadata, Viewport } from 'next'
 
@@ -15,62 +15,48 @@ const inter = Inter({
   variable: '--font-sans',
 })
 
-// Prénom seul : c'est le nom sous lequel le site se présente. Le nom complet
-// n'apparaît que dans les mentions légales, où la loi l'impose.
+// First name only: that is how the site introduces itself. The full name shows
+// up on the legal notice page alone, where the law requires it.
 const TITLE = 'Adem — Senior Frontend Developer'
 const DESCRIPTION =
   'Développeur frontend senior en Île-de-France. Interfaces React et Next.js rapides, accessibles et maintenables.'
 
 export const metadata: Metadata = {
-  // Le domaine définitif n'est pas encore arrêté : il vient de l'environnement
-  // plutôt que d'être écrit en dur, et retombe sur l'URL de développement.
+  // The final domain is not settled yet: it comes from the environment rather
+  // than being hardcoded, and falls back to the development URL.
   metadataBase: new URL(process.env.NEXT_PUBLIC_SERVER_URL ?? 'http://localhost:3000'),
   title: { default: TITLE, template: '%s — Adem' },
   description: DESCRIPTION,
   openGraph: { title: TITLE, description: DESCRIPTION, type: 'website' },
 }
 
-export const viewport: Viewport = { colorScheme: 'light dark', themeColor: '#080a0f' }
+// `themeColor` matches the light `--bg`, the theme served by default.
+export const viewport: Viewport = { colorScheme: 'light dark', themeColor: '#fbfdfe' }
 
-export default async function RootLayout({
+export default function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
-  const identity = await getIdentity()
-
-  // `data-scroll-behavior` déclare que le défilement doux de `globals.css` est
-  // voulu : sans cet attribut, Next avertit qu'une navigation pourrait être
-  // animée par accident.
+  // `data-scroll-behavior` declares that the smooth scrolling in `globals.css`
+  // is intentional: without it, Next warns that a navigation might be animated
+  // by accident.
+  //
+  // `suppressHydrationWarning` is required by next-themes: its inline script
+  // writes `data-theme` before hydration, which React would otherwise report.
   return (
     <html
       lang="fr"
-      data-theme="dark"
       data-scroll-behavior="smooth"
       className={inter.variable}
       suppressHydrationWarning
     >
-      <head>
-        <script
-          dangerouslySetInnerHTML={{
-            __html:
-              "try{document.documentElement.dataset.theme=localStorage.getItem('adem-theme')||'dark'}catch(e){document.documentElement.dataset.theme='dark'}",
-          }}
-        />
-      </head>
       <body>
-        <MotionProvider>
-          <SiteShell
-            identity={{
-              role: identity.role,
-              location: identity.location,
-              githubUrl: identity.githubUrl,
-              linkedinUrl: identity.linkedinUrl,
-            }}
-          >
-            {children}
-          </SiteShell>
-        </MotionProvider>
+        <ThemeProvider>
+          <MotionProvider>
+            <SiteShell>{children}</SiteShell>
+          </MotionProvider>
+        </ThemeProvider>
       </body>
     </html>
   )

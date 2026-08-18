@@ -7,25 +7,20 @@ import type {
 } from 'payload'
 
 /**
- * Cache serveur du contenu éditorial, invalidé à la publication.
+ * Server-side cache for editorial content, invalidated on publish.
  *
- * Les pages du site lisent Payload dans des composants serveur. Sans cache, Next
- * les rendrait à chaque visite et rejouerait les mêmes requêtes SQL pour un
- * contenu identique pour tous les visiteurs. Avec un simple `revalidate`, elles
- * resteraient statiques mais périmées jusqu'à l'expiration du délai — une
- * correction publiée dans `/admin` n'apparaîtrait pas tout de suite.
+ * Reads are cached and Payload hooks invalidate the affected pages as soon as a
+ * document changes: pages stay static, the database is queried only after a
+ * write, and the site is up to date immediately. A plain `revalidate` would
+ * leave a fix published in `/admin` invisible until the delay expired.
  *
- * On combine donc les deux : les lectures sont mises en cache, et les hooks
- * Payload invalident les pages concernées dès qu'un document change. Les pages
- * restent servies en statique, la base n'est interrogée qu'après une
- * modification, et le site est à jour immédiatement. Le cache vit ici, dans la
- * couche données, plutôt que dupliqué en configuration de segment dans chaque
- * page.
+ * The cache lives here, in the data layer, rather than duplicated as segment
+ * config in every page.
  */
 
 /**
- * Un tag par nature de contenu, et non un tag global unique : modifier un projet
- * ne doit pas provoquer la relecture du parcours ni des mentions légales.
+ * One tag per kind of content rather than a single global one: editing a project
+ * must not force the career path or the legal notice to be read again.
  */
 const CONTENT_TAGS = {
   identity: 'content:identity',
@@ -38,17 +33,15 @@ const CONTENT_TAGS = {
 type ContentTag = (typeof CONTENT_TAGS)[keyof typeof CONTENT_TAGS]
 
 /**
- * Pages à régénérer pour chaque nature de contenu.
+ * Pages to regenerate for each kind of content.
  *
- * L'invalidation vise les pages et non le cache de données : une page entièrement
- * prérendue à la compilation n'a aucune échéance de revalidation, donc marquer ses
- * données périmées ne déclenche jamais de nouveau rendu — seul `revalidatePath`
- * remplace son HTML. Vérifié en production : purger le tag laissait la page servir
- * l'ancien contenu indéfiniment, `revalidatePath` la rafraîchit dès la requête
- * suivante.
+ * Invalidation targets pages, not the data cache: a page fully prerendered at
+ * build time has no revalidation deadline, so marking its data stale never
+ * triggers a re-render — only `revalidatePath` replaces its HTML. Verified in
+ * production: purging the tag left the page serving stale content indefinitely.
  *
- * L'identité alimente l'en-tête et le pied de page définis dans le layout commun :
- * toutes les pages en dépendent, d'où la racine invalidée en mode `layout`.
+ * Identity feeds the header and footer defined in the shared layout, so every
+ * page depends on it — hence the root invalidated in `layout` mode.
  */
 const PAGES_BY_TAG: Record<ContentTag, { path: string; type?: 'layout' | 'page' }[]> = {
   [CONTENT_TAGS.identity]: [{ path: '/', type: 'layout' }],
@@ -59,29 +52,28 @@ const PAGES_BY_TAG: Record<ContentTag, { path: string; type?: 'layout' | 'page' 
 }
 
 /**
- * Met une lecture en cache sous son tag.
+ * Caches a read under its tag.
  *
- * `unstable_cache` exige une clé : le tag fait l'affaire, chaque lecture ayant la
- * sienne et ne prenant aucun argument. Aucune durée d'expiration n'est fixée —
- * l'invalidation vient des hooks, pas de l'horloge. `revalidate: false` évite un
- * rafraîchissement périodique qui ne servirait qu'à repasser sur la base.
+ * `revalidate: false` because invalidation comes from the hooks, not from a
+ * clock: a periodic refresh would only hit the database for nothing. The tag
+ * doubles as the cache key, each read having its own and taking no argument.
  *
- * Le tag reste utile même si l'invalidation passe par les chemins : il isole les
- * entrées de cache les unes des autres et garde `/veille`, rendue dynamiquement,
- * dispensée de rejouer la requête à chaque visite.
+ * The tag still earns its keep even though invalidation goes through paths: it
+ * isolates cache entries from each other and spares `/veille`, rendered
+ * dynamically, from replaying the query on every visit.
  */
 const cachedRead = <T>(tag: ContentTag, read: () => Promise<T>): (() => Promise<T>) =>
   unstable_cache(read, [tag], { tags: [tag], revalidate: false })
 
 /**
- * Régénère les pages qui affichent ce contenu.
+ * Regenerates the pages that display this content.
  *
- * `revalidatePath` exige un contexte de requête Next et lève une exception en
- * dehors. Or ces hooks tournent aussi hors du serveur web : `pnpm seed`, une
- * migration ou tout script lancé par `payload run` écrit dans les mêmes
- * collections. Sans ce filet, l'écriture échouerait alors qu'il n'y a
- * précisément aucune page à régénérer dans un processus CLI. On ignore donc cette
- * erreur, et seulement celle-là, pour ne pas masquer un vrai défaut côté serveur.
+ * `revalidatePath` needs a Next request context and throws outside one, but
+ * these hooks also run outside the web server: `pnpm seed`, a migration or any
+ * script started by `payload run` writes to the same collections. Without this
+ * guard the write would fail in a CLI process, where there is precisely no page
+ * to regenerate. Only that one error is swallowed, so a genuine server-side
+ * failure still surfaces.
  */
 const purge = (tag: ContentTag): void => {
   try {
@@ -95,14 +87,14 @@ const purge = (tag: ContentTag): void => {
 }
 
 /**
- * Hook `afterChange` de global : régénère les pages après une sauvegarde.
+ * Global `afterChange` hook: regenerates the pages once a save lands.
  *
- * `afterChange` et non `beforeChange` : on n'invalide qu'une fois l'écriture
- * réellement passée en base, sinon un échec de validation régénérerait les pages
- * pour rien.
+ * `afterChange` rather than `beforeChange` so invalidation happens only after
+ * the write actually reached the database — a failed validation would otherwise
+ * regenerate the pages for nothing.
  *
- * Aucune valeur n'est renvoyée : Payload ne remplace le document que si le hook
- * retourne quelque chose, et invalider un cache n'a pas à le modifier.
+ * Nothing is returned: Payload replaces the document when a hook returns a
+ * value, and invalidating a cache has no business modifying it.
  */
 const revalidateGlobal = (tag: ContentTag): GlobalAfterChangeHook => {
   return () => {
@@ -110,7 +102,7 @@ const revalidateGlobal = (tag: ContentTag): GlobalAfterChangeHook => {
   }
 }
 
-/** Même principe pour une collection : création, modification et suppression. */
+/** Same idea for a collection: create, update and delete. */
 const revalidateCollection = (
   tag: ContentTag
 ): { afterChange: CollectionAfterChangeHook; afterDelete: CollectionAfterDeleteHook } => ({
@@ -123,8 +115,8 @@ const revalidateCollection = (
 })
 
 /**
- * `ContentTag` n'est pas exporté : les appelants passent une valeur de
- * `CONTENT_TAGS`, dont le type se déduit tout seul. L'exporter inviterait à
- * déclarer un tag ailleurs, alors que la liste doit rester définie ici.
+ * `ContentTag` stays unexported: callers pass a `CONTENT_TAGS` value, whose type
+ * is inferred anyway. Exporting it would invite declaring a tag elsewhere, while
+ * the list has to stay defined here.
  */
 export { CONTENT_TAGS, cachedRead, revalidateCollection, revalidateGlobal }

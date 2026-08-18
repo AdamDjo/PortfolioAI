@@ -1,25 +1,24 @@
 import { headers } from 'next/headers'
 import { getPayload } from 'payload'
 
-import { BookmarkComposer } from '@/components/veille/bookmark-composer'
-import { BookmarkGrid } from '@/components/veille/bookmark-grid'
 import { listPublicBookmarks } from '@/lib/bookmarks'
 import config from '@payload-config'
 
+import { BookmarkComposer } from './_components/bookmark-composer'
+import { BookmarkGrid } from './_components/bookmark-grid'
+import { VEILLE_CONTENT } from './_content'
+
 import type { Metadata } from 'next'
 
-export const metadata: Metadata = {
-  title: 'Veille',
-  description: 'Ma bibliothèque de liens techniques, triée par tags.',
-}
+export const metadata: Metadata = VEILLE_CONTENT.metadata
 
 /**
- * La liste change dès qu'un lien est ajouté : on rend à la demande plutôt que de
- * figer la page au build.
+ * The list changes as soon as a link is added: render on demand rather than
+ * freezing the page at build time.
  */
 export const dynamic = 'force-dynamic'
 
-/** Vrai uniquement si la requête porte une session Payload valide. */
+/** True only when the request carries a valid Payload session. */
 async function isOwner(): Promise<boolean> {
   const payload = await getPayload({ config })
   const { user } = await payload.auth({ headers: await headers() })
@@ -27,19 +26,17 @@ async function isOwner(): Promise<boolean> {
 }
 
 async function WatchPage() {
-  // La lecture est publique, la session ne sert qu'à décider d'afficher le
-  // formulaire : les deux requêtes sont indépendantes.
+  // Reading is public and the session only decides whether to show the form:
+  // the two queries are independent.
   const [bookmarks, owner] = await Promise.all([listPublicBookmarks(), isOwner()])
+  const { heading } = VEILLE_CONTENT
 
   return (
     <div className="page shell">
       <header className="page-heading">
-        <p className="eyebrow">Veille active</p>
-        <h1>Ma bibliothèque de liens, triée par tags.</h1>
-        <p>
-          Les références que je garde sous la main, avec leur aperçu. Filtre par tag pour retrouver
-          une ressource en quelques secondes.
-        </p>
+        <p className="eyebrow">{heading.eyebrow}</p>
+        <h1>{heading.title}</h1>
+        <p>{heading.lead}</p>
       </header>
       {owner ? <BookmarkComposer /> : null}
       <BookmarkGrid bookmarks={bookmarks} />

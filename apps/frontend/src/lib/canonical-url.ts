@@ -1,15 +1,15 @@
 /**
- * Normalisation des URL avant stockage.
+ * URL normalisation before storage.
  *
- * Un même lien copié depuis une newsletter, un tweet ou la barre d'adresse arrive
- * sous trois formes différentes. On les ramène à une écriture unique afin que la
- * contrainte d'unicité en base détecte réellement les doublons — sans pour autant
- * confondre deux pages distinctes du même site.
+ * The same link copied from a newsletter, a tweet or the address bar arrives in
+ * three different forms. They are reduced to a single spelling so the database
+ * uniqueness constraint actually catches duplicates — without conflating two
+ * distinct pages of the same site.
  */
 
 /**
- * Paramètres de suivi retirés systématiquement : ils identifient la campagne qui
- * a amené le lien, jamais la ressource elle-même.
+ * Tracking parameters always stripped: they identify the campaign that brought
+ * the link, never the resource itself.
  */
 const TRACKING_PARAMS: readonly string[] = [
   'fbclid',
@@ -27,7 +27,7 @@ const TRACKING_PARAMS: readonly string[] = [
   'yclid',
 ]
 
-/** Préfixes de paramètres de suivi : `utm_source`, `utm_campaign`, etc. */
+/** Tracking parameter prefixes: `utm_source`, `utm_campaign`, and so on. */
 const TRACKING_PREFIXES: readonly string[] = ['utm_', 'pk_', 'mtm_', 'hsa_', 'oly_', 'wt_']
 
 const isTrackingParam = (key: string): boolean => {
@@ -37,16 +37,16 @@ const isTrackingParam = (key: string): boolean => {
 }
 
 /**
- * Réécrit une URL sous sa forme canonique.
+ * Rewrites a URL into its canonical form.
  *
- * - complète le schéma manquant (`react.dev` → `https://react.dev`)
- * - met l'hôte en minuscules et retire le `www.` de tête
- * - supprime les paramètres de suivi, puis trie ceux qui restent
- * - retire le fragment, qui ne désigne pas une autre ressource
- * - retire la barre oblique finale, sauf à la racine
+ * - fills in the missing scheme (`react.dev` → `https://react.dev`)
+ * - lowercases the host and drops a leading `www.`
+ * - removes tracking parameters, then sorts the remaining ones
+ * - removes the fragment, which does not designate another resource
+ * - removes the trailing slash, except at the root
  *
- * Retourne `null` si la chaîne n'est pas une URL http(s) exploitable. Ne fait
- * aucune requête réseau : la validation de la cible relève de `open-graph.ts`.
+ * Returns `null` when the string is not a usable http(s) URL. Makes no network
+ * request: validating the target is `open-graph.ts`'s job.
  */
 const canonicalizeUrl = (raw: string): string | null => {
   const candidate = raw.trim()
@@ -54,7 +54,7 @@ const canonicalizeUrl = (raw: string): string | null => {
 
   let url: URL
   try {
-    // Une saisie sans schéma est traitée comme https, cas courant d'un copier-coller.
+    // Input without a scheme is treated as https, the common copy-paste case.
     url = new URL(candidate.includes('://') ? candidate : `https://${candidate}`)
   } catch {
     return null
@@ -62,10 +62,10 @@ const canonicalizeUrl = (raw: string): string | null => {
 
   if (url.protocol !== 'https:' && url.protocol !== 'http:') return null
 
-  // Un hôte sans point n'est pas un domaine public (`localhost`, intranet…).
+  // A host without a dot is not a public domain (`localhost`, intranet…).
   if (!url.hostname.includes('.')) return null
 
-  // Les identifiants n'ont rien à faire dans un lien stocké.
+  // Credentials have no place in a stored link.
   url.username = ''
   url.password = ''
 
@@ -73,13 +73,13 @@ const canonicalizeUrl = (raw: string): string | null => {
   url.hash = ''
 
   const kept = [...url.searchParams.entries()].filter(([key]) => !isTrackingParam(key))
-  // Le tri rend l'ordre des paramètres non significatif : `?a=1&b=2` et
-  // `?b=2&a=1` désignent la même page et doivent produire la même clé.
+  // Sorting makes parameter order insignificant: `?a=1&b=2` and `?b=2&a=1`
+  // designate the same page and must produce the same key.
   kept.sort(([a], [b]) => a.localeCompare(b))
   url.search = ''
   for (const [key, value] of kept) url.searchParams.append(key, value)
 
-  // `/docs/` et `/docs` sont la même page ; `/` reste `/`.
+  // `/docs/` and `/docs` are the same page; `/` stays `/`.
   if (url.pathname.length > 1 && url.pathname.endsWith('/')) {
     url.pathname = url.pathname.slice(0, -1)
   }
@@ -87,7 +87,7 @@ const canonicalizeUrl = (raw: string): string | null => {
   return url.href
 }
 
-/** Domaine affichable, sans `www.`. `null` si l'URL est inexploitable. */
+/** Displayable domain, without `www.`. `null` when the URL is unusable. */
 const extractDomain = (raw: string): string | null => {
   const canonical = canonicalizeUrl(raw)
   if (!canonical) return null
@@ -95,8 +95,8 @@ const extractDomain = (raw: string): string | null => {
 }
 
 /**
- * Nom lisible déduit du domaine, utilisé quand la page distante n'expose pas de
- * titre : `developer.mozilla.org` → `Mozilla`.
+ * Readable name derived from the domain, used when the remote page exposes no
+ * title: `developer.mozilla.org` → `Mozilla`.
  */
 const deriveNameFromDomain = (domain: string): string => {
   const parts = domain.split('.')
