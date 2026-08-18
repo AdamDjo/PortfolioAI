@@ -226,10 +226,10 @@ const readProjects = async (): Promise<ProjectView[]> => {
   return result.docs.map(toProjectView)
 }
 
-const getIdentity = cachedRead(CONTENT_TAGS.identity, readIdentity)
-const getProfile = cachedRead(CONTENT_TAGS.profile, readProfile)
-const listExperiences = cachedRead(CONTENT_TAGS.experiences, readExperiences)
-const listProjects = cachedRead(CONTENT_TAGS.projects, readProjects)
+const getIdentity = cachedRead(CONTENT_TAGS.identity, 'identity', readIdentity)
+const getProfile = cachedRead(CONTENT_TAGS.profile, 'profile', readProfile)
+const listExperiences = cachedRead(CONTENT_TAGS.experiences, 'experiences', readExperiences)
+const listProjects = cachedRead(CONTENT_TAGS.projects, 'projects', readProjects)
 
 export {
   getIdentity,

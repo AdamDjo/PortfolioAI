@@ -2,13 +2,17 @@
 
 import { AnimatePresence, m } from 'motion/react'
 import Image from 'next/image'
+import { useRouter } from 'next/navigation'
 import { useMemo, useState } from 'react'
 
 import { EASE_OUT_QUINT } from '@/components/motion/primitives'
 
 import { VEILLE_CONTENT } from '../_content'
 
+import { CardTagEditor } from './card-tag-editor'
+
 import type { BookmarkView } from '@/lib/bookmarks'
+import type { TagView } from '@/lib/tags'
 
 const ALL_TAGS = VEILLE_CONTENT.filter.allTag
 const COVER_TONES = ['violet', 'coral', 'blue', 'green', 'cyan', 'mono'] as const
@@ -22,6 +26,10 @@ function coverTone(domain: string) {
 
 interface BookmarkGridProps {
   bookmarks: BookmarkView[]
+  /** Whole vocabulary, offered by the per-card editor. Empty for a visitor. */
+  allTags: TagView[]
+  /** Only the owner may retag a link; a visitor gets a read-only grid. */
+  canEdit: boolean
 }
 
 /**
@@ -31,9 +39,13 @@ interface BookmarkGridProps {
  * the tag filter and the transitions. It can neither add nor delete a link:
  * writing goes through the form reserved for the admin.
  */
-function BookmarkGrid({ bookmarks }: BookmarkGridProps) {
+function BookmarkGrid({ bookmarks, allTags, canEdit }: BookmarkGridProps) {
+  const router = useRouter()
   const [activeTag, setActiveTag] = useState<string>(ALL_TAGS)
 
+  // Only the tags actually carried by a link: a filter returning nothing has no
+  // value. The editors list the whole vocabulary instead, so a fresh tag is still
+  // reachable.
   const tags = useMemo(() => {
     const all = new Set<string>()
     for (const bookmark of bookmarks) for (const tag of bookmark.tags) all.add(tag)
@@ -83,6 +95,14 @@ function BookmarkGrid({ bookmarks }: BookmarkGridProps) {
               exit={{ opacity: 0, scale: 0.9 }}
               transition={{ duration: 0.35, ease: EASE_OUT_QUINT }}
             >
+              {canEdit ? (
+                <CardTagEditor
+                  bookmarkId={bookmark.id}
+                  tags={allTags}
+                  selectedIds={bookmark.tagIds}
+                  onSaved={() => router.refresh()}
+                />
+              ) : null}
               <a href={bookmark.url} target="_blank" rel="noreferrer">
                 <BookmarkCover bookmark={bookmark} />
                 <p>{bookmark.domain}</p>

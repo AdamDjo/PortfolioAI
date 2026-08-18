@@ -28,6 +28,13 @@ export const VEILLE_CONTENT = {
     saveFailed: 'Ce lien existe déjà ou n’a pas pu être enregistré.',
     networkError: 'Enregistrement impossible. Vérifie ta connexion.',
   },
+  tagPicker: {
+    composerLabel: 'Tags à associer au lien',
+    cardLabel: 'Modifier les tags de ce lien',
+    noTags: 'Aucun tag pour l’instant. Créez-en dans /admin.',
+    openLabel: 'Modifier les tags',
+    saveFailed: 'Les tags n’ont pas pu être enregistrés.',
+  },
   grid: {
     emptyState: 'Aucun lien publié pour l’instant.',
     emptyFilteredState: 'Aucun lien avec ce tag pour l’instant.',

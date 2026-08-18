@@ -10,6 +10,10 @@ import { canonicalizeUrl } from '@/lib/canonical-url'
 
 import { VEILLE_CONTENT } from '../_content'
 
+import { TagSelector } from './tag-selector'
+
+import type { TagView } from '@/lib/tags'
+
 /**
  * Add form reserved for the signed-in admin.
  *
@@ -20,12 +24,19 @@ import { VEILLE_CONTENT } from '../_content'
  * Having it here rather than in `/admin` is about the gesture on a phone: pasting
  * a link from the public page, without a detour through the admin.
  */
-function BookmarkComposer() {
+interface BookmarkComposerProps {
+  tags: TagView[]
+}
+
+function BookmarkComposer({ tags }: BookmarkComposerProps) {
   const router = useRouter()
   const [draft, setDraft] = useState('')
   const [status, setStatus] = useState<'idle' | 'saving'>('idle')
   const [message, setMessage] = useState<string | null>(null)
-  const { composer } = VEILLE_CONTENT
+  // Deliberately kept across submissions: filing veille usually means adding
+  // several links under the same tag, and re-checking it every time would grate.
+  const [selectedTagIds, setSelectedTagIds] = useState<string[]>([])
+  const { composer, tagPicker } = VEILLE_CONTENT
 
   async function addBookmark(raw: string) {
     const url = canonicalizeUrl(raw)
@@ -43,7 +54,9 @@ function BookmarkComposer() {
         headers: { 'Content-Type': 'application/json' },
         // The Payload session travels by cookie: nothing to carry by hand.
         credentials: 'include',
-        body: JSON.stringify({ url }),
+        // Payload expects relation identifiers; an empty list is valid and
+        // creates an untagged link, exactly as before.
+        body: JSON.stringify({ url, tags: selectedTagIds.map(Number) }),
       })
 
       if (response.status === 403 || response.status === 401) {
@@ -66,6 +79,12 @@ function BookmarkComposer() {
     } finally {
       setStatus('idle')
     }
+  }
+
+  function toggleTag(id: string) {
+    setSelectedTagIds((current) =>
+      current.includes(id) ? current.filter((entry) => entry !== id) : [...current, id]
+    )
   }
 
   function submit(event: FormEvent<HTMLFormElement>) {
@@ -116,6 +135,17 @@ function BookmarkComposer() {
           )}
         </button>
       </form>
+      {/*
+        Below the bar rather than inside it: selecting a tag stays optional and
+        must never stand between pasting a URL and it being saved.
+      */}
+      <TagSelector
+        tags={tags}
+        selectedIds={selectedTagIds}
+        onToggle={toggleTag}
+        disabled={saving}
+        ariaLabel={tagPicker.composerLabel}
+      />
       <AnimatePresence>
         {message ? (
           <m.p
