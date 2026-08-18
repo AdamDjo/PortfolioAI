@@ -210,20 +210,22 @@
   width: 26px;
   height: 26px;
   /*
-    Same primary fill as the site's other accent buttons. Fully opaque on
-    purpose: any opacity here blends the fill into the card behind it, and the
-    button then reads as a lighter, washed-out violet next to them.
+    Same accent fill as the primary buttons. `.button-primary` itself is sized
+    for a 46px call to action and cannot shrink to this 26px square, so the
+    token is applied directly. Fully opaque on purpose -- any opacity blends the
+    fill into the card behind it, and the button then reads as washed out.
   */
   border: 0;
   border-radius: 7px;
-  background: var(--accent-solid);
+  background: var(--accent-gradient);
   color: white;
   cursor: pointer;
-  transition: background-color 180ms ease;
+  box-shadow: 0 6px 14px var(--accent-glow);
+  transition: filter 180ms ease;
 }
 .veille-tag-editor-trigger:hover,
 .veille-tag-editor-trigger[aria-expanded='true'] {
-  background: var(--accent-2);
+  filter: brightness(1.08);
 }
 .veille-tag-editor-popover {
   position: absolute;

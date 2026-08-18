@@ -111,9 +111,8 @@
 }
 .button-primary {
   color: white;
-  /* Every stop kept at >=4.5:1 against white; the old #9a60ed tail was 3.98:1. */
-  background: linear-gradient(104deg, #2f71e8, #6344e0 62%, #8a4fd8);
-  box-shadow: 0 12px 25px rgb(103 85 245 / 28%);
+  background: var(--accent-gradient);
+  box-shadow: 0 12px 25px var(--accent-glow);
 }
 .button-primary:hover {
   filter: brightness(1.08);
@@ -270,9 +269,9 @@
   border-radius: 12px;
   place-items: center;
   color: white;
-  background: linear-gradient(145deg, #376ee8, #7948e8);
+  background: var(--accent-gradient);
   cursor: pointer;
-  box-shadow: 0 8px 20px rgb(103 85 245 / 28%);
+  box-shadow: 0 8px 20px var(--accent-glow);
   transition-property: transform, filter;
   transition-duration: 180ms;
 }
@@ -549,6 +548,11 @@
   border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
   box-shadow: 0 18px 45px rgb(30 37 58 / 10%);
 }
+/*
+  Fallback thumbnail when a project has no preview image. The accent fill is the
+  ground, the blurred orbs only add depth on top of it: they are round and soft,
+  so on their own they leave the corners bare and the white title unreadable.
+*/
 .project-visual {
   position: relative;
   display: grid;
@@ -556,6 +560,7 @@
   height: 125px;
   margin-bottom: 12px;
   border-radius: 7px;
+  background: var(--accent-gradient);
   place-items: center;
   isolation: isolate;
 }
