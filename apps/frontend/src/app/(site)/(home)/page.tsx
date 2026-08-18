@@ -1,13 +1,14 @@
 import { listPublicBookmarks } from '@/lib/bookmarks'
-import { getIdentity, listProjects } from '@/lib/site-content'
+import { getAvailability, getIdentity, listProjects } from '@/lib/site-content'
 
 import { ConversationSection } from './_components/conversation-section'
 import { ProjectsTeaser } from './_components/projects-teaser'
 import { QualityStrip } from './_components/quality-strip'
 
 async function Home() {
-  const [identity, projects, bookmarks] = await Promise.all([
+  const [identity, availability, projects, bookmarks] = await Promise.all([
     getIdentity(),
+    getAvailability(),
     listProjects(),
     listPublicBookmarks(),
   ])
@@ -22,6 +23,7 @@ async function Home() {
       <ConversationSection
         role={identity.role}
         location={identity.location}
+        availability={{ available: availability.available, label: availability.label }}
         bookmarks={bookmarks.slice(0, 3).map((bookmark) => ({
           id: bookmark.id,
           title: bookmark.title,

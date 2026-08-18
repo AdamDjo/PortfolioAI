@@ -11,6 +11,8 @@ import { EASE_OUT_QUINT, Stagger, StaggerItem } from '@/components/motion/primit
 
 import { AvailabilityBadge } from './availability-badge'
 
+import type { HomeAvailability } from './types'
+
 const { hero, chat } = HOME_CONTENT
 
 export interface HeroChatHandle {
@@ -21,11 +23,12 @@ export interface HeroChatHandle {
 interface HeroProps {
   role: string
   location: string | null
+  availability: HomeAvailability
   chatRef: RefObject<HeroChatHandle | null>
   onStartChat: () => void
 }
 
-export function Hero({ role, location, chatRef, onStartChat }: HeroProps) {
+export function Hero({ role, location, availability, chatRef, onStartChat }: HeroProps) {
   const heroRef = useRef<HTMLElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const [question, setQuestion] = useState('')
@@ -61,7 +64,9 @@ export function Hero({ role, location, chatRef, onStartChat }: HeroProps) {
     <section className="hero shell" ref={heroRef}>
       <Stagger className="hero-copy" stagger={0.09} delay={0.1} onMount>
         <StaggerItem variant="rise-visible">
-          <AvailabilityBadge>{hero.availability}</AvailabilityBadge>
+          <AvailabilityBadge available={availability.available}>
+            {availability.label}
+          </AvailabilityBadge>
         </StaggerItem>
         {/* Holds the LCP element: painted by the server with no entrance
             animation, so the heading is never gated on hydration. */}

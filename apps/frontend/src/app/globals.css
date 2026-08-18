@@ -79,6 +79,8 @@
   --orb-b: #7c3aed;
   --success: #19a76f;
   --success-text: #0a7049;
+  /* Unavailability, the counterpart to --success: same role, opposite signal. */
+  --danger: #d93a48;
   --shadow: 0 24px 70px rgb(69 74 105 / 9%);
   --header: rgb(251 252 255 / 82%);
   color-scheme: light;
@@ -106,6 +108,8 @@
   --orb-b: #6d28d9;
   --success: #3ecf8e;
   --success-text: #55dfa0;
+  /* Lightened for the dark ground, matching how --success is handled. */
+  --danger: #ff6b78;
   --shadow: 0 30px 90px rgb(0 0 0 / 36%);
   --header: rgb(0 1 2 / 82%);
   color-scheme: dark;

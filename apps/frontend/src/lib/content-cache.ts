@@ -24,6 +24,7 @@ import type {
  */
 const CONTENT_TAGS = {
   identity: 'content:identity',
+  availability: 'content:availability',
   profile: 'content:profile',
   experiences: 'content:experiences',
   projects: 'content:projects',
@@ -45,6 +46,7 @@ type ContentTag = (typeof CONTENT_TAGS)[keyof typeof CONTENT_TAGS]
  */
 const PAGES_BY_TAG: Record<ContentTag, { path: string; type?: 'layout' | 'page' }[]> = {
   [CONTENT_TAGS.identity]: [{ path: '/', type: 'layout' }],
+  [CONTENT_TAGS.availability]: [{ path: '/' }],
   [CONTENT_TAGS.profile]: [{ path: '/a-propos' }],
   [CONTENT_TAGS.experiences]: [{ path: '/a-propos' }],
   [CONTENT_TAGS.projects]: [{ path: '/' }, { path: '/projets' }],

@@ -12,6 +12,7 @@ import { Media } from './collections/media'
 import { Projects } from './collections/projects'
 import { Tags } from './collections/tags'
 import { Users } from './collections/users'
+import { Availability } from './globals/availability'
 import { Profile } from './globals/profile'
 import { SiteIdentity } from './globals/site-identity'
 
@@ -26,7 +27,7 @@ export default buildConfig({
     },
   },
   collections: [Users, Media, Projects, Experiences, Tags, Bookmarks],
-  globals: [SiteIdentity, Profile],
+  globals: [SiteIdentity, Availability, Profile],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET ?? '',
   typescript: {

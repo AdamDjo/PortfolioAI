@@ -20,3 +20,9 @@ export interface HomeBookmark {
   /** First tag when the bookmark has one, falling back to its domain. */
   label: string
 }
+
+/** Availability as the hero badge renders it. */
+export interface HomeAvailability {
+  available: boolean
+  label: string
+}
