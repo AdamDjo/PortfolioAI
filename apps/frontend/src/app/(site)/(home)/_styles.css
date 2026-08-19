@@ -158,8 +158,15 @@
   right: -28px;
   bottom: 4px;
   z-index: 4;
+  display: flex;
   width: min(100%, 550px);
   min-height: 260px;
+  /* The card is anchored on `bottom` and out of flow, so it grows upwards as
+     turns are appended and nothing can push the page down to make room. A fixed
+     ceiling keeps it inside its container; the transcript takes whatever height
+     is left once the header and the form have taken theirs. */
+  max-height: 520px;
+  flex-direction: column;
   padding: 24px;
   border: 1px solid color-mix(in srgb, var(--line) 74%, transparent);
   border-radius: 20px;
@@ -171,6 +178,8 @@
 }
 .chat-header {
   display: flex;
+  /* Header and form are fixed furniture: only the transcript may be compressed. */
+  flex: 0 0 auto;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
@@ -206,6 +215,9 @@
 }
 .message {
   width: fit-content;
+  /* The card is a flex column now; a message must keep its natural height
+     rather than be compressed to make room. */
+  flex: 0 0 auto;
   max-width: 86%;
   border-radius: 12px;
   padding: 12px 15px;
@@ -219,6 +231,7 @@
 }
 .message-row {
   display: flex;
+  flex: 0 0 auto;
   align-items: flex-start;
   gap: 13px;
   margin-top: 16px;
@@ -239,7 +252,73 @@
   padding: 0;
   color: var(--text);
 }
-.chat-answer {
+/* The live conversation, below the scripted example. */
+.chat-thread {
+  display: flex;
+  /* The one scroll container of the card. `min-height: 0` is what actually
+     enables it: a flex child defaults to `min-height: auto`, which refuses to
+     shrink below its content and would push the overflow back out of the card. */
+  min-height: 0;
+  flex: 1 1 auto;
+  flex-direction: column;
+  /* `auto` rather than `scroll`: the short conversations that fit show no track,
+     and the scripted empty state keeps its original look. */
+  overflow-y: auto;
+  /* Keeps a wheel gesture inside the transcript from continuing into the page
+     once the thread hits its end. */
+  overscroll-behavior: contain;
+  /* An empty thread must not push the form down, so the gap only applies
+     between children that actually exist. */
+  gap: 16px;
+}
+.chat-thread:not(:empty) {
+  margin-top: 16px;
+  /* Keeps the scrollbar off the text once the transcript overflows. */
+  padding-right: 4px;
+}
+.chat-thread .message-row {
+  margin-top: 0;
+}
+/* Shown between the question and the first token, so the wait reads as
+   activity rather than a frozen interface. */
+.chat-typing {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  height: 40px;
+}
+.chat-typing span:not(.sr-only) {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent-solid);
+  animation: chat-typing 1.2s ease-in-out infinite;
+}
+.chat-typing span:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.chat-typing span:nth-child(3) {
+  animation-delay: 0.3s;
+}
+@keyframes chat-typing {
+  0%,
+  60%,
+  100% {
+    opacity: 0.25;
+    transform: translateY(0);
+  }
+  30% {
+    opacity: 1;
+    transform: translateY(-3px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .chat-typing span:not(.sr-only) {
+    animation: none;
+    opacity: 0.5;
+  }
+}
+.chat-error {
   margin: 12px 0 0 45px;
   padding: 10px 12px;
   border-left: 2px solid var(--accent);
@@ -247,6 +326,7 @@
   font-size: 12px;
 }
 .chat-form {
+  flex: 0 0 auto;
   display: flex;
   gap: 9px;
   margin-top: 20px;

@@ -6,12 +6,14 @@ import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { buildConfig } from 'payload'
 import sharp from 'sharp'
 
+import { AIKnowledge } from './collections/ai-knowledge'
 import { Bookmarks } from './collections/bookmarks'
 import { Experiences } from './collections/experiences'
 import { Media } from './collections/media'
 import { Projects } from './collections/projects'
 import { Tags } from './collections/tags'
 import { Users } from './collections/users'
+import { AssistantSettings } from './globals/assistant-settings'
 import { Availability } from './globals/availability'
 import { Profile } from './globals/profile'
 import { SiteIdentity } from './globals/site-identity'
@@ -26,8 +28,8 @@ export default buildConfig({
       titleSuffix: '— Adem',
     },
   },
-  collections: [Users, Media, Projects, Experiences, Tags, Bookmarks],
-  globals: [SiteIdentity, Availability, Profile],
+  collections: [Users, Media, Projects, Experiences, Tags, Bookmarks, AIKnowledge],
+  globals: [SiteIdentity, Availability, Profile, AssistantSettings],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET ?? '',
   typescript: {
