@@ -4,7 +4,14 @@ import { ArrowRight, Send, Sparkles } from 'lucide-react'
 import { AnimatePresence, m, useScroll, useTransform } from 'motion/react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useImperativeHandle, useRef, useState, type FormEvent, type RefObject } from 'react'
+import {
+  useEffect,
+  useImperativeHandle,
+  useRef,
+  useState,
+  type FormEvent,
+  type RefObject,
+} from 'react'
 
 import { HOME_CONTENT } from '@/app/(site)/(home)/_content'
 import { EASE_OUT_QUINT, Stagger, StaggerItem } from '@/components/motion/primitives'
@@ -15,6 +22,8 @@ import { AvailabilityBadge } from './availability-badge'
 import type { HomeAvailability } from './types'
 
 const { hero, chat } = HOME_CONTENT
+
+const FOLLOW_TAIL_THRESHOLD = 80
 
 export interface HeroChatHandle {
   /** Scrolls to the chat input and focuses it, prefilling it when given a question. */
@@ -32,12 +41,29 @@ interface HeroProps {
 export function Hero({ role, location, availability, chatRef, onStartChat }: HeroProps) {
   const heroRef = useRef<HTMLElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
+  const threadRef = useRef<HTMLDivElement>(null)
   const [question, setQuestion] = useState('')
   const { turns, streaming, pending, error, ask } = useAssistant()
 
   // The scripted exchange is the empty state: it shows what the chat is for.
   // The moment a real question lands it steps aside for the conversation.
   const started = turns.length > 0
+
+  // The transcript is bounded and scrollable, so new tokens would otherwise
+  // stream in below the fold. Following the tail keeps the answer in view while
+  // it is written, which is the only moment the visitor cares about.
+  useEffect(() => {
+    const thread = threadRef.current
+    if (!thread) return
+
+    // Someone who scrolled up is reading an earlier turn; yanking them back to
+    // the bottom on every token would make that impossible.
+    const distanceFromBottom = thread.scrollHeight - thread.scrollTop - thread.clientHeight
+    if (distanceFromBottom > FOLLOW_TAIL_THRESHOLD) return
+
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    thread.scrollTo({ top: thread.scrollHeight, behavior: reduceMotion ? 'auto' : 'smooth' })
+  }, [turns, streaming, pending])
 
   useImperativeHandle(chatRef, () => ({
     ask(prefill) {
@@ -192,7 +218,7 @@ export function Hero({ role, location, availability, chatRef, onStartChat }: Her
 
           {/* The live conversation. `aria-live` is polite so a screen reader
               announces the finished answer without interrupting on every token. */}
-          <div className="chat-thread" aria-live="polite" aria-busy={pending}>
+          <div className="chat-thread" ref={threadRef} aria-live="polite" aria-busy={pending}>
             {turns.map((turn, index) =>
               turn.role === 'user' ? (
                 <m.div

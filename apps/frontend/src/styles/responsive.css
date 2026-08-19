@@ -47,7 +47,10 @@
     right: 0;
     left: 0;
     width: auto;
+    /* The ceiling follows .hero-visual: the card is anchored on its bottom edge,
+       so anything taller overflows the hero and covers the copy above it. */
     max-width: 520px;
+    max-height: 460px;
     margin-inline: auto;
   }
   .hero-location {
@@ -98,6 +101,7 @@
   }
   .chat-card {
     bottom: 0;
+    max-height: 430px;
   }
   .feature-heading p {
     letter-spacing: 0.18em;
