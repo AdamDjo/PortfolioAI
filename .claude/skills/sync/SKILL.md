@@ -17,26 +17,39 @@ Execute in order:
 
    - If develop is already up to date with main, print "✅ develop is already up to date with main" and stop
 
-2. **Show the commits that will be brought into develop**
-
-3. **Merge main into develop**
+2. **Verify the release PR was not squashed**
 
    ```bash
-   git checkout develop
-   git pull origin develop
+   git merge-base origin/main origin/develop
+   ```
+
+   If this prints the repository's first commit instead of the release merge,
+   `main` was squashed and its link to `develop` is broken. Say so — the sync
+   below will report phantom conflicts on files that are identical on both
+   sides. The repair procedure is in the `/release` skill.
+
+3. **Show the commits that will be brought into develop**
+
+4. **Merge main into develop on a branch**
+
+   `develop` is protected: never push to it directly. Create an issue first,
+   then a branch from `develop`, and open a pull request.
+
+   ```bash
+   git checkout develop && git pull origin develop
+   git checkout -b chore/<issue>-sync-develop-with-main
    git merge origin/main --no-edit
+   git push -u origin chore/<issue>-sync-develop-with-main
    ```
 
-4. **Push develop**
+5. **Open the PR toward `develop`** with the usual checklist (Closes #<issue>,
+   assignee, labels, milestone, project). Adem merges it himself.
 
-   ```bash
-   git push origin develop
-   ```
-
-5. **Confirm:**
+6. **Confirm:**
 
    ```
-   ✅ develop is now up to date with main
+   ✅ Sync PR opened: <url>
 
+   Merge it to bring main back into develop.
    Ready to start a new feature: /feature <name>
    ```
