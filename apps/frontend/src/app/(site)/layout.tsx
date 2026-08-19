@@ -1,4 +1,5 @@
 import { Inter } from 'next/font/google'
+import { Analytics } from '@vercel/analytics/next'
 
 import { MotionProvider } from '@/components/motion/motion-provider'
 import { SiteShell } from '@/components/site-shell'
@@ -57,6 +58,7 @@ export default function RootLayout({
             <SiteShell>{children}</SiteShell>
           </MotionProvider>
         </ThemeProvider>
+        <Analytics />
       </body>
     </html>
   )
