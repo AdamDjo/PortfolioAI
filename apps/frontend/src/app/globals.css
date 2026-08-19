@@ -115,6 +115,30 @@
   color-scheme: dark;
 }
 
+/*
+ * Keeps five tokens alive through the production build.
+ *
+ * `--accent-gradient`, `--accent-glow`, `--orb-a`, `--orb-b` and `--danger` are
+ * the only tokens referenced exclusively from route-level `_styles.css` files.
+ * The production CSS minifier does not see those usages and strips the
+ * declarations from both `:root` blocks as dead code, while leaving the
+ * `var()` references in place — an unresolved `var()` inside a `background`
+ * shorthand computes to `none`, which turned every gradient on the deployed
+ * site into a blank fill (see #54).
+ *
+ * Referencing them here, in the file that declares them, marks them as used.
+ * The rule matches nothing: `:root` is never a descendant of itself, so this
+ * paints no pixel and only exists to hold the reference.
+ */
+:root :root {
+  background-image: var(--accent-gradient);
+  box-shadow:
+    0 0 var(--accent-glow),
+    0 0 var(--orb-a),
+    0 0 var(--orb-b),
+    0 0 var(--danger);
+}
+
 * {
   box-sizing: border-box;
 }
