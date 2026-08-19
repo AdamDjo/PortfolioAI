@@ -66,6 +66,10 @@
   --accent-on-soft: #5a49e0;
   --success: #19a76f;
   --success-text: #0a7049;
+  /* Blurred orbs behind a project preview: they are the card's visual when a
+     project has no screenshot, so the white fallback label reads against them. */
+  --orb-a: #7b6bff;
+  --orb-b: #b98bff;
   --shadow: 0 24px 70px rgb(69 74 105 / 9%);
   --header: rgb(251 252 255 / 82%);
   color-scheme: light;
@@ -88,6 +92,9 @@
   --accent-on-soft: #a59dff;
   --success: #3ecf8e;
   --success-text: #55dfa0;
+  /* Deeper than the light pair: the same orbs on a dark surface would glare. */
+  --orb-a: #5344c9;
+  --orb-b: #7d4fc4;
   --shadow: 0 30px 90px rgb(0 0 0 / 36%);
   --header: rgb(0 1 2 / 82%);
   color-scheme: dark;

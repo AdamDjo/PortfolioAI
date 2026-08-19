@@ -556,6 +556,11 @@
   height: 125px;
   margin-bottom: 12px;
   border-radius: 7px;
+  /* The orbs are sized for this frame and no longer cover it once a card scales
+     it up, so the gradient — not the page — is what shows through behind them.
+     Without it the frame of a project that has no preview renders plain white,
+     taking the white fallback label with it. */
+  background: linear-gradient(135deg, var(--orb-a), var(--orb-b));
   place-items: center;
   isolation: isolate;
 }
