@@ -230,7 +230,12 @@
   border-radius: 10px;
   background: var(--bg);
 }
-.search-bar svg {
+/*
+  Only the leading icon of the field is muted, hence the direct-child selector:
+  the submit's icon is nested in the button and must inherit its white, which a
+  bare `.search-bar svg` would beat.
+*/
+.search-bar > svg {
   color: var(--muted);
 }
 .search-bar input {
@@ -243,12 +248,13 @@
   /* 16px: iOS Safari zooms the viewport on focus below this size. */
   font-size: 16px;
 }
+/* Submit of a search bar: a primary action, so it carries the accent fill. */
 .search-bar button {
   height: 36px;
   padding: 0 15px;
   border: 0;
   border-radius: 7px;
-  background: var(--accent-solid);
+  background: var(--accent-gradient);
   color: white;
   font-size: 12px;
   cursor: pointer;

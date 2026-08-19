@@ -24,10 +24,13 @@ import type {
  */
 const CONTENT_TAGS = {
   identity: 'content:identity',
+  availability: 'content:availability',
   profile: 'content:profile',
   experiences: 'content:experiences',
   projects: 'content:projects',
   bookmarks: 'content:bookmarks',
+  aiKnowledge: 'content:ai-knowledge',
+  assistant: 'content:assistant',
 } as const
 
 type ContentTag = (typeof CONTENT_TAGS)[keyof typeof CONTENT_TAGS]
@@ -45,25 +48,35 @@ type ContentTag = (typeof CONTENT_TAGS)[keyof typeof CONTENT_TAGS]
  */
 const PAGES_BY_TAG: Record<ContentTag, { path: string; type?: 'layout' | 'page' }[]> = {
   [CONTENT_TAGS.identity]: [{ path: '/', type: 'layout' }],
+  [CONTENT_TAGS.availability]: [{ path: '/' }],
   [CONTENT_TAGS.profile]: [{ path: '/a-propos' }],
   [CONTENT_TAGS.experiences]: [{ path: '/a-propos' }],
   [CONTENT_TAGS.projects]: [{ path: '/' }, { path: '/projets' }],
   [CONTENT_TAGS.bookmarks]: [{ path: '/' }, { path: '/veille' }],
+  // The assistant answers from a route handler, so no page holds this content:
+  // purging the cache entry is enough, there is no HTML to replace.
+  [CONTENT_TAGS.aiKnowledge]: [],
+  [CONTENT_TAGS.assistant]: [],
 }
 
 /**
  * Caches a read under its tag.
  *
  * `revalidate: false` because invalidation comes from the hooks, not from a
- * clock: a periodic refresh would only hit the database for nothing. The tag
- * doubles as the cache key, each read having its own and taking no argument.
+ * clock: a periodic refresh would only hit the database for nothing.
+ *
+ * `key` identifies the cache entry and must be unique across all reads, while
+ * `tag` decides what invalidates it. They are separate because several reads can
+ * legitimately share one tag — bookmarks and the tag vocabulary are always shown
+ * together and are purged together, but each needs its own entry. Passing the tag
+ * as the key too would make the second read overwrite the first.
  *
  * The tag still earns its keep even though invalidation goes through paths: it
  * isolates cache entries from each other and spares `/veille`, rendered
  * dynamically, from replaying the query on every visit.
  */
-const cachedRead = <T>(tag: ContentTag, read: () => Promise<T>): (() => Promise<T>) =>
-  unstable_cache(read, [tag], { tags: [tag], revalidate: false })
+const cachedRead = <T>(tag: ContentTag, key: string, read: () => Promise<T>): (() => Promise<T>) =>
+  unstable_cache(read, [key], { tags: [tag], revalidate: false })
 
 /**
  * Regenerates the pages that display this content.

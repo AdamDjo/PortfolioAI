@@ -1,3 +1,4 @@
+import { Analytics } from '@vercel/analytics/next'
 import { Inter } from 'next/font/google'
 
 import { MotionProvider } from '@/components/motion/motion-provider'
@@ -57,6 +58,7 @@ export default function RootLayout({
             <SiteShell>{children}</SiteShell>
           </MotionProvider>
         </ThemeProvider>
+        <Analytics />
       </body>
     </html>
   )

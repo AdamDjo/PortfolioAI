@@ -73,6 +73,7 @@ export interface Config {
     experiences: Experience
     tags: Tag
     bookmarks: Bookmark
+    'ai-knowledge': AiKnowledge
     'payload-kv': PayloadKv
     'payload-locked-documents': PayloadLockedDocument
     'payload-preferences': PayloadPreference
@@ -86,6 +87,7 @@ export interface Config {
     experiences: ExperiencesSelect<false> | ExperiencesSelect<true>
     tags: TagsSelect<false> | TagsSelect<true>
     bookmarks: BookmarksSelect<false> | BookmarksSelect<true>
+    'ai-knowledge': AiKnowledgeSelect<false> | AiKnowledgeSelect<true>
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>
     'payload-locked-documents':
       | PayloadLockedDocumentsSelect<false>
@@ -99,11 +101,15 @@ export interface Config {
   fallbackLocale: null
   globals: {
     'site-identity': SiteIdentity
+    availability: Availability
     profile: Profile
+    'assistant-settings': AssistantSetting
   }
   globalsSelect: {
     'site-identity': SiteIdentitySelect<false> | SiteIdentitySelect<true>
+    availability: AvailabilitySelect<false> | AvailabilitySelect<true>
     profile: ProfileSelect<false> | ProfileSelect<true>
+    'assistant-settings': AssistantSettingsSelect<false> | AssistantSettingsSelect<true>
   }
   locale: null
   widgets: {
@@ -317,6 +323,33 @@ export interface Bookmark {
   createdAt: string
 }
 /**
+ * Réponses que l’assistant peut donner sur Adem. Ce contenu n’est jamais affiché sur le site et n’est pas exposé publiquement.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ai-knowledge".
+ */
+export interface AiKnowledge {
+  id: number
+  /**
+   * La question telle qu’un visiteur la poserait.
+   */
+  question: string
+  /**
+   * Ce que l’assistant doit répondre. Écrit à la troisième personne.
+   */
+  answer: string
+  /**
+   * Sert à regrouper les entrées dans le contexte envoyé au modèle.
+   */
+  category?: ('parcours' | 'competences' | 'methode' | 'collaboration' | 'autre') | null
+  /**
+   * Décochée, l’entrée reste ici sans jamais être transmise au modèle.
+   */
+  published?: boolean | null
+  updatedAt: string
+  createdAt: string
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
@@ -363,6 +396,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'bookmarks'
         value: number | Bookmark
+      } | null)
+    | ({
+        relationTo: 'ai-knowledge'
+        value: number | AiKnowledge
       } | null)
   globalSlug?: string | null
   user: {
@@ -514,6 +551,18 @@ export interface BookmarksSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ai-knowledge_select".
+ */
+export interface AiKnowledgeSelect<T extends boolean = true> {
+  question?: T
+  answer?: T
+  category?: T
+  published?: T
+  updatedAt?: T
+  createdAt?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv_select".
  */
 export interface PayloadKvSelect<T extends boolean = true> {
@@ -595,6 +644,29 @@ export interface SiteIdentity {
   createdAt?: string | null
 }
 /**
+ * Statut affiché sur l’accueil et utilisé par l’assistant. Modifiable sans redéploiement.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "availability".
+ */
+export interface Availability {
+  id: number
+  /**
+   * Décoché, le badge de l’accueil s’affiche en état indisponible et l’assistant répond en conséquence.
+   */
+  available?: boolean | null
+  /**
+   * Phrase courte montrée dans le badge de l’accueil.
+   */
+  label: string
+  /**
+   * Optionnel. Contexte que l’assistant peut donner : type de mission recherché, date de disponibilité, préférence sur le télétravail.
+   */
+  detail?: string | null
+  updatedAt?: string | null
+  createdAt?: string | null
+}
+/**
  * Biographie, compétences et principes affichés sur la page À propos.
  *
  * This interface was referenced by `Config`'s JSON-Schema
@@ -632,6 +704,33 @@ export interface Profile {
   createdAt?: string | null
 }
 /**
+ * Comportement de l’assistant public. Les modifications s’appliquent sans redéploiement.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "assistant-settings".
+ */
+export interface AssistantSetting {
+  id: number
+  /**
+   * Décoché, le chat affiche un message d’indisponibilité au lieu de répondre.
+   */
+  enabled?: boolean | null
+  /**
+   * Instructions envoyées au modèle avant chaque conversation. Le contexte du site est ajouté automatiquement.
+   */
+  systemPrompt: string
+  /**
+   * Identifiant du modèle chez le fournisseur, par exemple openai/gpt-oss-20b.
+   */
+  model: string
+  /**
+   * Affiché en cas de panne du fournisseur, de quota épuisé ou d’assistant désactivé.
+   */
+  unavailableMessage: string
+  updatedAt?: string | null
+  createdAt?: string | null
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "site-identity_select".
  */
@@ -664,6 +763,18 @@ export interface SiteIdentitySelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "availability_select".
+ */
+export interface AvailabilitySelect<T extends boolean = true> {
+  available?: T
+  label?: T
+  detail?: T
+  updatedAt?: T
+  createdAt?: T
+  globalType?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "profile_select".
  */
 export interface ProfileSelect<T extends boolean = true> {
@@ -684,6 +795,19 @@ export interface ProfileSelect<T extends boolean = true> {
         detail?: T
         id?: T
       }
+  updatedAt?: T
+  createdAt?: T
+  globalType?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "assistant-settings_select".
+ */
+export interface AssistantSettingsSelect<T extends boolean = true> {
+  enabled?: T
+  systemPrompt?: T
+  model?: T
+  unavailableMessage?: T
   updatedAt?: T
   createdAt?: T
   globalType?: T

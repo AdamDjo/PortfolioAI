@@ -64,8 +64,23 @@
   --accent-soft: #eeeaff;
   /* Accent variant readable as text on --accent-soft (>=4.5:1). */
   --accent-on-soft: #5a49e0;
+  /*
+    Fill of every primary button on the site. Each stop stays >=4.5:1 against
+    white, so button labels pass WCAG AA anywhere along the ramp.
+  */
+  --accent-gradient: linear-gradient(104deg, #2f71e8, #6344e0 62%, #8a4fd8);
+  --accent-glow: rgb(103 85 245 / 28%);
+  /*
+    Blurred orbs behind a project thumbnail, used as the fallback when the
+    project has no preview image. Saturated on purpose in both themes: the
+    card title sits on top of them in white and needs a dark enough ground.
+  */
+  --orb-a: #4f46e5;
+  --orb-b: #7c3aed;
   --success: #19a76f;
   --success-text: #0a7049;
+  /* Unavailability, the counterpart to --success: same role, opposite signal. */
+  --danger: #d93a48;
   --shadow: 0 24px 70px rgb(69 74 105 / 9%);
   --header: rgb(251 252 255 / 82%);
   color-scheme: light;
@@ -86,8 +101,15 @@
   --accent-soft: #1d1839;
   /* Accent variant readable as text on --accent-soft (>=4.5:1). */
   --accent-on-soft: #a59dff;
+  /* Same ramp in both themes: it is always read as white-on-accent. */
+  --accent-gradient: linear-gradient(104deg, #2f71e8, #6344e0 62%, #8a4fd8);
+  --accent-glow: rgb(103 85 245 / 28%);
+  --orb-a: #4338ca;
+  --orb-b: #6d28d9;
   --success: #3ecf8e;
   --success-text: #55dfa0;
+  /* Lightened for the dark ground, matching how --success is handled. */
+  --danger: #ff6b78;
   --shadow: 0 30px 90px rgb(0 0 0 / 36%);
   --header: rgb(0 1 2 / 82%);
   color-scheme: dark;

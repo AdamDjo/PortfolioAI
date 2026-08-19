@@ -7,7 +7,6 @@
  */
 export const HOME_CONTENT = {
   hero: {
-    availability: 'Disponible pour des opportunités',
     titleLeading: 'Discute avec',
     titleTrailing: 'mon ',
     titleAccent: 'cerveau',
@@ -24,8 +23,6 @@ export const HOME_CONTENT = {
     inputLabel: 'Posez votre question',
     inputPlaceholder: 'Posez votre question…',
     submitLabel: 'Envoyer',
-    cannedAnswer:
-      'Je peux te parler de mes projets, de mon approche frontend ou de la façon dont j’utilise Next.js.',
   },
   features: {
     heading: 'Découvrez mes fonctionnalités',

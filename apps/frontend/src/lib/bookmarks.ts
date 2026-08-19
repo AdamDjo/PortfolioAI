@@ -27,6 +27,8 @@ interface BookmarkView {
   description: string | null
   previewImageUrl: string | null
   tags: string[]
+  /** Relation identifiers, needed by the owner-only tag editor to know what is checked. */
+  tagIds: string[]
 }
 
 const asText = (value: string | null | undefined): string | null => {
@@ -36,22 +38,25 @@ const asText = (value: string | null | undefined): string | null => {
 }
 
 /**
- * Extracts tag names from a Payload relation.
+ * Extracts tag names and identifiers from a Payload relation.
  *
  * Depending on the query depth, the relation holds either identifiers or the full
  * documents. Depth is 1 here, so objects are expected and bare identifiers are
  * ignored.
  */
-const readTagNames = (relation: Bookmark['tags']): string[] => {
-  if (!relation) return []
+const readTags = (relation: Bookmark['tags']): { names: string[]; ids: string[] } => {
+  if (!relation) return { names: [], ids: [] }
 
   const names: string[] = []
+  const ids: string[] = []
   for (const entry of relation) {
     if (typeof entry === 'number') continue
     const name = asText(entry.name)
-    if (name) names.push(name)
+    if (!name) continue
+    names.push(name)
+    ids.push(String(entry.id))
   }
-  return names
+  return { names, ids }
 }
 
 /** Stored domain, or derived from the URL when the automatic field is empty. */
@@ -68,6 +73,7 @@ const readDomain = (doc: Bookmark): string => {
 
 const toView = (doc: Bookmark): BookmarkView => {
   const domain = readDomain(doc)
+  const { names, ids } = readTags(doc.tags)
 
   return {
     id: String(doc.id),
@@ -76,7 +82,8 @@ const toView = (doc: Bookmark): BookmarkView => {
     title: asText(doc.title) ?? domain,
     description: asText(doc.description),
     previewImageUrl: asText(doc.previewImageUrl),
-    tags: readTagNames(doc.tags),
+    tags: names,
+    tagIds: ids,
   }
 }
 
@@ -103,6 +110,10 @@ const readPublicBookmarks = async (): Promise<BookmarkView[]> => {
   return result.docs.map(toView)
 }
 
-const listPublicBookmarks = cachedRead(CONTENT_TAGS.bookmarks, readPublicBookmarks)
+const listPublicBookmarks = cachedRead(
+  CONTENT_TAGS.bookmarks,
+  'bookmarks:list',
+  readPublicBookmarks
+)
 
 export { listPublicBookmarks, type BookmarkView }
