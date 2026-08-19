@@ -17,6 +17,12 @@ export default defineConfig({
     },
   },
   resolve: {
-    alias: { '@': resolve(__dirname, './src') },
+    // Mirrors the `paths` of tsconfig.json: `@payload-config` is resolved by the
+    // Next build, and Vitest has to be told about it separately or any module
+    // importing it fails to load — before `vi.mock` ever gets a chance to run.
+    alias: {
+      '@': resolve(__dirname, './src'),
+      '@payload-config': resolve(__dirname, './src/cms/payload.config.ts'),
+    },
   },
 })

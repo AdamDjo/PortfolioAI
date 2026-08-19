@@ -239,7 +239,60 @@
   padding: 0;
   color: var(--text);
 }
-.chat-answer {
+/* The live conversation, below the scripted example. */
+.chat-thread {
+  display: flex;
+  flex-direction: column;
+  /* An empty thread must not push the form down, so the gap only applies
+     between children that actually exist. */
+  gap: 16px;
+}
+.chat-thread:not(:empty) {
+  margin-top: 16px;
+}
+.chat-thread .message-row {
+  margin-top: 0;
+}
+/* Shown between the question and the first token, so the wait reads as
+   activity rather than a frozen interface. */
+.chat-typing {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  height: 40px;
+}
+.chat-typing span:not(.sr-only) {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent-solid);
+  animation: chat-typing 1.2s ease-in-out infinite;
+}
+.chat-typing span:nth-child(2) {
+  animation-delay: 0.15s;
+}
+.chat-typing span:nth-child(3) {
+  animation-delay: 0.3s;
+}
+@keyframes chat-typing {
+  0%,
+  60%,
+  100% {
+    opacity: 0.25;
+    transform: translateY(0);
+  }
+  30% {
+    opacity: 1;
+    transform: translateY(-3px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .chat-typing span:not(.sr-only) {
+    animation: none;
+    opacity: 0.5;
+  }
+}
+.chat-error {
   margin: 12px 0 0 45px;
   padding: 10px 12px;
   border-left: 2px solid var(--accent);

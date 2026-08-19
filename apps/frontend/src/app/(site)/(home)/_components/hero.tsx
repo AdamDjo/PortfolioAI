@@ -8,6 +8,7 @@ import { useImperativeHandle, useRef, useState, type FormEvent, type RefObject }
 
 import { HOME_CONTENT } from '@/app/(site)/(home)/_content'
 import { EASE_OUT_QUINT, Stagger, StaggerItem } from '@/components/motion/primitives'
+import { useAssistant } from '@/hooks/use-assistant'
 
 import { AvailabilityBadge } from './availability-badge'
 
@@ -32,7 +33,11 @@ export function Hero({ role, location, availability, chatRef, onStartChat }: Her
   const heroRef = useRef<HTMLElement>(null)
   const inputRef = useRef<HTMLInputElement>(null)
   const [question, setQuestion] = useState('')
-  const [answer, setAnswer] = useState('')
+  const { turns, streaming, pending, error, ask } = useAssistant()
+
+  // The scripted exchange is the empty state: it shows what the chat is for.
+  // The moment a real question lands it steps aside for the conversation.
+  const started = turns.length > 0
 
   useImperativeHandle(chatRef, () => ({
     ask(prefill) {
@@ -55,8 +60,8 @@ export function Hero({ role, location, availability, chatRef, onStartChat }: Her
 
   function submitQuestion(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
-    if (!question.trim()) return
-    setAnswer(chat.cannedAnswer)
+    if (!question.trim() || pending) return
+    void ask(question)
     setQuestion('')
   }
 
@@ -162,35 +167,91 @@ export function Hero({ role, location, availability, chatRef, onStartChat }: Her
             </span>
             <small>{chat.status}</small>
           </div>
-          <m.div
-            className="message message-user"
-            initial={{ opacity: 0, y: 14, scale: 0.97 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            transition={{ duration: 0.45, delay: 0.32, ease: EASE_OUT_QUINT }}
-          >
-            {chat.userMessage}
-          </m.div>
-          <m.div
-            className="message-row"
-            initial={{ opacity: 0, y: 14, scale: 0.97 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            // Holds the LCP element: kept early so the paint is not animation-gated.
-            transition={{ duration: 0.45, delay: 0.45, ease: EASE_OUT_QUINT }}
-          >
-            <span className="avatar">A</span>
-            <div className="message message-ai">{chat.aiMessage}</div>
-          </m.div>
+          {started ? null : (
+            <>
+              <m.div
+                className="message message-user"
+                initial={{ opacity: 0, y: 14, scale: 0.97 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={{ duration: 0.45, delay: 0.32, ease: EASE_OUT_QUINT }}
+              >
+                {chat.userMessage}
+              </m.div>
+              <m.div
+                className="message-row"
+                initial={{ opacity: 0, y: 14, scale: 0.97 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                // Holds the LCP element: kept early so the paint is not animation-gated.
+                transition={{ duration: 0.45, delay: 0.45, ease: EASE_OUT_QUINT }}
+              >
+                <span className="avatar">A</span>
+                <div className="message message-ai">{chat.aiMessage}</div>
+              </m.div>
+            </>
+          )}
+
+          {/* The live conversation. `aria-live` is polite so a screen reader
+              announces the finished answer without interrupting on every token. */}
+          <div className="chat-thread" aria-live="polite" aria-busy={pending}>
+            {turns.map((turn, index) =>
+              turn.role === 'user' ? (
+                <m.div
+                  // Turns are append-only, so the index is a stable identity here.
+                  key={`user-${index}`}
+                  className="message message-user"
+                  initial={{ opacity: 0, y: 12, scale: 0.97 }}
+                  animate={{ opacity: 1, y: 0, scale: 1 }}
+                  transition={{ duration: 0.35, ease: EASE_OUT_QUINT }}
+                >
+                  {turn.content}
+                </m.div>
+              ) : (
+                <m.div
+                  key={`assistant-${index}`}
+                  className="message-row"
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.35, ease: EASE_OUT_QUINT }}
+                >
+                  <span className="avatar">A</span>
+                  <div className="message message-ai">{turn.content}</div>
+                </m.div>
+              )
+            )}
+
+            {streaming ? (
+              <div className="message-row">
+                <span className="avatar">A</span>
+                <div className="message message-ai">{streaming}</div>
+              </div>
+            ) : null}
+
+            {/* Shown only before the first token: once text flows, it is the
+                progress indicator. */}
+            {pending && !streaming ? (
+              <div className="message-row">
+                <span className="avatar">A</span>
+                <div className="message message-ai chat-typing" role="status">
+                  <span />
+                  <span />
+                  <span />
+                  <span className="sr-only">Réponse en cours</span>
+                </div>
+              </div>
+            ) : null}
+          </div>
+
           <AnimatePresence>
-            {answer ? (
+            {error ? (
               <m.p
-                className="chat-answer"
-                role="status"
+                className="chat-error"
+                role="alert"
                 initial={{ opacity: 0, y: 10, height: 0 }}
                 animate={{ opacity: 1, y: 0, height: 'auto' }}
                 exit={{ opacity: 0, height: 0 }}
                 transition={{ duration: 0.4, ease: EASE_OUT_QUINT }}
               >
-                {answer}
+                {error}
               </m.p>
             ) : null}
           </AnimatePresence>
@@ -211,7 +272,7 @@ export function Hero({ role, location, availability, chatRef, onStartChat }: Her
               onChange={(event) => setQuestion(event.target.value)}
               placeholder={chat.inputPlaceholder}
             />
-            <button type="submit" aria-label={chat.submitLabel}>
+            <button type="submit" aria-label={chat.submitLabel} disabled={pending}>
               <Send size={15} />
             </button>
           </m.form>
