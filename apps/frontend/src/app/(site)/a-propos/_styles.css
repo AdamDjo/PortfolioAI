@@ -17,33 +17,32 @@
 .about-portrait {
   position: relative;
   display: grid;
+  min-height: 500px;
   place-items: center;
-  padding: 22px;
+  align-self: stretch;
+  overflow: hidden;
+  padding: 28px 28px 0;
   border: 1px solid var(--line);
   border-radius: 20px;
-  background: var(--surface);
+  background:
+    linear-gradient(color-mix(in srgb, var(--line) 42%, transparent) 1px, transparent 1px),
+    linear-gradient(90deg, color-mix(in srgb, var(--line) 42%, transparent) 1px, transparent 1px),
+    radial-gradient(circle at 50% 52%, var(--accent-soft), transparent 62%), var(--surface);
+  background-size:
+    42px 42px,
+    42px 42px,
+    auto,
+    auto;
 }
 .about-portrait img {
-  width: 100%;
-  height: auto;
-}
-/*
- * Theme-dependent images are swapped in CSS rather than picked in JS: reading the
- * theme from React state would leave the wrong variant painted until hydration.
- * Both variants ship in the markup and the inactive one is never fetched, since
- * `display: none` suppresses the request.
- */
-.brain-light {
+  z-index: 1;
   display: block;
-}
-.brain-dark {
-  display: none;
-}
-[data-theme='dark'] .brain-light {
-  display: none;
-}
-[data-theme='dark'] .brain-dark {
-  display: block;
+  width: min(100%, 390px);
+  height: 100%;
+  max-height: 530px;
+  object-fit: contain;
+  object-position: center bottom;
+  filter: drop-shadow(0 18px 24px color-mix(in srgb, var(--text) 18%, transparent));
 }
 .about-meta {
   margin-top: 14px;
@@ -144,12 +143,38 @@
   list-style: none;
 }
 .skill-chips li {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
   padding: 5px 11px;
   border: 1px solid var(--line);
   border-radius: 999px;
   background: var(--bg);
   color: var(--muted);
   font-size: 13px;
+}
+
+@media (max-width: 760px) {
+  .about-hero {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+  .about-portrait {
+    min-height: 430px;
+  }
+  .about-portrait img {
+    max-height: 450px;
+  }
+}
+
+@media (max-width: 480px) {
+  .about-portrait {
+    min-height: 360px;
+    padding-inline: 12px;
+  }
+  .about-portrait img {
+    max-height: 390px;
+  }
 }
 
 /* Parcours professionnel. */

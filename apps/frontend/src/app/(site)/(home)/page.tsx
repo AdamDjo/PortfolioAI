@@ -1,41 +1,47 @@
-import { listPublicBookmarks } from '@/lib/bookmarks'
-import { getAvailability, getIdentity, listProjects } from '@/lib/site-content'
+import { getAvailability, getIdentity, getProfile, listProjects } from '@/lib/site-content'
 
 import { ConversationSection } from './_components/conversation-section'
-import { ProjectsTeaser } from './_components/projects-teaser'
 import { QualityStrip } from './_components/quality-strip'
 
+const PROJECT_FALLBACK_IMAGES: Record<string, string> = {
+  Grimoire: '/images/project-grimoire.webp',
+  Ethswap: '/images/project-ethswap.webp',
+  Fitapp: '/images/project-fitapp.webp',
+}
+
 async function Home() {
-  const [identity, availability, projects, bookmarks] = await Promise.all([
+  const [identity, availability, profile, projects] = await Promise.all([
     getIdentity(),
     getAvailability(),
+    getProfile(),
     listProjects(),
-    listPublicBookmarks(),
   ])
 
   // Without a project flagged as featured, show the first of the sort order
   // rather than an empty grid.
   const featured = projects.filter((project) => project.featured)
-  const shown = (featured.length > 0 ? featured : projects).slice(0, 3)
+  const shown = [...featured, ...projects.filter((project) => !project.featured)].slice(0, 3)
 
   return (
     <>
       <ConversationSection
+        name={identity.displayName}
         role={identity.role}
         location={identity.location}
+        yearsOfExperience={profile.yearsOfExperience}
+        projectCount={projects.length}
+        skills={profile.skillGroups.flatMap((group) => group.items).slice(0, 5)}
         availability={{ available: availability.available, label: availability.label }}
-        bookmarks={bookmarks.slice(0, 3).map((bookmark) => ({
-          id: bookmark.id,
-          title: bookmark.title,
-          label: bookmark.tags[0] ?? bookmark.domain,
-        }))}
-      />
-      <ProjectsTeaser
         projects={shown.map((project) => ({
           id: project.id,
           url: project.url,
           title: project.title,
-          imageUrl: project.coverUrl ?? project.previewImageUrl,
+          description: project.description,
+          imageUrl:
+            project.coverUrl ??
+            project.previewImageUrl ??
+            PROJECT_FALLBACK_IMAGES[project.title] ??
+            null,
           technologies: project.technologies,
         }))}
       />

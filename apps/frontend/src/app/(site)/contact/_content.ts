@@ -24,7 +24,9 @@ export const CONTACT_CONTENT = {
     subjectLabel: 'Sujet',
     messageLabel: 'Message',
     submitLabel: 'Envoyer le message',
-    successMessage:
-      'Le service d’envoi n’est pas encore branché. En attendant, écris-moi directement à',
+    pendingLabel: 'Envoi en cours…',
+    successMessage: 'Message envoyé. Je te réponds au plus vite.',
+    /** Shown when no sending domain is configured yet — nothing has failed. */
+    unconfiguredMessage: 'L’envoi n’est pas encore actif. En attendant, écris-moi directement à',
   },
 } as const
