@@ -219,6 +219,24 @@
   color: var(--success);
   font-size: 12px;
 }
+.form-error {
+  margin: 0;
+  color: var(--danger);
+  font-size: 12px;
+}
+/*
+  Honeypot: removed from the layout without `display: none`, which the more
+  careful bots detect and skip. Kept unreachable by pointer and keyboard so no
+  visitor can fill it by accident and have their message silently dropped.
+*/
+.honeypot {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
 
 .search-bar {
   display: flex;
