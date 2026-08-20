@@ -36,19 +36,12 @@ async function AboutPage() {
         </div>
         <div className="about-portrait">
           <Image
-            className="brain-light"
-            src="/images/hero-brain-light.webp"
-            width={1080}
-            height={720}
+            src="/images/adem-mascot.webp"
+            width={1024}
+            height={1536}
+            sizes="(max-width: 640px) 82vw, 38vw"
             alt={hero.portraitAlt}
-          />
-          <Image
-            className="brain-dark"
-            src="/images/hero-brain-dark.webp"
-            width={1080}
-            height={720}
-            alt=""
-            aria-hidden="true"
+            priority
           />
         </div>
       </div>

@@ -1,5 +1,5 @@
 .shell {
-  width: min(100% - 48px, 1200px);
+  width: min(100% - 48px, 1320px);
   margin-inline: auto;
 }
 .sr-only {
@@ -143,6 +143,26 @@
   color: var(--text);
   background: var(--surface-2);
   transform: translateY(-1px);
+}
+.technology-icon {
+  display: inline-grid;
+  flex: 0 0 auto;
+  place-items: center;
+}
+.technology-brand-icon {
+  color: var(--technology-brand);
+}
+[data-theme='dark'] .technology-brand-icon[data-monochrome='true'] {
+  color: #f4f6fb;
+}
+.technology-icon-fallback {
+  color: var(--accent);
+}
+.technology-icon-zustand {
+  align-items: center;
+  justify-content: center;
+  font-family: system-ui, sans-serif;
+  line-height: 1;
 }
 .menu-trigger {
   display: none;

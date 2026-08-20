@@ -2,17 +2,22 @@
 
 import { useCallback, useRef } from 'react'
 
-import { FeatureSwitcher } from './feature-switcher'
 import { Hero } from './hero'
+import { HomeRail } from './home-rail'
+import { ProjectsTeaser } from './projects-teaser'
 
 import type { HeroChatHandle } from './hero'
-import type { HomeAvailability, HomeBookmark } from './types'
+import type { HomeAvailability, HomeProject } from './types'
 
 interface ConversationSectionProps {
+  name: string
   role: string
   location: string | null
+  yearsOfExperience: number | null
+  projectCount: number
+  skills: string[]
   availability: HomeAvailability
-  bookmarks: HomeBookmark[]
+  projects: HomeProject[]
 }
 
 /**
@@ -24,10 +29,14 @@ interface ConversationSectionProps {
  * and leaves the switcher and the sections below untouched.
  */
 export function ConversationSection({
+  name,
   role,
   location,
+  yearsOfExperience,
+  projectCount,
+  skills,
   availability,
-  bookmarks,
+  projects,
 }: ConversationSectionProps) {
   const chatRef = useRef<HeroChatHandle>(null)
 
@@ -37,13 +46,17 @@ export function ConversationSection({
   return (
     <>
       <Hero
+        name={name}
         role={role}
         location={location}
+        yearsOfExperience={yearsOfExperience}
+        projectCount={projectCount}
+        skills={skills}
         availability={availability}
         chatRef={chatRef}
-        onStartChat={startChat}
       />
-      <FeatureSwitcher bookmarks={bookmarks} onAskQuestion={askQuestion} />
+      <HomeRail onStartChat={startChat} />
+      <ProjectsTeaser projects={projects} onAskQuestion={askQuestion} />
     </>
   )
 }
