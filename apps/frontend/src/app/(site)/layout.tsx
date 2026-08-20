@@ -1,9 +1,9 @@
 import { Analytics } from '@vercel/analytics/next'
 import { Inter } from 'next/font/google'
+import Script from 'next/script'
 
 import { MotionProvider } from '@/components/motion/motion-provider'
 import { SiteShell } from '@/components/site-shell'
-import { ThemeProvider } from '@/components/theme-provider'
 
 import type { Metadata, Viewport } from 'next'
 
@@ -21,6 +21,18 @@ const inter = Inter({
 const TITLE = 'Adem — Senior Frontend Developer'
 const DESCRIPTION =
   'Développeur frontend senior en Île-de-France. Interfaces React et Next.js rapides, accessibles et maintenables.'
+
+const THEME_INIT_SCRIPT = `
+try {
+  const storedTheme = localStorage.getItem('adem-theme')
+  const theme = storedTheme === 'dark' ? 'dark' : 'light'
+  document.documentElement.dataset.theme = theme
+  document.documentElement.style.colorScheme = theme
+} catch {
+  document.documentElement.dataset.theme = 'light'
+  document.documentElement.style.colorScheme = 'light'
+}
+`
 
 export const metadata: Metadata = {
   // The final domain is not settled yet: it comes from the environment rather
@@ -43,8 +55,8 @@ export default function RootLayout({
   // is intentional: without it, Next warns that a navigation might be animated
   // by accident.
   //
-  // `suppressHydrationWarning` is required by next-themes: its inline script
-  // writes `data-theme` before hydration, which React would otherwise report.
+  // The beforeInteractive initializer writes `data-theme` before hydration.
+  // React would otherwise report the expected server/client attribute mismatch.
   return (
     <html
       lang="fr"
@@ -52,12 +64,15 @@ export default function RootLayout({
       className={inter.variable}
       suppressHydrationWarning
     >
+      <head>
+        <Script id="theme-initializer" strategy="beforeInteractive">
+          {THEME_INIT_SCRIPT}
+        </Script>
+      </head>
       <body>
-        <ThemeProvider>
-          <MotionProvider>
-            <SiteShell>{children}</SiteShell>
-          </MotionProvider>
-        </ThemeProvider>
+        <MotionProvider>
+          <SiteShell>{children}</SiteShell>
+        </MotionProvider>
         <Analytics />
       </body>
     </html>

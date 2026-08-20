@@ -41,6 +41,7 @@ coverage/
 
 # Misc
 *.tsbuildinfo
+apps/frontend/next-env.d.ts
 
 # MCP config (contains secrets)
 .mcp.json

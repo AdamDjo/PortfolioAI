@@ -1,27 +1,30 @@
 'use client'
 
 import { Moon, Sun } from 'lucide-react'
-import { useTheme } from 'next-themes'
+
+const THEME_STORAGE_KEY = 'adem-theme'
 
 /**
  * Switches between the light and dark themes.
  *
  * Both icons are always rendered and CSS picks the visible one from
- * `data-theme`, set before the first paint by the `next-themes` script. Choosing
- * in JS would require waiting for mount to stay hydration-safe, which is exactly
+ * `data-theme`, set before hydration by the root layout initializer. Choosing in
+ * JS would require waiting for mount to stay hydration-safe, which is exactly
  * what makes the icon pop in after the header has painted.
  */
 export function ThemeToggle() {
-  const { setTheme } = useTheme()
-
-  /*
-   * Reads the current theme from the setter rather than from `resolvedTheme`, so
-   * this component never subscribes to the theme value: nothing here renders
-   * differently per theme, and subscribing would re-render on every toggle for
-   * no visible gain.
-   */
   function toggleTheme() {
-    setTheme((current) => (current === 'dark' ? 'light' : 'dark'))
+    const root = document.documentElement
+    const nextTheme = root.dataset.theme === 'dark' ? 'light' : 'dark'
+
+    root.dataset.theme = nextTheme
+    root.style.colorScheme = nextTheme
+
+    try {
+      localStorage.setItem(THEME_STORAGE_KEY, nextTheme)
+    } catch {
+      // The visual toggle still works when storage is unavailable.
+    }
   }
 
   return (
