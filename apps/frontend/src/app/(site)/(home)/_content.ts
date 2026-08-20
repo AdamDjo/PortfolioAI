@@ -7,23 +7,56 @@
  */
 export const HOME_CONTENT = {
   hero: {
-    titleLeading: 'Discute avec',
-    titleTrailing: 'mon ',
-    titleAccent: 'cerveau',
-    lead: ['Pose-moi n’importe quelle question.', 'Mon IA vous répond instantanément.'],
-    primaryAction: 'Commencer à discuter',
-    secondaryAction: 'En savoir plus',
+    titleLines: ['Je transforme', 'des idées en', 'interfaces nettes.'],
+    lead: 'Développeur frontend passionné par la création d’expériences web modernes, rapides et accessibles.',
+    primaryAction: 'Voir mes projets',
+    secondaryAction: 'Me contacter',
   },
   chat: {
-    header: 'Conversation avec mon portfolio',
+    header: 'Discuter avec mon portfolio',
     status: 'En ligne',
-    userMessage: 'Bonjour, qui es-tu ?',
+    userMessage: 'Bonjour ! 👋',
     aiMessage:
-      'Salut, je suis Adem. Je conçois des expériences web modernes, rapides et accessibles avec React, Next.js et TypeScript.',
+      'Pose-moi une question sur mes projets, mon parcours, mes compétences ou ma façon de travailler.',
     inputLabel: 'Posez votre question',
     inputPlaceholder: 'Posez votre question…',
     submitLabel: 'Envoyer',
   },
+  profile: {
+    heading: 'Profil',
+    action: 'Voir mon parcours',
+  },
+  skills: {
+    heading: 'Compétences',
+    fallback: ['React', 'Next.js', 'TypeScript', 'Tailwind CSS', 'Node.js'],
+  },
+  stats: {
+    projects: 'Projets réalisés',
+    experience: 'Ans d’expérience',
+    satisfaction: 'Engagement',
+  },
+  rail: [
+    {
+      id: 'assistant',
+      title: 'Assistant IA',
+      description: 'Posez une question, obtenez une réponse.',
+    },
+    {
+      id: 'projects',
+      title: 'Projets',
+      description: 'Découvrez mes réalisations.',
+    },
+    {
+      id: 'journey',
+      title: 'Parcours',
+      description: 'Mon expérience et mon parcours.',
+    },
+    {
+      id: 'contact',
+      title: 'Informations',
+      description: 'Coordonnées et disponibilités.',
+    },
+  ],
   features: {
     heading: 'Découvrez mes fonctionnalités',
     ai: {
@@ -66,9 +99,22 @@ export const HOME_CONTENT = {
     action: 'Découvrir mon parcours',
   },
   projects: {
-    eyebrow: 'Sélection',
-    heading: 'Mes derniers projets',
-    action: 'Voir tous',
+    eyebrow: 'Projets sélectionnés',
+    heading: 'Quelques réalisations',
+    action: 'Voir tous les projets',
+    assistantHeading: 'Demandez à mon IA',
+    prompts: [
+      'Parle-moi de ton meilleur projet',
+      'Quelles technologies utilises-tu ?',
+      'Comment travailles-tu ?',
+      'Quel est ton parcours ?',
+    ],
+    assistantAction: 'Discuter avec mon portfolio',
   },
-  quality: ['Rapide', 'Responsive', 'Accessible', 'SEO Friendly'],
+  quality: [
+    { label: 'Rapide', detail: 'Sites optimisés pour la performance.' },
+    { label: 'Responsive', detail: 'Expérience parfaite sur tous les écrans.' },
+    { label: 'Accessible', detail: 'Des interfaces inclusives et modernes.' },
+    { label: 'SEO Friendly', detail: 'Optimisées pour le référencement.' },
+  ],
 } as const
