@@ -2,11 +2,7 @@
 
 import {
   ArrowRight,
-  Atom,
-  Braces,
-  Code2,
   GitBranchPlus,
-  Hexagon,
   MapPin,
   MessageCircle,
   Rocket,
@@ -28,6 +24,7 @@ import {
 
 import { HOME_CONTENT } from '@/app/(site)/(home)/_content'
 import { EASE_OUT_QUINT, Stagger, StaggerItem } from '@/components/motion/primitives'
+import { TechnologyIcon } from '@/components/technology-icon'
 import { useAssistant } from '@/hooks/use-assistant'
 
 import { AvailabilityBadge } from './availability-badge'
@@ -36,8 +33,6 @@ import type { HomeAvailability } from './types'
 
 const { chat, hero, profile, skills: skillsContent, stats } = HOME_CONTENT
 const FOLLOW_TAIL_THRESHOLD = 80
-const SKILL_ICONS = [Atom, Hexagon, Braces, Code2, Sparkles] as const
-
 export interface HeroChatHandle {
   ask: (question?: string) => void
 }
@@ -136,15 +131,12 @@ export function Hero({
 
         <StaggerItem variant="rise-visible">
           <ul className="home-tech-list" aria-label="Technologies principales">
-            {shownSkills.slice(0, 4).map((skill, index) => {
-              const Icon = SKILL_ICONS[index]
-              return (
-                <li key={skill}>
-                  <Icon size={15} aria-hidden="true" />
-                  {skill}
-                </li>
-              )
-            })}
+            {shownSkills.slice(0, 4).map((skill) => (
+              <li key={skill}>
+                <TechnologyIcon name={skill} size={15} />
+                {skill}
+              </li>
+            ))}
           </ul>
         </StaggerItem>
 
@@ -198,14 +190,11 @@ export function Hero({
           <article className="home-skills-card">
             <h2>{skillsContent.heading}</h2>
             <ul>
-              {shownSkills.map((skill, index) => {
-                const Icon = SKILL_ICONS[index]
-                return (
-                  <li key={skill}>
-                    <Icon size={15} aria-hidden="true" /> {skill}
-                  </li>
-                )
-              })}
+              {shownSkills.map((skill) => (
+                <li key={skill}>
+                  <TechnologyIcon name={skill} size={15} /> {skill}
+                </li>
+              ))}
             </ul>
           </article>
         </div>

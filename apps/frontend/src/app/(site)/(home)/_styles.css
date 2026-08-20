@@ -955,7 +955,12 @@
 }
 .home-skills-card li svg {
   flex: 0 0 auto;
-  color: var(--accent);
+}
+.home-skills-card li .technology-brand-icon {
+  color: var(--technology-brand);
+}
+[data-theme='dark'] .home-skills-card li .technology-brand-icon[data-monochrome='true'] {
+  color: #f4f6fb;
 }
 .home-chat-card {
   display: flex;
@@ -1085,6 +1090,21 @@
   place-items: center;
   color: color-mix(in srgb, var(--text) 82%, var(--accent));
 }
+.home-rail-icon.is-avatar {
+  width: 50px;
+  height: 58px;
+  align-self: end;
+  overflow: hidden;
+}
+.home-rail-icon.is-avatar img {
+  display: block;
+  width: 54px;
+  height: 54px;
+  object-fit: contain;
+  object-position: center bottom;
+  filter: drop-shadow(0 5px 7px color-mix(in srgb, var(--text) 14%, transparent));
+  transform: translateY(4px);
+}
 .home-rail-item.is-active .home-rail-icon,
 .home-rail-item.is-active strong {
   color: var(--accent);
@@ -1206,6 +1226,7 @@
   padding-top: 71px;
 }
 .home-project-assistant {
+  position: relative;
   display: flex;
   min-height: 358px;
   height: 100%;
@@ -1255,9 +1276,54 @@
 .home-project-assistant-cta {
   min-height: 50px;
   margin-top: auto;
+  padding-right: 52px;
   border-color: color-mix(in srgb, var(--accent) 52%, var(--line));
   color: var(--accent-on-soft);
   font-weight: 700;
+}
+.home-project-helper {
+  position: absolute;
+  z-index: 3;
+  right: -26px;
+  bottom: -16px;
+  width: 92px;
+  pointer-events: none;
+}
+.home-project-helper img {
+  display: block;
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 8px 12px color-mix(in srgb, var(--text) 16%, transparent));
+}
+.home-project-helper span {
+  position: absolute;
+  z-index: 2;
+  top: -39px;
+  right: 57px;
+  width: 84px;
+  padding: 8px 9px;
+  border: 1px solid color-mix(in srgb, var(--text) 34%, var(--line));
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--text);
+  font-family: var(--font-handwriting), cursive;
+  font-size: 8px;
+  font-style: italic;
+  line-height: 1.25;
+  text-align: center;
+  transform: rotate(-5deg);
+}
+.home-project-helper span::after {
+  position: absolute;
+  right: 5px;
+  bottom: -7px;
+  width: 12px;
+  height: 12px;
+  border-right: 1px solid color-mix(in srgb, var(--text) 34%, var(--line));
+  border-bottom: 1px solid color-mix(in srgb, var(--text) 34%, var(--line));
+  background: var(--surface);
+  content: '';
+  transform: rotate(35deg) skew(10deg);
 }
 .quality-strip {
   padding-bottom: 26px;

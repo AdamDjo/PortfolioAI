@@ -1,4 +1,5 @@
 import { ArrowRight, Sparkles } from 'lucide-react'
+import Image from 'next/image'
 import Link from 'next/link'
 
 import { HOME_CONTENT } from '@/app/(site)/(home)/_content'
@@ -83,6 +84,16 @@ export function ProjectsTeaser({ projects, onAskQuestion }: ProjectsTeaserProps)
           >
             {copy.assistantAction} <ArrowRight size={16} aria-hidden="true" />
           </button>
+          <div className="home-project-helper" aria-hidden="true">
+            <span>Je suis là pour aider&nbsp;!</span>
+            <Image
+              src="/images/adem-assistant-helper.webp"
+              alt=""
+              width={320}
+              height={320}
+              sizes="92px"
+            />
+          </div>
         </aside>
       </Reveal>
     </section>

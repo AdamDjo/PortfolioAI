@@ -4,6 +4,7 @@ import { Bot, Database, LayoutTemplate, Palette, ShieldCheck, Sparkles } from 'l
 import { m } from 'motion/react'
 
 import { riseItem, staggerContainer } from '@/components/motion/primitives'
+import { TechnologyIcon } from '@/components/technology-icon'
 
 import type { SkillGroupView } from '@/lib/site-content'
 import type { LucideIcon } from 'lucide-react'
@@ -76,7 +77,10 @@ export function SkillGroups({ groups, onMount }: SkillGroupsProps) {
             <dd>
               <ul className="skill-chips">
                 {group.items.map((item) => (
-                  <li key={item}>{item}</li>
+                  <li key={item}>
+                    <TechnologyIcon name={item} size={14} />
+                    {item}
+                  </li>
                 ))}
               </ul>
             </dd>

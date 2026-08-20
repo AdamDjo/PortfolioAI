@@ -1,12 +1,13 @@
 'use client'
 
-import { Bot, FileText, FolderOpen, Route } from 'lucide-react'
+import { FileText, FolderOpen, Route } from 'lucide-react'
+import Image from 'next/image'
 import Link from 'next/link'
 
 import { HOME_CONTENT } from '@/app/(site)/(home)/_content'
 
 const RAIL_ITEMS = [
-  { ...HOME_CONTENT.rail[0], href: null, icon: Bot },
+  { ...HOME_CONTENT.rail[0], href: null, icon: null },
   { ...HOME_CONTENT.rail[1], href: '/projets', icon: FolderOpen },
   { ...HOME_CONTENT.rail[2], href: '/a-propos', icon: Route },
   { ...HOME_CONTENT.rail[3], href: '/contact', icon: FileText },
@@ -19,8 +20,18 @@ export function HomeRail({ onStartChat }: { onStartChat: () => void }) {
         const Icon = item.icon
         const content = (
           <>
-            <span className="home-rail-icon" aria-hidden="true">
-              <Icon size={30} strokeWidth={1.45} />
+            <span className={`home-rail-icon${index === 0 ? ' is-avatar' : ''}`} aria-hidden="true">
+              {Icon ? (
+                <Icon size={30} strokeWidth={1.45} />
+              ) : (
+                <Image
+                  src="/images/adem-assistant-avatar.webp"
+                  alt=""
+                  width={256}
+                  height={256}
+                  sizes="48px"
+                />
+              )}
             </span>
             <span>
               <strong>{item.title}</strong>
