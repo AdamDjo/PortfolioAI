@@ -5,6 +5,7 @@ import * as migration_20260817_124153_real_content from './20260817_124153_real_
 import * as migration_20260817_155900_display_name from './20260817_155900_display_name'
 import * as migration_20260818_135519_availability from './20260818_135519_availability'
 import * as migration_20260818_141706_assistant from './20260818_141706_assistant'
+import * as migration_20260824_203553_ai_tools from './20260824_203553_ai_tools'
 
 export const migrations = [
   {
@@ -41,5 +42,10 @@ export const migrations = [
     up: migration_20260818_141706_assistant.up,
     down: migration_20260818_141706_assistant.down,
     name: '20260818_141706_assistant',
+  },
+  {
+    up: migration_20260824_203553_ai_tools.up,
+    down: migration_20260824_203553_ai_tools.down,
+    name: '20260824_203553_ai_tools',
   },
 ]

@@ -10,6 +10,7 @@ const NAV_ITEMS = [
   { href: '/', label: 'Accueil' },
   { href: '/projets', label: 'Projets' },
   { href: '/veille', label: 'Veille' },
+  { href: '/outils-ia', label: 'Outils IA' },
   { href: '/a-propos', label: 'À propos' },
   { href: '/contact', label: 'Contact' },
 ]

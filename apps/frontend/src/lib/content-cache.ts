@@ -29,6 +29,7 @@ const CONTENT_TAGS = {
   experiences: 'content:experiences',
   projects: 'content:projects',
   bookmarks: 'content:bookmarks',
+  aiTools: 'content:ai-tools',
   aiKnowledge: 'content:ai-knowledge',
   assistant: 'content:assistant',
 } as const
@@ -53,6 +54,7 @@ const PAGES_BY_TAG: Record<ContentTag, { path: string; type?: 'layout' | 'page' 
   [CONTENT_TAGS.experiences]: [{ path: '/a-propos' }],
   [CONTENT_TAGS.projects]: [{ path: '/' }, { path: '/projets' }],
   [CONTENT_TAGS.bookmarks]: [{ path: '/' }, { path: '/veille' }],
+  [CONTENT_TAGS.aiTools]: [{ path: '/outils-ia' }],
   // The assistant answers from a route handler, so no page holds this content:
   // purging the cache entry is enough, there is no HTML to replace.
   [CONTENT_TAGS.aiKnowledge]: [],
