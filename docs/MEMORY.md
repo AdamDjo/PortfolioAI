@@ -24,6 +24,9 @@
   `/mentions-legales` alimentées depuis la base et prérendues.
 - Cache serveur centralisé dans `src/lib/content-cache.ts`, invalidé à la
   publication par les hooks Payload. Plus aucun `revalidate` dans les pages.
+- Administration Payload durcie (issue #4) : `PAYLOAD_SECRET` et `DATABASE_URI`
+  exigés au chargement, politique de verrouillage explicite sur `users`, et
+  réinitialisation du mot de passe branchée sur le transport Lumail existant.
 - Code hérité de l'ère Express retiré : `lib/api.ts`, `lib/query-client.ts`,
   `providers.tsx`, `data/portfolio.ts`, pages `/liens` et `/demo`. React Query,
   Axios et quatre autres dépendances désinstallées.
@@ -77,6 +80,19 @@
   (`src/lib/open-graph-hook.ts`), paramétré par les noms de champs.
 - Toute URL est canonicalisée avant enregistrement (`src/lib/canonical-url.ts`),
   sinon l'index unique sur `url` laisserait passer des doublons.
+- **Aucune variable d'environnement critique ne prend de valeur de repli.**
+  `process.env.X ?? ''` laissait Payload démarrer avec un secret vide, donc des
+  cookies de session et des jetons de réinitialisation signés avec une valeur
+  devinable. `src/lib/require-env.ts` échoue au chargement en nommant la
+  variable ; une valeur blanche compte comme absente.
+- Payload n'a pas de transport email : sans adaptateur, `forgot-password`
+  répond « envoyé » et ne délivre rien. `src/lib/email/payload.ts` branche
+  l'expéditeur Lumail déjà utilisé par le formulaire de contact. Le corps part
+  en markdown, donc le gabarit de `src/cms/emails/reset-password.ts` écrit du
+  markdown dans le champ que Payload nomme `html`.
+- `resolveEmailSender` (identifiants seuls) et `resolveEmailProvider`
+  (identifiants + `CONTACT_TO_EMAIL`) sont distincts : la récupération de compte
+  écrit au compte concerné, le formulaire à une boîte fixe.
 - Prettier et ESLint doivent être lancés depuis le workspace
   (`pnpm --filter @portfolio/frontend exec …`), pas depuis la racine.
 - Un écran `500` sur toutes les routes `/api/*` et `/admin` après plusieurs
