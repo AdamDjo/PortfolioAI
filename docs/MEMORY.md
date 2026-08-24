@@ -24,6 +24,12 @@
   `/mentions-legales` alimentées depuis la base et prérendues.
 - Cache serveur centralisé dans `src/lib/content-cache.ts`, invalidé à la
   publication par les hooks Payload. Plus aucun `revalidate` dans les pages.
+- Chat protégé contre les abus (issue #10, 1er lot) : limiteur de débit à trois
+  paliers (rafale / minute / jour) dans `src/lib/ai/rate-limit.ts`, empreinte IP
+  salée et rotée quotidiennement dans `src/lib/ai/client-fingerprint.ts`. Le 429
+  part avant `resolveProvider`/`buildContext`, donc sans consommer de quota Groq,
+  et renvoie vers `/contact`. Rétention des conversations, feedback et page de
+  confidentialité restent à faire (2e lot de #10).
 - Code hérité de l'ère Express retiré : `lib/api.ts`, `lib/query-client.ts`,
   `providers.tsx`, `data/portfolio.ts`, pages `/liens` et `/demo`. React Query,
   Axios et quatre autres dépendances désinstallées.
@@ -77,6 +83,15 @@
   (`src/lib/open-graph-hook.ts`), paramétré par les noms de champs.
 - Toute URL est canonicalisée avant enregistrement (`src/lib/canonical-url.ts`),
   sinon l'index unique sur `url` laisserait passer des doublons.
+- Limiteur du chat : compteurs en mémoire (`Map` de module), fenêtre glissante,
+  pas de datastore — assumé, l'app tourne en une poignée d'instances et le
+  limiteur vit derrière une interface étroite (bascule Redis = un seul fichier).
+  Les compteurs sont remis à zéro au redéploiement ; le quota du fournisseur
+  reste le vrai plafond. L'empreinte combine `CHAT_FINGERPRINT_SALT` (secret
+  d'environnement) et la date UTC : rotation quotidienne sans manipuler la
+  variable. Sans sel, `computeFingerprint` renvoie `null` et le limiteur reste
+  éteint plutôt que de hacher une valeur réversible ou de regrouper tout le
+  monde. Aucune IP brute n'est jamais stockée ni journalisée.
 - Prettier et ESLint doivent être lancés depuis le workspace
   (`pnpm --filter @portfolio/frontend exec …`), pas depuis la racine.
 - Un écran `500` sur toutes les routes `/api/*` et `/admin` après plusieurs

@@ -1,6 +1,9 @@
+import { headers } from 'next/headers'
 import { z } from 'zod'
 
 import { ProviderError, resolveProvider } from '@/lib/ai'
+import { computeFingerprint } from '@/lib/ai/client-fingerprint'
+import { checkRateLimit } from '@/lib/ai/rate-limit'
 import { buildContext, getAssistantConfig } from '@/lib/assistant-context'
 
 import type { ChatMessage } from '@/lib/ai'
@@ -54,6 +57,16 @@ const streamHeaders = {
 } as const
 
 /**
+ * Shown when a caller has spent their allowance.
+ *
+ * It reads as the assistant's own reply and sends the visitor to the contact
+ * page, so a real person who happened to hit the ceiling still has a way through
+ * rather than a dead error.
+ */
+const RATE_LIMITED_MESSAGE =
+  'Vous avez posé beaucoup de questions d’affilée. Laissez souffler l’assistant une minute, ou écrivez-moi directement depuis la page /contact.'
+
+/**
  * Answers with the editable fallback and HTTP 200.
  *
  * 200 rather than 503 because this *is* the answer as far as the visitor is
@@ -74,6 +87,19 @@ export async function POST(request: Request): Promise<Response> {
   const parsed = requestSchema.safeParse(payload)
   if (!parsed.success) {
     return Response.json({ error: 'Question invalide' }, { status: 400 })
+  }
+
+  // Throttle before touching the provider: a refused caller must cost no token
+  // and reach no context build. The fingerprint is anonymous and per-day; when
+  // no salt is configured it is null, and the limiter stays off rather than
+  // bucketing everyone together — see computeFingerprint.
+  const fingerprint = computeFingerprint(await headers())
+  if (fingerprint) {
+    const verdict = checkRateLimit(fingerprint)
+    if (!verdict.allowed) {
+      console.warn(`[assistant] rate-limited: ${verdict.reason}`)
+      return new Response(RATE_LIMITED_MESSAGE, { status: 429, headers: streamHeaders })
+    }
   }
 
   const settings = await getAssistantConfig()
