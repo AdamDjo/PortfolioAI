@@ -17,6 +17,36 @@
 .footer-links a:hover {
   color: var(--text);
 }
+/* Support button: reads as a button without shouting, so the footer stays a
+   footer and not a call to action. */
+.support-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 6px 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: var(--muted);
+  transition:
+    transform 180ms ease,
+    color 180ms ease,
+    background 180ms ease,
+    border-color 180ms ease;
+}
+.support-link:hover {
+  color: var(--text);
+  background: var(--surface-2);
+  border-color: color-mix(in srgb, var(--accent) 40%, var(--line));
+  transform: translateY(-1px);
+}
+@media (prefers-reduced-motion: reduce) {
+  .support-link {
+    transition: none;
+  }
+  .support-link:hover {
+    transform: none;
+  }
+}
 
 .page {
   padding-block: 76px 110px;

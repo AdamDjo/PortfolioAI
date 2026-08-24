@@ -114,7 +114,7 @@ Une question sur un usage particulier ? Ouvrez une issue, on en discute.
 Si ce dépôt vous a fait gagner du temps ou appris quelque chose, vous pouvez soutenir le travail :
 
 - [GitHub Sponsors](https://github.com/sponsors/AdamDjo)
-- [Buy Me a Coffee](https://www.buymeacoffee.com/adembenmessaoud)
+- [Buy Me a Coffee](https://www.buymeacoffee.com/adamdjo)
 
 Vous voulez de l'aide pour le déployer chez vous ? Écrivez-moi, c'est le genre de chose que je fais volontiers.
 
