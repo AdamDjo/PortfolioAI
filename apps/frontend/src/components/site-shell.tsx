@@ -1,4 +1,4 @@
-import { Coffee, Github, Linkedin } from 'lucide-react'
+import { Github, Linkedin } from 'lucide-react'
 import Link from 'next/link'
 
 import { AmbientField } from '@/components/motion/ambient-field'
@@ -8,10 +8,6 @@ import { ThemeToggle } from '@/components/theme-toggle'
 import { getIdentity } from '@/lib/site-content'
 
 import type { ReactNode } from 'react'
-
-// The project is source-available: the code is free to read and run, and this
-// is the one place the site invites people to support the work.
-const BUY_ME_A_COFFEE_URL = 'https://www.buymeacoffee.com/adamdjo'
 
 /**
  * Header, footer and page frame shared by every route.
@@ -81,15 +77,6 @@ export async function SiteShell({ children }: { children: ReactNode }) {
           <div className="footer-links">
             <Link href="/contact">Me contacter</Link>
             <Link href="/mentions-legales">Mentions légales</Link>
-            <a
-              className="support-link"
-              href={BUY_ME_A_COFFEE_URL}
-              rel="noreferrer noopener"
-              target="_blank"
-            >
-              <Coffee size={14} strokeWidth={1.7} aria-hidden="true" />
-              Offrir un café
-            </a>
           </div>
         </div>
       </footer>

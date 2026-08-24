@@ -109,15 +109,6 @@ Les détails sont dans [LICENSE](LICENSE). Les versions publiées avant ce chang
 
 Une question sur un usage particulier ? Ouvrez une issue, on en discute.
 
-## Soutenir le projet
-
-Si ce dépôt vous a fait gagner du temps ou appris quelque chose, vous pouvez soutenir le travail :
-
-- [GitHub Sponsors](https://github.com/sponsors/AdamDjo)
-- [Buy Me a Coffee](https://www.buymeacoffee.com/adamdjo)
-
-Vous voulez de l'aide pour le déployer chez vous ? Écrivez-moi, c'est le genre de chose que je fais volontiers.
-
 ## Contribuer
 
 Les issues et PRs sont bienvenues — voir [CONTRIBUTING.md](CONTRIBUTING.md). Pour les vulnérabilités, suivez [SECURITY.md](SECURITY.md) plutôt que d'ouvrir une issue publique.
