@@ -1,0 +1,165 @@
+.tools-filters {
+  flex-wrap: wrap;
+  margin-bottom: var(--spacing-lg);
+}
+.tools-filters button {
+  padding: var(--spacing-2xs) 13px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--muted);
+  font-size: var(--text-2xs);
+  cursor: pointer;
+  transition:
+    color var(--duration-fast) ease,
+    border-color var(--duration-fast) ease,
+    background-color var(--duration-fast) ease;
+}
+.tools-filters button:hover {
+  border-color: var(--accent);
+  color: var(--text);
+}
+.tools-filters button.is-active {
+  border-color: var(--accent-solid);
+  background: var(--accent-solid);
+  color: white;
+}
+
+/*
+ * Wider minimum than the veille grid: these cards hold a command line, and a
+ * narrower column would wrap almost every snippet.
+ */
+.tools-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: var(--spacing-md);
+}
+.tool-card {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-sm);
+  padding: var(--spacing-md);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  transition:
+    border-color var(--duration-base) ease,
+    box-shadow var(--duration-base) ease;
+}
+.tool-card:hover {
+  border-color: var(--accent);
+  box-shadow: 0 14px 34px rgb(18 24 40 / 10%);
+}
+.tool-card-head h2 {
+  margin: var(--spacing-2xs) 0 0;
+  font-size: var(--text-base);
+}
+.tool-card-head p {
+  margin: var(--spacing-2xs) 0 0;
+  color: var(--muted);
+  font-size: var(--text-xs);
+  line-height: 1.55;
+}
+
+.tool-kind {
+  display: inline-block;
+  padding: 3px var(--spacing-xs);
+  border-radius: var(--radius-full);
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+.tool-kind-skill {
+  background: color-mix(in srgb, var(--accent) 14%, var(--bg));
+  color: var(--accent-solid);
+}
+.tool-kind-plugin {
+  background: color-mix(in srgb, #3ecf8e 16%, var(--bg));
+  color: #17795a;
+}
+.tool-kind-mcp {
+  background: color-mix(in srgb, #6d8cff 16%, var(--bg));
+  color: #3355c8;
+}
+
+.tool-snippet {
+  margin-top: auto;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-md);
+  background: var(--surface-2);
+  overflow: hidden;
+}
+.tool-snippet-head {
+  display: flex;
+  gap: var(--spacing-xs);
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--spacing-2xs) var(--spacing-xs) var(--spacing-2xs) var(--spacing-sm);
+  border-bottom: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 11px;
+}
+.tool-snippet pre {
+  margin: 0;
+  padding: var(--spacing-sm);
+  overflow-x: auto;
+  color: var(--text);
+  font-size: var(--text-2xs);
+  line-height: 1.5;
+  /*
+   * One-line snippets keep their own line and scroll sideways rather than wrap,
+   * so a command stays readable as a single unit. Config blocks keep the line
+   * breaks they were written with.
+   */
+  white-space: pre;
+}
+.tool-snippet pre.is-block {
+  max-height: 220px;
+  overflow-y: auto;
+}
+
+.copy-button {
+  display: inline-flex;
+  flex-shrink: 0;
+  gap: var(--spacing-3xs);
+  align-items: center;
+  padding: var(--spacing-3xs) var(--spacing-xs);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-xs);
+  background: var(--surface);
+  color: var(--muted);
+  font-size: 11px;
+  cursor: pointer;
+  transition:
+    color var(--duration-fast) ease,
+    border-color var(--duration-fast) ease;
+}
+.copy-button:hover {
+  border-color: var(--accent);
+  color: var(--text);
+}
+.copy-button.is-done {
+  border-color: #3ecf8e;
+  color: #17795a;
+}
+.copy-button.is-failed {
+  border-color: #e5484d;
+  color: #e5484d;
+}
+
+.tool-link {
+  color: var(--muted);
+  font-size: var(--text-2xs);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.tool-link:hover {
+  color: var(--text);
+}
+
+.tools-empty {
+  padding: var(--spacing-xl) 0;
+  color: var(--muted);
+  font-size: var(--text-sm);
+  text-align: center;
+}

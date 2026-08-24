@@ -208,5 +208,6 @@ img {
 @import '../styles/responsive.css';
 @import '../styles/motion.css';
 @import './(site)/veille/_styles.css';
+@import './(site)/outils-ia/_styles.css';
 @import './(site)/a-propos/_styles.css';
 @import '../styles/overrides.css';

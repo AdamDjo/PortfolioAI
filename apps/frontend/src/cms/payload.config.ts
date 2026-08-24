@@ -7,6 +7,7 @@ import { buildConfig } from 'payload'
 import sharp from 'sharp'
 
 import { AIKnowledge } from './collections/ai-knowledge'
+import { AITools } from './collections/ai-tools'
 import { Bookmarks } from './collections/bookmarks'
 import { Experiences } from './collections/experiences'
 import { Media } from './collections/media'
@@ -28,7 +29,7 @@ export default buildConfig({
       titleSuffix: '— Adem',
     },
   },
-  collections: [Users, Media, Projects, Experiences, Tags, Bookmarks, AIKnowledge],
+  collections: [Users, Media, Projects, Experiences, Tags, Bookmarks, AIKnowledge, AITools],
   globals: [SiteIdentity, Availability, Profile, AssistantSettings],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET ?? '',

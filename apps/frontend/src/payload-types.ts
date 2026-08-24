@@ -74,6 +74,7 @@ export interface Config {
     tags: Tag
     bookmarks: Bookmark
     'ai-knowledge': AiKnowledge
+    'ai-tools': AiTool
     'payload-kv': PayloadKv
     'payload-locked-documents': PayloadLockedDocument
     'payload-preferences': PayloadPreference
@@ -88,6 +89,7 @@ export interface Config {
     tags: TagsSelect<false> | TagsSelect<true>
     bookmarks: BookmarksSelect<false> | BookmarksSelect<true>
     'ai-knowledge': AiKnowledgeSelect<false> | AiKnowledgeSelect<true>
+    'ai-tools': AiToolsSelect<false> | AiToolsSelect<true>
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>
     'payload-locked-documents':
       | PayloadLockedDocumentsSelect<false>
@@ -350,6 +352,38 @@ export interface AiKnowledge {
   createdAt: string
 }
 /**
+ * Skills, plugins et serveurs MCP affichés sur /outils-ia.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ai-tools".
+ */
+export interface AiTool {
+  id: number
+  name: string
+  /**
+   * Décide du filtre sous lequel l’outil apparaît.
+   */
+  kind: 'skill' | 'plugin' | 'mcp'
+  /**
+   * Une ou deux phrases : à quoi sert l’outil, pas comment il marche.
+   */
+  description?: string | null
+  /**
+   * Commande d’installation pour un skill ou un plugin, bloc de configuration pour un MCP. C’est le contenu du bouton « Copier ».
+   */
+  snippet: string
+  /**
+   * Dépôt ou documentation. Affiché en lien discret sur la carte.
+   */
+  url?: string | null
+  /**
+   * Décochez pour retirer l’outil du site sans le supprimer.
+   */
+  active?: boolean | null
+  updatedAt: string
+  createdAt: string
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
@@ -400,6 +434,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'ai-knowledge'
         value: number | AiKnowledge
+      } | null)
+    | ({
+        relationTo: 'ai-tools'
+        value: number | AiTool
       } | null)
   globalSlug?: string | null
   user: {
@@ -558,6 +596,20 @@ export interface AiKnowledgeSelect<T extends boolean = true> {
   answer?: T
   category?: T
   published?: T
+  updatedAt?: T
+  createdAt?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ai-tools_select".
+ */
+export interface AiToolsSelect<T extends boolean = true> {
+  name?: T
+  kind?: T
+  description?: T
+  snippet?: T
+  url?: T
+  active?: T
   updatedAt?: T
   createdAt?: T
 }
