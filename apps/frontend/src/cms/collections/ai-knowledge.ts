@@ -16,6 +16,12 @@ const { afterChange, afterDelete } = revalidateCollection(CONTENT_TAGS.aiKnowled
  *
  * `published` gates an entry without deleting it: a half-written answer stays in
  * `/admin` while remaining invisible to the model.
+ *
+ * Security note: `read` being admin-only protects the API, not the content. Every
+ * published entry is fed to the assistant, and a visitor can coax a model into
+ * repeating its context (prompt injection). So treat this collection as readable
+ * by any visitor through the chat: put here only what Adem would say out loud,
+ * never a private note, an address, or anything that must not leave the site.
  */
 const AIKnowledge: CollectionConfig = {
   slug: 'ai-knowledge',

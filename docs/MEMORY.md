@@ -27,6 +27,13 @@
 - Administration Payload durcie (issue #4) : `PAYLOAD_SECRET` et `DATABASE_URI`
   exigés au chargement, politique de verrouillage explicite sur `users`, et
   réinitialisation du mot de passe branchée sur le transport Lumail existant.
+- Surface d'attaque durcie (issue #66, lot indépendant du déploiement) :
+  en-têtes de sécurité + CSP dans `next.config.ts` (CSP volontairement permissive
+  sur script/style, mais `frame-ancestors 'none'`, `object-src`, `base-uri`,
+  `form-action` verrouillés), suivi de redirection revalidé dans le hook Open
+  Graph (plus de bypass SSRF par `302` vers une adresse interne), et note
+  d'injection de prompt sur `ai-knowledge`. Restent liés au proxy/prod : confiance
+  `X-Forwarded-For` (#66.2) et config `cors`/`csrf`/cookies Payload (#66.4).
 - Chat protégé contre les abus (issue #10, 1er lot) : limiteur de débit à trois
   paliers (rafale / minute / jour) dans `src/lib/ai/rate-limit.ts`, empreinte IP
   salée et rotée quotidiennement dans `src/lib/ai/client-fingerprint.ts`. Le 429
@@ -105,6 +112,16 @@
 - `resolveEmailSender` (identifiants seuls) et `resolveEmailProvider`
   (identifiants + `CONTACT_TO_EMAIL`) sont distincts : la récupération de compte
   écrit au compte concerné, le formulaire à une boîte fixe.
+- CSP : `script-src`/`style-src` gardent `'unsafe-inline'` (+`'unsafe-eval'`) car
+  Next injecte des scripts inline et l'admin Payload des styles inline, sans nonce
+  sans middleware. `img-src` autorise `https:` parce que les previews de veille,
+  favicons et covers projets sont rendus `unoptimized` (donc chargés depuis la
+  source). Fonts auto-hébergées (`next/font`), Groq/Lumail côté serveur, Vercel
+  Analytics same-origin : aucun hôte tiers requis. Resserrer `script-src` en
+  politique à nonce est un suivi de #66.
+- Le hook Open Graph suit les redirections à la main (`redirect: 'manual'`,
+  `MAX_REDIRECTS`) et repasse chaque `Location` par `resolveSafeUrl` : `fetch`
+  suivrait sinon une redirection vers une IP interne sans re-vérifier.
 - Limiteur du chat : compteurs en mémoire (`Map` de module), fenêtre glissante,
   pas de datastore — assumé, l'app tourne en une poignée d'instances et le
   limiteur vit derrière une interface étroite (bascule Redis = un seul fichier).
