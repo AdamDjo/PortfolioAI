@@ -156,12 +156,13 @@ export function Hero({
         ) : null}
       </Stagger>
 
-      <m.div
-        className="home-mascot"
-        initial={{ opacity: 0, y: 28, scale: 0.96 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        transition={{ duration: 0.75, delay: 0.12, ease: EASE_OUT_QUINT }}
-      >
+      {/*
+        The mascot is the hero's LCP element, so its entrance is CSS, not Framer
+        Motion: a JS-driven fade kept the image at opacity 0 until hydration,
+        pushing LCP past 4s. The CSS animation only moves it (opacity stays 1),
+        so the browser paints it on the first frame. See home-mascot in _styles.
+      */}
+      <div className="home-mascot">
         <span className="home-mascot-doodle doodle-chat" aria-hidden="true">
           <MessageCircle size={28} />
         </span>
@@ -176,7 +177,7 @@ export function Hero({
           sizes="(max-width: 760px) 70vw, 300px"
           priority
         />
-      </m.div>
+      </div>
 
       <aside className="home-hero-aside" aria-label="Profil, compétences et assistant">
         <div className="home-mini-grid">

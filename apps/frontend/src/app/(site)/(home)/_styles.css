@@ -842,6 +842,25 @@
   grid-column: 2;
   grid-row: 1;
   margin-inline: -30px -18px;
+  /*
+   * Transform-only entrance, opacity untouched: the mascot is the LCP element,
+   * so it must paint on the first frame. A CSS animation runs without waiting
+   * for JS, unlike the Framer Motion fade it replaces.
+   */
+  animation: home-mascot-enter 0.75s var(--ease-out-quint, ease-out) 0.12s both;
+}
+@keyframes home-mascot-enter {
+  from {
+    transform: translateY(28px) scale(0.96);
+  }
+  to {
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .home-mascot {
+    animation: none;
+  }
 }
 .home-mascot::before {
   content: '';
