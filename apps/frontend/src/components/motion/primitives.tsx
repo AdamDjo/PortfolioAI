@@ -31,16 +31,16 @@ export const riseItem: Variants = {
 }
 
 /**
- * Entrance for content rendered above the fold. Identical to `riseItem` but
- * without the opacity fade: the server renders `hidden` inline, so an element
- * starting at opacity 0 is not painted until hydration runs, which defers LCP
- * on slow devices. Motion here enriches an already-visible element.
+ * Entrance for content rendered above the fold. Only a transform — no opacity
+ * fade, no blur: the server renders `hidden` inline, and an element that starts
+ * at opacity 0 (or blurred) is not counted as painted until hydration runs,
+ * which defers LCP on slow devices. A translate leaves the element fully painted
+ * from the first frame, so Motion here only enriches an already-visible element.
  */
 const riseItemVisible: Variants = {
-  hidden: { y: 26, filter: 'blur(6px)' },
+  hidden: { y: 26 },
   visible: {
     y: 0,
-    filter: 'blur(0px)',
     transition: { duration: 0.7, ease: EASE_OUT_QUINT },
   },
 }
