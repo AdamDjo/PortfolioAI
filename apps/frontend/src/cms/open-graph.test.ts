@@ -1,6 +1,6 @@
-import { describe, expect, it } from 'vitest'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 
-import { resolveSafeUrl } from './open-graph'
+import { fetchOpenGraphMetadata, resolveSafeUrl } from './open-graph'
 
 /**
  * These tests protect a security guard: `resolveSafeUrl` is what keeps a URL
@@ -56,5 +56,68 @@ describe('resolveSafeUrl', () => {
 
   it('refuse un hôte qui ne résout pas', async () => {
     expect(await resolveSafeUrl('https://hote-inexistant.invalid/')).toBeNull()
+  })
+})
+
+describe('fetchOpenGraphMetadata — suivi de redirection', () => {
+  afterEach(() => {
+    vi.unstubAllGlobals()
+  })
+
+  const redirect = (location: string): Response =>
+    new Response(null, { status: 302, headers: { location } })
+
+  const htmlPage = (html: string): Response =>
+    new Response(html, { status: 200, headers: { 'content-type': 'text/html' } })
+
+  /** Serves the queued responses in order, one per fetch call. */
+  const stubFetchQueue = (responses: Response[]) => {
+    let call = 0
+    const spy = vi.fn(() => Promise.resolve(responses[call++] ?? htmlPage('')))
+    vi.stubGlobal('fetch', spy)
+    return spy
+  }
+
+  it('lit les balises quand la cible répond directement', async () => {
+    stubFetchQueue([htmlPage('<meta property="og:title" content="Titre" />')])
+
+    const meta = await fetchOpenGraphMetadata('https://example.com/')
+    expect(meta.title).toBe('Titre')
+  })
+
+  it('suit une redirection vers une cible publique', async () => {
+    const spy = stubFetchQueue([
+      redirect('https://example.com/final'),
+      htmlPage('<meta property="og:title" content="Après redirection" />'),
+    ])
+
+    const meta = await fetchOpenGraphMetadata('https://example.com/')
+    expect(meta.title).toBe('Après redirection')
+    expect(spy).toHaveBeenCalledTimes(2)
+  })
+
+  /**
+   * The core of the SSRF fix: a public URL that redirects to the cloud metadata
+   * endpoint must not reach it. The second hop is refused by the private-range
+   * guard, so the internal address is never fetched.
+   */
+  it('refuse une redirection vers une adresse interne, sans l’atteindre', async () => {
+    const spy = stubFetchQueue([redirect('http://169.254.169.254/latest/meta-data/')])
+
+    const meta = await fetchOpenGraphMetadata('https://example.com/')
+    expect(meta).toEqual({ title: null, description: null, imageUrl: null })
+    // Only the first hop was fetched; the internal address never was.
+    expect(spy).toHaveBeenCalledTimes(1)
+  })
+
+  it('abandonne au-delà du nombre maximal de redirections', async () => {
+    const spy = stubFetchQueue(
+      Array.from({ length: 8 }, (_, i) => redirect(`https://example.com/hop-${i}`))
+    )
+
+    const meta = await fetchOpenGraphMetadata('https://example.com/')
+    expect(meta.title).toBeNull()
+    // MAX_REDIRECTS (5) hops plus the initial request, never the eighth.
+    expect(spy).toHaveBeenCalledTimes(6)
   })
 })
