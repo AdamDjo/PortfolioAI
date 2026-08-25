@@ -18,6 +18,7 @@ interface ConversationSectionProps {
   skills: string[]
   availability: HomeAvailability
   projects: HomeProject[]
+  retentionNotice: string
 }
 
 /**
@@ -37,6 +38,7 @@ export function ConversationSection({
   skills,
   availability,
   projects,
+  retentionNotice,
 }: ConversationSectionProps) {
   const chatRef = useRef<HeroChatHandle>(null)
 
@@ -53,6 +55,7 @@ export function ConversationSection({
         projectCount={projectCount}
         skills={skills}
         availability={availability}
+        retentionNotice={retentionNotice}
         chatRef={chatRef}
       />
       <HomeRail onStartChat={startChat} />

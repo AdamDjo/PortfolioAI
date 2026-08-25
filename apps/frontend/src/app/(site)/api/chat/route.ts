@@ -5,6 +5,7 @@ import { ProviderError, resolveProvider } from '@/lib/ai'
 import { computeFingerprint } from '@/lib/ai/client-fingerprint'
 import { checkRateLimit } from '@/lib/ai/rate-limit'
 import { buildContext, getAssistantConfig } from '@/lib/assistant-context'
+import { recordExchange } from '@/lib/conversation-store'
 
 import type { ChatMessage } from '@/lib/ai'
 
@@ -33,6 +34,12 @@ const MAX_HISTORY_TURNS = 8
 
 const requestSchema = z.object({
   question: z.string().trim().min(1, 'Question vide').max(MAX_QUESTION_LENGTH),
+  /**
+   * Opaque, client-generated id that ties the turns of one conversation together
+   * when they are stored. A UUID and nothing else: it carries no identity, and
+   * validating the shape keeps a caller from writing an arbitrary key.
+   */
+  conversationId: z.uuid().optional(),
   /**
    * Prior turns, sent by the client because the server keeps no session. They are
    * capped and re-validated: this is visitor input like any other, and a caller
@@ -125,6 +132,7 @@ export async function POST(request: Request): Promise<Response> {
 
   const encoder = new TextEncoder()
   let started = false
+  let answer = ''
 
   const stream = new ReadableStream<Uint8Array>({
     async start(controller) {
@@ -135,6 +143,7 @@ export async function POST(request: Request): Promise<Response> {
           signal: request.signal,
         })) {
           started = true
+          answer += delta
           controller.enqueue(encoder.encode(delta))
         }
       } catch (error) {
@@ -154,6 +163,19 @@ export async function POST(request: Request): Promise<Response> {
         controller.enqueue(encoder.encode(notice))
       }
       controller.close()
+
+      // Stored after the stream closes so persistence never delays a token, and
+      // only when the client tracks a conversation and an answer was produced.
+      // recordExchange swallows its own errors: the answer is already delivered.
+      if (parsed.data.conversationId && answer) {
+        void recordExchange({
+          conversationId: parsed.data.conversationId,
+          fingerprint,
+          history: parsed.data.history ?? [],
+          question: parsed.data.question,
+          answer,
+        })
+      }
     },
   })
 

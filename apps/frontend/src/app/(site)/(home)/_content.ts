@@ -21,6 +21,11 @@ export const HOME_CONTENT = {
     inputLabel: 'Posez votre question',
     inputPlaceholder: 'Posez votre question…',
     submitLabel: 'Envoyer',
+    feedbackPrompt: 'Cette réponse vous a-t-elle aidé ?',
+    feedbackUseful: 'Réponse utile',
+    feedbackNotUseful: 'Réponse pas utile',
+    feedbackThanks: 'Merci pour votre retour.',
+    privacyLink: 'En savoir plus',
   },
   profile: {
     heading: 'Profil',

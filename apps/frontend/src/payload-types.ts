@@ -75,6 +75,7 @@ export interface Config {
     bookmarks: Bookmark
     'ai-knowledge': AiKnowledge
     'ai-tools': AiTool
+    conversations: Conversation
     'payload-kv': PayloadKv
     'payload-locked-documents': PayloadLockedDocument
     'payload-preferences': PayloadPreference
@@ -90,6 +91,7 @@ export interface Config {
     bookmarks: BookmarksSelect<false> | BookmarksSelect<true>
     'ai-knowledge': AiKnowledgeSelect<false> | AiKnowledgeSelect<true>
     'ai-tools': AiToolsSelect<false> | AiToolsSelect<true>
+    conversations: ConversationsSelect<false> | ConversationsSelect<true>
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>
     'payload-locked-documents':
       | PayloadLockedDocumentsSelect<false>
@@ -384,6 +386,41 @@ export interface AiTool {
   createdAt: string
 }
 /**
+ * Échanges anonymisés avec l’assistant, conservés 30 jours puis supprimés automatiquement.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "conversations".
+ */
+export interface Conversation {
+  id: number
+  /**
+   * Identifiant opaque généré par le client, sans lien avec une identité.
+   */
+  conversationId: string
+  /**
+   * Empreinte anonyme, salée et changée chaque jour. Ce n’est pas une adresse IP.
+   */
+  fingerprint?: string | null
+  /**
+   * Les tours de la conversation, dans l’ordre.
+   */
+  transcript?:
+    | {
+        [k: string]: unknown
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null
+  /**
+   * Retour laissé sur la réponse, quand le visiteur en donne un.
+   */
+  feedback?: ('useful' | 'not_useful') | null
+  updatedAt: string
+  createdAt: string
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
@@ -438,6 +475,10 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'ai-tools'
         value: number | AiTool
+      } | null)
+    | ({
+        relationTo: 'conversations'
+        value: number | Conversation
       } | null)
   globalSlug?: string | null
   user: {
@@ -615,6 +656,18 @@ export interface AiToolsSelect<T extends boolean = true> {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "conversations_select".
+ */
+export interface ConversationsSelect<T extends boolean = true> {
+  conversationId?: T
+  fingerprint?: T
+  transcript?: T
+  feedback?: T
+  updatedAt?: T
+  createdAt?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv_select".
  */
 export interface PayloadKvSelect<T extends boolean = true> {
@@ -779,6 +832,10 @@ export interface AssistantSetting {
    * Affiché en cas de panne du fournisseur, de quota épuisé ou d’assistant désactivé.
    */
   unavailableMessage: string
+  /**
+   * Affiché sous le champ du chat, avant que le visiteur écrive. La page de confidentialité y est liée automatiquement.
+   */
+  retentionNotice: string
   updatedAt?: string | null
   createdAt?: string | null
 }
@@ -860,6 +917,7 @@ export interface AssistantSettingsSelect<T extends boolean = true> {
   systemPrompt?: T
   model?: T
   unavailableMessage?: T
+  retentionNotice?: T
   updatedAt?: T
   createdAt?: T
   globalType?: T

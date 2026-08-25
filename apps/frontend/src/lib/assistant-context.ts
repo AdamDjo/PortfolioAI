@@ -31,6 +31,7 @@ interface AssistantConfig {
   systemPrompt: string
   model: string
   unavailableMessage: string
+  retentionNotice: string
 }
 
 interface KnowledgeEntry {
@@ -44,6 +45,7 @@ const toConfig = (doc: AssistantSetting): AssistantConfig => ({
   systemPrompt: doc.systemPrompt,
   model: doc.model,
   unavailableMessage: doc.unavailableMessage,
+  retentionNotice: doc.retentionNotice,
 })
 
 /**

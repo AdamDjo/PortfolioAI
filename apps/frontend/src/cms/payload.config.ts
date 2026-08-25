@@ -12,6 +12,7 @@ import { requireEnv } from '@/lib/require-env'
 import { AIKnowledge } from './collections/ai-knowledge'
 import { AITools } from './collections/ai-tools'
 import { Bookmarks } from './collections/bookmarks'
+import { Conversations } from './collections/conversations'
 import { Experiences } from './collections/experiences'
 import { Media } from './collections/media'
 import { Projects } from './collections/projects'
@@ -32,7 +33,17 @@ export default buildConfig({
       titleSuffix: '— Adem',
     },
   },
-  collections: [Users, Media, Projects, Experiences, Tags, Bookmarks, AIKnowledge, AITools],
+  collections: [
+    Users,
+    Media,
+    Projects,
+    Experiences,
+    Tags,
+    Bookmarks,
+    AIKnowledge,
+    AITools,
+    Conversations,
+  ],
   globals: [SiteIdentity, Availability, Profile, AssistantSettings],
   editor: lexicalEditor(),
   // Required, never defaulted: an empty secret signs session cookies and reset

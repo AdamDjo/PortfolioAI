@@ -31,8 +31,14 @@
   paliers (rafale / minute / jour) dans `src/lib/ai/rate-limit.ts`, empreinte IP
   salée et rotée quotidiennement dans `src/lib/ai/client-fingerprint.ts`. Le 429
   part avant `resolveProvider`/`buildContext`, donc sans consommer de quota Groq,
-  et renvoie vers `/contact`. Rétention des conversations, feedback et page de
-  confidentialité restent à faire (2e lot de #10).
+  et renvoie vers `/contact`.
+- Rétention et confidentialité du chat (issue #10, 2e lot) : collection
+  `conversations` (transcription anonyme + empreinte, jamais d'IP), écrite depuis
+  la route après le stream, purgée automatiquement au bout de 30 jours
+  (`src/lib/conversation-store.ts`). Feedback utile/pas utile via
+  `/api/chat/feedback`. Avis de conservation éditable (`retentionNotice` sur le
+  global assistant) affiché sous le champ du chat, page `/confidentialite` liée
+  depuis là et depuis le footer.
 - Code hérité de l'ère Express retiré : `lib/api.ts`, `lib/query-client.ts`,
   `providers.tsx`, `data/portfolio.ts`, pages `/liens` et `/demo`. React Query,
   Axios et quatre autres dépendances désinstallées.
