@@ -9,6 +9,8 @@ import {
   Send,
   Sparkles,
   Star,
+  ThumbsDown,
+  ThumbsUp,
 } from 'lucide-react'
 import { AnimatePresence, m } from 'motion/react'
 import Image from 'next/image'
@@ -45,6 +47,7 @@ interface HeroProps {
   projectCount: number
   skills: string[]
   availability: HomeAvailability
+  retentionNotice: string
   chatRef: RefObject<HeroChatHandle | null>
 }
 
@@ -56,13 +59,17 @@ export function Hero({
   projectCount,
   skills,
   availability,
+  retentionNotice,
   chatRef,
 }: HeroProps) {
   const inputRef = useRef<HTMLInputElement>(null)
   const threadRef = useRef<HTMLDivElement>(null)
   const [question, setQuestion] = useState('')
-  const { turns, streaming, pending, error, ask } = useAssistant()
+  const { turns, streaming, pending, error, feedback, ask, rate } = useAssistant()
   const started = turns.length > 0
+  // Feedback is offered once the assistant has answered and nothing is streaming:
+  // rating an answer still being written makes no sense.
+  const canRate = turns.some((turn) => turn.role === 'assistant') && !pending && !streaming
   const shownSkills = (skills.length > 0 ? skills : [...skillsContent.fallback]).slice(0, 5)
 
   useEffect(() => {
@@ -262,6 +269,34 @@ export function Hero({
             ) : null}
           </div>
 
+          {canRate ? (
+            <div className="chat-feedback">
+              {feedback ? (
+                <span className="chat-feedback-thanks" role="status">
+                  {chat.feedbackThanks}
+                </span>
+              ) : (
+                <>
+                  <span>{chat.feedbackPrompt}</span>
+                  <button
+                    type="button"
+                    aria-label={chat.feedbackUseful}
+                    onClick={() => rate('useful')}
+                  >
+                    <ThumbsUp size={14} />
+                  </button>
+                  <button
+                    type="button"
+                    aria-label={chat.feedbackNotUseful}
+                    onClick={() => rate('not_useful')}
+                  >
+                    <ThumbsDown size={14} />
+                  </button>
+                </>
+              )}
+            </div>
+          ) : null}
+
           <AnimatePresence>
             {error ? (
               <m.p
@@ -291,6 +326,10 @@ export function Hero({
               <Send size={15} />
             </button>
           </form>
+
+          <p className="chat-retention">
+            {retentionNotice} <Link href="/confidentialite">{chat.privacyLink}</Link>
+          </p>
         </m.div>
       </aside>
 

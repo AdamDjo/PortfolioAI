@@ -1,3 +1,4 @@
+import { getAssistantConfig } from '@/lib/assistant-context'
 import { getAvailability, getIdentity, getProfile, listProjects } from '@/lib/site-content'
 
 import { ConversationSection } from './_components/conversation-section'
@@ -10,11 +11,12 @@ const PROJECT_FALLBACK_IMAGES: Record<string, string> = {
 }
 
 async function Home() {
-  const [identity, availability, profile, projects] = await Promise.all([
+  const [identity, availability, profile, projects, assistant] = await Promise.all([
     getIdentity(),
     getAvailability(),
     getProfile(),
     listProjects(),
+    getAssistantConfig(),
   ])
 
   // Without a project flagged as featured, show the first of the sort order
@@ -32,6 +34,7 @@ async function Home() {
         projectCount={projects.length}
         skills={profile.skillGroups.flatMap((group) => group.items).slice(0, 5)}
         availability={{ available: availability.available, label: availability.label }}
+        retentionNotice={assistant.retentionNotice}
         projects={shown.map((project) => ({
           id: project.id,
           url: project.url,
