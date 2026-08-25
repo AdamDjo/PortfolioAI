@@ -1,7 +1,11 @@
+import { headers } from 'next/headers'
 import { z } from 'zod'
 
 import { ProviderError, resolveProvider } from '@/lib/ai'
+import { computeFingerprint } from '@/lib/ai/client-fingerprint'
+import { checkRateLimit } from '@/lib/ai/rate-limit'
 import { buildContext, getAssistantConfig } from '@/lib/assistant-context'
+import { recordExchange } from '@/lib/conversation-store'
 
 import type { ChatMessage } from '@/lib/ai'
 
@@ -31,6 +35,12 @@ const MAX_HISTORY_TURNS = 8
 const requestSchema = z.object({
   question: z.string().trim().min(1, 'Question vide').max(MAX_QUESTION_LENGTH),
   /**
+   * Opaque, client-generated id that ties the turns of one conversation together
+   * when they are stored. A UUID and nothing else: it carries no identity, and
+   * validating the shape keeps a caller from writing an arbitrary key.
+   */
+  conversationId: z.uuid().optional(),
+  /**
    * Prior turns, sent by the client because the server keeps no session. They are
    * capped and re-validated: this is visitor input like any other, and a caller
    * could otherwise smuggle in an arbitrary system message.
@@ -54,6 +64,16 @@ const streamHeaders = {
 } as const
 
 /**
+ * Shown when a caller has spent their allowance.
+ *
+ * It reads as the assistant's own reply and sends the visitor to the contact
+ * page, so a real person who happened to hit the ceiling still has a way through
+ * rather than a dead error.
+ */
+const RATE_LIMITED_MESSAGE =
+  'Vous avez posé beaucoup de questions d’affilée. Laissez souffler l’assistant une minute, ou écrivez-moi directement depuis la page /contact.'
+
+/**
  * Answers with the editable fallback and HTTP 200.
  *
  * 200 rather than 503 because this *is* the answer as far as the visitor is
@@ -74,6 +94,19 @@ export async function POST(request: Request): Promise<Response> {
   const parsed = requestSchema.safeParse(payload)
   if (!parsed.success) {
     return Response.json({ error: 'Question invalide' }, { status: 400 })
+  }
+
+  // Throttle before touching the provider: a refused caller must cost no token
+  // and reach no context build. The fingerprint is anonymous and per-day; when
+  // no salt is configured it is null, and the limiter stays off rather than
+  // bucketing everyone together — see computeFingerprint.
+  const fingerprint = computeFingerprint(await headers())
+  if (fingerprint) {
+    const verdict = checkRateLimit(fingerprint)
+    if (!verdict.allowed) {
+      console.warn(`[assistant] rate-limited: ${verdict.reason}`)
+      return new Response(RATE_LIMITED_MESSAGE, { status: 429, headers: streamHeaders })
+    }
   }
 
   const settings = await getAssistantConfig()
@@ -99,6 +132,7 @@ export async function POST(request: Request): Promise<Response> {
 
   const encoder = new TextEncoder()
   let started = false
+  let answer = ''
 
   const stream = new ReadableStream<Uint8Array>({
     async start(controller) {
@@ -109,6 +143,7 @@ export async function POST(request: Request): Promise<Response> {
           signal: request.signal,
         })) {
           started = true
+          answer += delta
           controller.enqueue(encoder.encode(delta))
         }
       } catch (error) {
@@ -128,6 +163,19 @@ export async function POST(request: Request): Promise<Response> {
         controller.enqueue(encoder.encode(notice))
       }
       controller.close()
+
+      // Stored after the stream closes so persistence never delays a token, and
+      // only when the client tracks a conversation and an answer was produced.
+      // recordExchange swallows its own errors: the answer is already delivered.
+      if (parsed.data.conversationId && answer) {
+        void recordExchange({
+          conversationId: parsed.data.conversationId,
+          fingerprint,
+          history: parsed.data.history ?? [],
+          question: parsed.data.question,
+          answer,
+        })
+      }
     },
   })
 

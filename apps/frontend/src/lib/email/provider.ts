@@ -2,13 +2,21 @@
  * Vendor-agnostic contract for sending one transactional email.
  *
  * The portfolio sends a handful of messages triggered one at a time — a contact
- * form entry today, an account recovery mail tomorrow. Nothing here models
+ * form entry, an account recovery mail. Nothing here models
  * campaigns, lists or templates: that is the vendor's own domain, and pulling it
  * into this interface would tie the callers to whoever is behind it.
  */
 
 /** What a caller hands over. `replyTo` is what makes an answer one click away. */
 interface EmailMessage {
+  /**
+   * Recipient, when the caller knows it better than the provider does.
+   *
+   * The contact form always writes to the same inbox, so its provider carries
+   * the address and callers omit it. Account recovery is the opposite: the
+   * address is the account being recovered, and only the caller has it.
+   */
+  to?: string
   subject: string
   /** Plain text. Callers build it; no provider-specific templating is involved. */
   text: string

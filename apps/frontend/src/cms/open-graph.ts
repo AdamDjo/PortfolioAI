@@ -21,6 +21,18 @@ const FETCH_TIMEOUT_MS = 8_000
 const MAX_BYTES = 512 * 1_024
 
 /**
+ * How many redirects a fetch may follow.
+ *
+ * Redirects are followed by hand rather than by `fetch` so each hop is
+ * re-validated: a public URL that answers `302 Location: http://169.254.169.254/`
+ * would otherwise reach the cloud metadata endpoint, since the browser's own
+ * follow does not re-run the private-range check. A handful of hops covers every
+ * legitimate `http→https` or `www` redirect; beyond that is a loop or an attempt
+ * to wear the limit down.
+ */
+const MAX_REDIRECTS = 5
+
+/**
  * Reserved or private ranges (RFC 1918, loopback, link-local, CGNAT…).
  * A URL resolving to one of them is refused.
  */
@@ -222,6 +234,47 @@ const decodeHtmlEntities = (value: string): string =>
  * Never throws: any error (refused URL, unreachable host, page without tags)
  * turns into `null` fields, leaving the admin free to supply a visual by hand.
  */
+/** A 3xx with a `Location`: the response is a hop, not a page. */
+const isRedirect = (response: Response): boolean =>
+  response.status >= 300 && response.status < 400 && response.headers.has('location')
+
+/**
+ * Fetches `url`, following redirects by hand so every hop is re-validated.
+ *
+ * `redirect: 'manual'` stops `fetch` from following on its own — which it would
+ * do without re-checking the destination against the private-range guard. Each
+ * `Location` is resolved to an absolute URL and passed back through
+ * `resolveSafeUrl`; a hop that points anywhere internal ends the walk with
+ * `null`. Returns the first non-redirect response, or `null` when the chain is
+ * refused, loops past `MAX_REDIRECTS`, or sends a malformed `Location`.
+ */
+const fetchFollowingSafely = async (start: URL, signal: AbortSignal): Promise<Response | null> => {
+  let url = start
+
+  for (let hop = 0; hop <= MAX_REDIRECTS; hop += 1) {
+    const response = await fetch(url, {
+      signal,
+      redirect: 'manual',
+      headers: {
+        // Some sites only serve Open Graph tags to known agents.
+        'User-Agent': 'Mozilla/5.0 (compatible; PortfolioPreviewBot/1.0)',
+        Accept: 'text/html,application/xhtml+xml',
+      },
+    })
+
+    if (!isRedirect(response)) return response
+
+    const location = response.headers.get('location')
+    const next = location ? toAbsoluteUrl(location, url.href) : null
+    const safeNext = next ? await resolveSafeUrl(next) : null
+    if (!safeNext) return null
+
+    url = safeNext
+  }
+
+  return null
+}
+
 const fetchOpenGraphMetadata = async (rawUrl: string): Promise<OpenGraphMetadata> => {
   const empty: OpenGraphMetadata = { title: null, description: null, imageUrl: null }
 
@@ -232,17 +285,8 @@ const fetchOpenGraphMetadata = async (rawUrl: string): Promise<OpenGraphMetadata
   const timeout = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS)
 
   try {
-    const response = await fetch(url, {
-      signal: controller.signal,
-      redirect: 'follow',
-      headers: {
-        // Some sites only serve Open Graph tags to known agents.
-        'User-Agent': 'Mozilla/5.0 (compatible; PortfolioPreviewBot/1.0)',
-        Accept: 'text/html,application/xhtml+xml',
-      },
-    })
-
-    if (!response.ok) return empty
+    const response = await fetchFollowingSafely(url, controller.signal)
+    if (!response?.ok) return empty
 
     const contentType = response.headers.get('content-type') ?? ''
     if (!contentType.includes('html')) return empty
@@ -254,8 +298,8 @@ const fetchOpenGraphMetadata = async (rawUrl: string): Promise<OpenGraphMetadata
     return {
       title: findMetaContent(html, ['og:title', 'twitter:title']) ?? findTitleTag(html),
       description: findMetaContent(html, ['og:description', 'twitter:description', 'description']),
-      // A relative image is resolved against the page URL.
-      imageUrl: imageUrl ? toAbsoluteUrl(imageUrl, url.href) : null,
+      // A relative image is resolved against the page the redirects landed on.
+      imageUrl: imageUrl ? toAbsoluteUrl(imageUrl, response.url || url.href) : null,
     }
   } catch {
     return empty

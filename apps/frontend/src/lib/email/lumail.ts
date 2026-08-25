@@ -15,13 +15,24 @@ import type { EmailMessage, EmailProvider } from './provider'
 
 const ENDPOINT = 'https://lumail.io/api/v1/emails'
 
-interface LumailConfig {
+/** What it takes to reach Lumail at all, independently of any recipient. */
+interface LumailCredentials {
   apiToken: string
   fromEmail: string
   /** Display name shown as the sender. Optional: the address alone is valid. */
   fromName?: string
-  /** Where contact notifications land. Unlike `fromEmail`, any domain works. */
-  toEmail: string
+}
+
+interface LumailConfig extends LumailCredentials {
+  /**
+   * Default recipient, used by every message that does not name one.
+   *
+   * Optional because not every sender has a fixed destination: the contact form
+   * always writes to the same inbox, while account recovery writes to whoever
+   * asked. A provider built without it only accepts messages carrying their own
+   * `to`. Unlike `fromEmail`, any domain works.
+   */
+  toEmail?: string
 }
 
 /**
@@ -65,7 +76,13 @@ const createLumailProvider = ({
   toEmail,
 }: LumailConfig): EmailProvider => ({
   id: 'lumail',
-  send: async ({ subject, text, replyTo }: EmailMessage) => {
+  send: async ({ to, subject, text, replyTo }: EmailMessage) => {
+    const recipient = to ?? toEmail
+
+    // A provider with no default recipient and a message that names none is a
+    // wiring mistake, caught here rather than sent to Lumail to be refused.
+    if (!recipient) throw new EmailError('bad_request', 'Aucun destinataire')
+
     let response: Response
     try {
       response = await fetch(ENDPOINT, {
@@ -75,7 +92,7 @@ const createLumailProvider = ({
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          to: toEmail,
+          to: recipient,
           from: formatSender(fromEmail, fromName),
           subject,
           content: text,
@@ -100,3 +117,4 @@ const createLumailProvider = ({
 })
 
 export { createLumailProvider }
+export type { LumailConfig, LumailCredentials }

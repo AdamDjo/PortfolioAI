@@ -325,6 +325,45 @@
   color: var(--muted);
   font-size: 12px;
 }
+.chat-feedback {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 14px;
+  color: var(--muted);
+  font-size: var(--text-2xs);
+}
+.chat-feedback button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 5px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  transition:
+    color var(--duration-fast) ease,
+    border-color var(--duration-fast) ease;
+}
+.chat-feedback button:hover {
+  border-color: var(--accent);
+  color: var(--text);
+}
+.chat-retention {
+  flex: 0 0 auto;
+  margin-top: 12px;
+  color: var(--muted);
+  font-size: var(--text-2xs);
+  line-height: 1.5;
+}
+.chat-retention a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
 .chat-form {
   flex: 0 0 auto;
   display: flex;
@@ -803,6 +842,25 @@
   grid-column: 2;
   grid-row: 1;
   margin-inline: -30px -18px;
+  /*
+   * Transform-only entrance, opacity untouched: the mascot is the LCP element,
+   * so it must paint on the first frame. A CSS animation runs without waiting
+   * for JS, unlike the Framer Motion fade it replaces.
+   */
+  animation: home-mascot-enter 0.75s var(--ease-out-quint, ease-out) 0.12s both;
+}
+@keyframes home-mascot-enter {
+  from {
+    transform: translateY(28px) scale(0.96);
+  }
+  to {
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .home-mascot {
+    animation: none;
+  }
 }
 .home-mascot::before {
   content: '';

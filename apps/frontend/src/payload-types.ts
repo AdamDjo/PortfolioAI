@@ -74,6 +74,8 @@ export interface Config {
     tags: Tag
     bookmarks: Bookmark
     'ai-knowledge': AiKnowledge
+    'ai-tools': AiTool
+    conversations: Conversation
     'payload-kv': PayloadKv
     'payload-locked-documents': PayloadLockedDocument
     'payload-preferences': PayloadPreference
@@ -88,6 +90,8 @@ export interface Config {
     tags: TagsSelect<false> | TagsSelect<true>
     bookmarks: BookmarksSelect<false> | BookmarksSelect<true>
     'ai-knowledge': AiKnowledgeSelect<false> | AiKnowledgeSelect<true>
+    'ai-tools': AiToolsSelect<false> | AiToolsSelect<true>
+    conversations: ConversationsSelect<false> | ConversationsSelect<true>
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>
     'payload-locked-documents':
       | PayloadLockedDocumentsSelect<false>
@@ -350,6 +354,73 @@ export interface AiKnowledge {
   createdAt: string
 }
 /**
+ * Skills, plugins et serveurs MCP affichés sur /outils-ia.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ai-tools".
+ */
+export interface AiTool {
+  id: number
+  name: string
+  /**
+   * Décide du filtre sous lequel l’outil apparaît.
+   */
+  kind: 'skill' | 'plugin' | 'mcp'
+  /**
+   * Une ou deux phrases : à quoi sert l’outil, pas comment il marche.
+   */
+  description?: string | null
+  /**
+   * Commande d’installation pour un skill ou un plugin, bloc de configuration pour un MCP. C’est le contenu du bouton « Copier ».
+   */
+  snippet: string
+  /**
+   * Dépôt ou documentation. Affiché en lien discret sur la carte.
+   */
+  url?: string | null
+  /**
+   * Décochez pour retirer l’outil du site sans le supprimer.
+   */
+  active?: boolean | null
+  updatedAt: string
+  createdAt: string
+}
+/**
+ * Échanges anonymisés avec l’assistant, conservés 30 jours puis supprimés automatiquement.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "conversations".
+ */
+export interface Conversation {
+  id: number
+  /**
+   * Identifiant opaque généré par le client, sans lien avec une identité.
+   */
+  conversationId: string
+  /**
+   * Empreinte anonyme, salée et changée chaque jour. Ce n’est pas une adresse IP.
+   */
+  fingerprint?: string | null
+  /**
+   * Les tours de la conversation, dans l’ordre.
+   */
+  transcript?:
+    | {
+        [k: string]: unknown
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null
+  /**
+   * Retour laissé sur la réponse, quand le visiteur en donne un.
+   */
+  feedback?: ('useful' | 'not_useful') | null
+  updatedAt: string
+  createdAt: string
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
@@ -400,6 +471,14 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'ai-knowledge'
         value: number | AiKnowledge
+      } | null)
+    | ({
+        relationTo: 'ai-tools'
+        value: number | AiTool
+      } | null)
+    | ({
+        relationTo: 'conversations'
+        value: number | Conversation
       } | null)
   globalSlug?: string | null
   user: {
@@ -558,6 +637,32 @@ export interface AiKnowledgeSelect<T extends boolean = true> {
   answer?: T
   category?: T
   published?: T
+  updatedAt?: T
+  createdAt?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "ai-tools_select".
+ */
+export interface AiToolsSelect<T extends boolean = true> {
+  name?: T
+  kind?: T
+  description?: T
+  snippet?: T
+  url?: T
+  active?: T
+  updatedAt?: T
+  createdAt?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "conversations_select".
+ */
+export interface ConversationsSelect<T extends boolean = true> {
+  conversationId?: T
+  fingerprint?: T
+  transcript?: T
+  feedback?: T
   updatedAt?: T
   createdAt?: T
 }
@@ -727,6 +832,10 @@ export interface AssistantSetting {
    * Affiché en cas de panne du fournisseur, de quota épuisé ou d’assistant désactivé.
    */
   unavailableMessage: string
+  /**
+   * Affiché sous le champ du chat, avant que le visiteur écrive. La page de confidentialité y est liée automatiquement.
+   */
+  retentionNotice: string
   updatedAt?: string | null
   createdAt?: string | null
 }
@@ -808,6 +917,7 @@ export interface AssistantSettingsSelect<T extends boolean = true> {
   systemPrompt?: T
   model?: T
   unavailableMessage?: T
+  retentionNotice?: T
   updatedAt?: T
   createdAt?: T
   globalType?: T

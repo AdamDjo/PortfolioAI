@@ -1,21 +1,77 @@
-MIT License
+PortfolioAI Source-Available License
+Copyright (c) 2026 AdamDjo
 
-Copyright (c) 2026 Adam BenM
+This software is source-available, not open source. The source code may be read,
+run, studied and modified under the terms below, but it may not be resold or
+redistributed as a product.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+1. DEFINITIONS
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+   "Software" means the source code, configuration, documentation and assets in
+   this repository, together with any modification or derivative work of them.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+   "You" means the individual or entity exercising the permissions granted here.
+
+2. PERMITTED USES
+
+   Subject to the conditions in section 4, You may, free of charge:
+
+   a. Read, download, copy and study the Software.
+   b. Run the Software locally or on infrastructure You control, for personal,
+      educational, evaluation or internal purposes.
+   c. Modify the Software and create derivative works for those same purposes.
+   d. Reuse individual portions of the Software as a reference or building block
+      within Your own distinct project, provided the result is not a substantial
+      reproduction of the Software as a whole.
+
+3. PROHIBITED USES
+
+   Without prior written permission from the copyright holder, You may not:
+
+   a. Sell, license, rent, sublicense or otherwise distribute the Software in
+      exchange for payment or other consideration.
+   b. Distribute the Software, in whole or in substantial part, as a template,
+      boilerplate, starter kit, theme or comparable product, whether free or paid.
+   c. Offer the Software, or a derivative work of it, as a hosted or managed
+      service to third parties.
+   d. Remove, alter or obscure this license, the copyright notice, or the
+      attribution required by section 4.
+
+4. CONDITIONS
+
+   a. This license and the copyright notice above must be included in all copies
+      or substantial portions of the Software.
+   b. Any public deployment of a derivative work must retain visible attribution
+      to the original author and a link to the original repository.
+
+5. PRIOR RELEASES
+
+   Versions of the Software distributed before this license took effect were
+   released under the MIT License. Those releases remain available under the MIT
+   License and its terms are not revoked. This license governs this version and
+   all subsequent versions.
+
+6. RESERVATION OF RIGHTS
+
+   All rights not expressly granted here are reserved by the copyright holder.
+   Permission for any prohibited use may be requested from the author, who may
+   grant it at their sole discretion.
+
+7. TERMINATION
+
+   The permissions granted by this license terminate automatically if You breach
+   any of its terms. They are reinstated if the breach is cured within 30 days of
+   You becoming aware of it.
+
+8. NO WARRANTY
+
+   THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+   IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+
+9. LIMITATION OF LIABILITY
+
+   IN NO EVENT SHALL THE AUTHOR OR COPYRIGHT HOLDER BE LIABLE FOR ANY CLAIM,
+   DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
+   OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE
+   OR OTHER DEALINGS IN THE SOFTWARE.

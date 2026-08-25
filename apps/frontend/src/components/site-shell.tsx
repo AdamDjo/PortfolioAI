@@ -76,6 +76,7 @@ export async function SiteShell({ children }: { children: ReactNode }) {
           </p>
           <div className="footer-links">
             <Link href="/contact">Me contacter</Link>
+            <Link href="/confidentialite">Confidentialité</Link>
             <Link href="/mentions-legales">Mentions légales</Link>
           </div>
         </div>

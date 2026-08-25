@@ -100,6 +100,19 @@ const AssistantSettings: GlobalConfig = {
           'Affiché en cas de panne du fournisseur, de quota épuisé ou d’assistant désactivé.',
       },
     },
+    {
+      name: 'retentionNotice',
+      type: 'textarea',
+      label: 'Avis de conservation',
+      required: true,
+      defaultValue:
+        'Les échanges sont conservés 30 jours de façon anonyme pour améliorer l’assistant.',
+      admin: {
+        rows: 2,
+        description:
+          'Affiché sous le champ du chat, avant que le visiteur écrive. La page de confidentialité y est liée automatiquement.',
+      },
+    },
   ],
   hooks: {
     afterChange: [revalidateGlobal(CONTENT_TAGS.assistant)],
