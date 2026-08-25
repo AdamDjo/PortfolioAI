@@ -132,3 +132,36 @@ describe('createLumailProvider', () => {
     })
   })
 })
+
+/**
+ * Recipient resolution. The contact form leans on the configured inbox; account
+ * recovery names its own address, and a provider configured for neither must say
+ * so rather than post a message with no destination.
+ */
+describe('destinataire', () => {
+  it('utilise le destinataire par défaut quand le message n’en nomme aucun', async () => {
+    const spy = stubFetch(jsonResponse(200, { id: 'msg_1' }))
+
+    await createLumailProvider(CONFIG).send(MESSAGE)
+
+    expect(sentBody(spy).to).toBe(CONFIG.toEmail)
+  })
+
+  it('préfère le destinataire porté par le message', async () => {
+    const spy = stubFetch(jsonResponse(200, { id: 'msg_1' }))
+
+    await createLumailProvider(CONFIG).send({ ...MESSAGE, to: 'admin@domaine.fr' })
+
+    expect(sentBody(spy).to).toBe('admin@domaine.fr')
+  })
+
+  it('refuse d’envoyer sans destinataire, sans appeler Lumail', async () => {
+    const spy = stubFetch(jsonResponse(200, { id: 'msg_1' }))
+    const { toEmail: _ignored, ...credentials } = CONFIG
+
+    await expect(createLumailProvider(credentials).send(MESSAGE)).rejects.toMatchObject({
+      kind: 'bad_request' satisfies EmailErrorKind,
+    })
+    expect(spy).not.toHaveBeenCalled()
+  })
+})

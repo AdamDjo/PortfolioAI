@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
-import { resolveEmailProvider } from './index'
+import { resolveEmailProvider, resolveEmailSender } from './index'
 
 const env = (vars: Record<string, string>): NodeJS.ProcessEnv => ({ NODE_ENV: 'test', ...vars })
 
@@ -38,5 +38,36 @@ describe('resolveEmailProvider', () => {
 
   it('n’exige pas le nom d’expéditeur, qui n’est que cosmétique', () => {
     expect(resolveEmailProvider(env({ ...COMPLETE, LUMAIL_FROM_NAME: '' }))?.id).toBe('lumail')
+  })
+})
+
+/**
+ * The sender is what everything that composes its own message goes through —
+ * account recovery today. It asks for less than the contact form: no destination
+ * inbox, because the message carries one.
+ */
+describe('resolveEmailSender', () => {
+  it('retourne null quand rien n’est configuré', () => {
+    expect(resolveEmailSender(env({}))).toBeNull()
+  })
+
+  it('n’exige pas le destinataire du formulaire de contact', () => {
+    const { CONTACT_TO_EMAIL: _ignored, ...credentials } = COMPLETE
+
+    expect(resolveEmailSender(env(credentials))?.provider.id).toBe('lumail')
+  })
+
+  it('exige les identifiants et l’adresse d’envoi', () => {
+    for (const missing of ['LUMAIL_API_TOKEN', 'LUMAIL_FROM_EMAIL']) {
+      const partial = { ...COMPLETE, [missing]: '' }
+      expect(resolveEmailSender(env(partial)), `sans ${missing}`).toBeNull()
+    }
+  })
+
+  it('expose l’identité sous laquelle Payload annoncera ses envois', () => {
+    const sender = resolveEmailSender(env({ ...COMPLETE, LUMAIL_FROM_NAME: 'Portfolio' }))
+
+    expect(sender?.fromEmail).toBe('contact@domaine.fr')
+    expect(sender?.fromName).toBe('Portfolio')
   })
 })

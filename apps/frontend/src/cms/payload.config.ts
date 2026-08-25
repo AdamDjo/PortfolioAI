@@ -6,6 +6,9 @@ import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { buildConfig } from 'payload'
 import sharp from 'sharp'
 
+import { resolvePayloadEmailAdapter } from '@/lib/email/payload'
+import { requireEnv } from '@/lib/require-env'
+
 import { AIKnowledge } from './collections/ai-knowledge'
 import { AITools } from './collections/ai-tools'
 import { Bookmarks } from './collections/bookmarks'
@@ -32,7 +35,12 @@ export default buildConfig({
   collections: [Users, Media, Projects, Experiences, Tags, Bookmarks, AIKnowledge, AITools],
   globals: [SiteIdentity, Availability, Profile, AssistantSettings],
   editor: lexicalEditor(),
-  secret: process.env.PAYLOAD_SECRET ?? '',
+  // Required, never defaulted: an empty secret signs session cookies and reset
+  // tokens with a value anyone can reproduce. See lib/require-env.
+  secret: requireEnv('PAYLOAD_SECRET'),
+  // Absent when the sending domain is not configured. Payload then reports that
+  // email is unavailable rather than pretending a reset link was delivered.
+  email: resolvePayloadEmailAdapter(),
   typescript: {
     // Generated types live at src/payload-types.ts, one level up from this
     // config, so they resolve through the plain @/payload-types alias.
@@ -40,7 +48,7 @@ export default buildConfig({
   },
   db: postgresAdapter({
     pool: {
-      connectionString: process.env.DATABASE_URI ?? '',
+      connectionString: requireEnv('DATABASE_URI'),
     },
     // Migrations are the single source of truth for the schema: `push` is
     // disabled so dev and production can never drift apart.
