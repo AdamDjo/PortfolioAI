@@ -67,6 +67,16 @@ const useAssistant = (): UseAssistantResult => {
           signal: controller.signal,
         })
 
+        // A spent allowance comes back as 429 with a plain-text notice. It is
+        // content, not a failure to report: shown as the assistant's reply, it
+        // keeps the conversation coherent and points the visitor to /contact.
+        if (response.status === 429) {
+          const notice = await response.text()
+          setTurns((current) => [...current, { role: 'assistant', content: notice }])
+          setStreaming('')
+          return
+        }
+
         if (!response.ok || !response.body) {
           setError(NETWORK_ERROR)
           return
