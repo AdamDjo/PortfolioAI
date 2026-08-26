@@ -1,12 +1,14 @@
 import { Github, Linkedin } from 'lucide-react'
-import Link from 'next/link'
 
+import { LocaleLink } from '@/components/i18n/locale-link'
 import { AmbientField } from '@/components/motion/ambient-field'
 import { SiteHeaderShell } from '@/components/site-header-shell'
 import { SiteNav } from '@/components/site-nav'
 import { ThemeToggle } from '@/components/theme-toggle'
+import { getMessages } from '@/lib/i18n/messages'
 import { getIdentity } from '@/lib/site-content'
 
+import type { Locale } from '@/lib/i18n/config'
 import type { ReactNode } from 'react'
 
 /**
@@ -16,22 +18,27 @@ import type { ReactNode } from 'react'
  * islands — `SiteNav` for the active link and the mobile menu, `ThemeToggle` for
  * the theme, `SiteHeaderShell` for the entry animation. The wordmark, the social
  * links and the whole footer never reach the browser as JavaScript.
+ *
+ * The frame's own copy comes from the shared UI messages rather than a route's
+ * `_content.ts`: no single route owns the navigation or the footer.
  */
-export async function SiteShell({ children }: { children: ReactNode }) {
+export async function SiteShell({ children, locale }: { children: ReactNode; locale: Locale }) {
+  const messages = getMessages(locale)
   const { role, location, githubUrl, linkedinUrl } = await getIdentity()
 
   return (
     <>
       <a className="skip-link" href="#main-content">
-        Aller au contenu
+        {messages.skipLink}
       </a>
       <AmbientField />
       <SiteHeaderShell>
         <div className="shell header-inner">
-          <Link className="wordmark" href="/">
+          <LocaleLink className="wordmark" href="/">
             ADEM<span>.</span>
-          </Link>
+          </LocaleLink>
           <SiteNav
+            messages={messages.nav}
             actions={
               <>
                 {githubUrl ? (
@@ -75,9 +82,9 @@ export async function SiteShell({ children }: { children: ReactNode }) {
             {location ? ` · ${location}` : ''}
           </p>
           <div className="footer-links">
-            <Link href="/contact">Me contacter</Link>
-            <Link href="/confidentialite">Confidentialité</Link>
-            <Link href="/mentions-legales">Mentions légales</Link>
+            <LocaleLink href="/contact">{messages.footer.contact}</LocaleLink>
+            <LocaleLink href="/confidentialite">{messages.footer.privacy}</LocaleLink>
+            <LocaleLink href="/mentions-legales">{messages.footer.legal}</LocaleLink>
           </div>
         </div>
       </footer>

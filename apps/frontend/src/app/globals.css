@@ -203,11 +203,11 @@ img {
  * lines silently changes which rule wins.
  */
 @import '../styles/base.css';
-@import './(site)/(home)/_styles.css';
+@import './[lang]/(site)/(home)/_styles.css';
 @import '../styles/layout.css';
 @import '../styles/responsive.css';
 @import '../styles/motion.css';
-@import './(site)/veille/_styles.css';
-@import './(site)/outils-ia/_styles.css';
-@import './(site)/a-propos/_styles.css';
+@import './[lang]/(site)/veille/_styles.css';
+@import './[lang]/(site)/outils-ia/_styles.css';
+@import './[lang]/(site)/a-propos/_styles.css';
 @import '../styles/overrides.css';

@@ -46,15 +46,28 @@ type ContentTag = (typeof CONTENT_TAGS)[keyof typeof CONTENT_TAGS]
  *
  * Identity feeds the header and footer defined in the shared layout, so every
  * page depends on it — hence the root invalidated in `layout` mode.
+ *
+ * Paths are route patterns, not URLs: every public page lives under `/[lang]`,
+ * and passing the pattern with a `type` refreshes each locale's copy of the page
+ * in a single call. Naming a literal locale would silently leave the other
+ * languages serving stale content — and adding a locale would be one more place
+ * to remember. `type` is mandatory here for that reason: a path carrying a
+ * dynamic segment is ambiguous without it.
  */
-const PAGES_BY_TAG: Record<ContentTag, { path: string; type?: 'layout' | 'page' }[]> = {
-  [CONTENT_TAGS.identity]: [{ path: '/', type: 'layout' }],
-  [CONTENT_TAGS.availability]: [{ path: '/' }],
-  [CONTENT_TAGS.profile]: [{ path: '/a-propos' }],
-  [CONTENT_TAGS.experiences]: [{ path: '/a-propos' }],
-  [CONTENT_TAGS.projects]: [{ path: '/' }, { path: '/projets' }],
-  [CONTENT_TAGS.bookmarks]: [{ path: '/' }, { path: '/veille' }],
-  [CONTENT_TAGS.aiTools]: [{ path: '/outils-ia' }],
+const PAGES_BY_TAG: Record<ContentTag, { path: string; type: 'layout' | 'page' }[]> = {
+  [CONTENT_TAGS.identity]: [{ path: '/[lang]', type: 'layout' }],
+  [CONTENT_TAGS.availability]: [{ path: '/[lang]', type: 'page' }],
+  [CONTENT_TAGS.profile]: [{ path: '/[lang]/a-propos', type: 'page' }],
+  [CONTENT_TAGS.experiences]: [{ path: '/[lang]/a-propos', type: 'page' }],
+  [CONTENT_TAGS.projects]: [
+    { path: '/[lang]', type: 'page' },
+    { path: '/[lang]/projets', type: 'page' },
+  ],
+  [CONTENT_TAGS.bookmarks]: [
+    { path: '/[lang]', type: 'page' },
+    { path: '/[lang]/veille', type: 'page' },
+  ],
+  [CONTENT_TAGS.aiTools]: [{ path: '/[lang]/outils-ia', type: 'page' }],
   // The assistant answers from a route handler, so no page holds this content:
   // purging the cache entry is enough, there is no HTML to replace.
   [CONTENT_TAGS.aiKnowledge]: [],

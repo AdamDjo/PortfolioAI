@@ -6,14 +6,20 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useState } from 'react'
 
+import { LanguageSwitcher } from '@/components/i18n/language-switcher'
+import { useLocale } from '@/components/i18n/locale-context'
+import { localizePath } from '@/lib/i18n/config'
+
+import type { UiMessages } from '@/lib/i18n/messages'
+
 const NAV_ITEMS = [
-  { href: '/', label: 'Accueil' },
-  { href: '/projets', label: 'Projets' },
-  { href: '/veille', label: 'Veille' },
-  { href: '/outils-ia', label: 'Outils IA' },
-  { href: '/a-propos', label: 'À propos' },
-  { href: '/contact', label: 'Contact' },
-]
+  { href: '/', key: 'home' },
+  { href: '/projets', key: 'projects' },
+  { href: '/veille', key: 'veille' },
+  { href: '/outils-ia', key: 'tools' },
+  { href: '/a-propos', key: 'about' },
+  { href: '/contact', key: 'contact' },
+] as const satisfies readonly { href: string; key: keyof UiMessages['nav'] }[]
 
 /**
  * Primary navigation and its mobile trigger.
@@ -24,24 +30,32 @@ const NAV_ITEMS = [
  *
  * The trigger renders after the links in the DOM but is placed in the header's
  * action group by the parent, which passes it through as a separate slot.
+ *
+ * Hrefs are localized here rather than through `LocaleLink` because the active
+ * check needs the resolved path anyway.
  */
-export function SiteNav({ actions }: { actions: React.ReactNode }) {
+export function SiteNav({
+  actions,
+  messages,
+}: {
+  actions: React.ReactNode
+  messages: UiMessages['nav']
+}) {
   const pathname = usePathname()
+  const locale = useLocale()
   const [menuOpen, setMenuOpen] = useState(false)
 
   return (
     <>
-      <nav
-        className={menuOpen ? 'nav-links is-open' : 'nav-links'}
-        aria-label="Navigation principale"
-      >
+      <nav className={menuOpen ? 'nav-links is-open' : 'nav-links'} aria-label={messages.label}>
         {NAV_ITEMS.map((item) => {
-          const active = pathname === item.href
+          const href = localizePath(locale, item.href)
+          const active = pathname === href
           return (
             <Link
               aria-current={active ? 'page' : undefined}
               className={active ? 'nav-link is-active' : 'nav-link'}
-              href={item.href}
+              href={href}
               key={item.href}
               onClick={() => setMenuOpen(false)}
             >
@@ -54,17 +68,18 @@ export function SiteNav({ actions }: { actions: React.ReactNode }) {
                 />
               ) : null}
               <span className="active-dot" aria-hidden="true" />
-              <span className="nav-label">{item.label}</span>
+              <span className="nav-label">{messages[item.key]}</span>
             </Link>
           )
         })}
       </nav>
       <div className="header-actions">
+        <LanguageSwitcher />
         {actions}
         <button
           className="icon-link menu-trigger"
           onClick={() => setMenuOpen((current) => !current)}
-          aria-label="Ouvrir le menu"
+          aria-label={messages.openMenu}
           aria-expanded={menuOpen}
           type="button"
         >
