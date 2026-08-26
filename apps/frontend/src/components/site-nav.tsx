@@ -2,16 +2,17 @@
 
 import { Menu, X } from 'lucide-react'
 import { m } from 'motion/react'
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 
-import { LanguageSwitcher } from '@/components/i18n/language-switcher'
-import { useLocale } from '@/components/i18n/locale-context'
-import { localizePath } from '@/lib/i18n/config'
+import { LanguageSwitcher } from '@/components/language-switcher'
+import { Link, usePathname } from '@/i18n/navigation'
 
-import type { UiMessages } from '@/lib/i18n/messages'
-
+/**
+ * Paths are the ones the app is written with, without a locale prefix: the
+ * `Link` and `usePathname` from `@/i18n/navigation` add and strip it, so the
+ * active check compares like with like.
+ */
 const NAV_ITEMS = [
   { href: '/', key: 'home' },
   { href: '/projets', key: 'projects' },
@@ -19,7 +20,7 @@ const NAV_ITEMS = [
   { href: '/outils-ia', key: 'tools' },
   { href: '/a-propos', key: 'about' },
   { href: '/contact', key: 'contact' },
-] as const satisfies readonly { href: string; key: keyof UiMessages['nav'] }[]
+] as const
 
 /**
  * Primary navigation and its mobile trigger.
@@ -30,32 +31,22 @@ const NAV_ITEMS = [
  *
  * The trigger renders after the links in the DOM but is placed in the header's
  * action group by the parent, which passes it through as a separate slot.
- *
- * Hrefs are localized here rather than through `LocaleLink` because the active
- * check needs the resolved path anyway.
  */
-export function SiteNav({
-  actions,
-  messages,
-}: {
-  actions: React.ReactNode
-  messages: UiMessages['nav']
-}) {
+export function SiteNav({ actions }: { actions: React.ReactNode }) {
+  const t = useTranslations('Nav')
   const pathname = usePathname()
-  const locale = useLocale()
   const [menuOpen, setMenuOpen] = useState(false)
 
   return (
     <>
-      <nav className={menuOpen ? 'nav-links is-open' : 'nav-links'} aria-label={messages.label}>
+      <nav className={menuOpen ? 'nav-links is-open' : 'nav-links'} aria-label={t('label')}>
         {NAV_ITEMS.map((item) => {
-          const href = localizePath(locale, item.href)
-          const active = pathname === href
+          const active = pathname === item.href
           return (
             <Link
               aria-current={active ? 'page' : undefined}
               className={active ? 'nav-link is-active' : 'nav-link'}
-              href={href}
+              href={item.href}
               key={item.href}
               onClick={() => setMenuOpen(false)}
             >
@@ -68,7 +59,7 @@ export function SiteNav({
                 />
               ) : null}
               <span className="active-dot" aria-hidden="true" />
-              <span className="nav-label">{messages[item.key]}</span>
+              <span className="nav-label">{t(item.key)}</span>
             </Link>
           )
         })}
@@ -79,7 +70,7 @@ export function SiteNav({
         <button
           className="icon-link menu-trigger"
           onClick={() => setMenuOpen((current) => !current)}
-          aria-label={messages.openMenu}
+          aria-label={t('openMenu')}
           aria-expanded={menuOpen}
           type="button"
         >

@@ -46,11 +46,11 @@
   `/api/chat/feedback`. Avis de conservation éditable (`retentionNotice` sur le
   global assistant) affiché sous le champ du chat, page `/confidentialite` liée
   depuis là et depuis le footer.
-- Site bilingue anglais/français (issue #74, lot interface) : anglais par défaut.
-  Segment `[lang]` au-dessus de `(site)`, négociation dans `src/proxy.ts`
-  (cookie `adem-locale` prioritaire sur `Accept-Language`), sélecteur de langue
-  dans l'en-tête, copie des pages extraite en dictionnaires `en`/`fr`, sitemap et
-  `hreflang` par locale, assistant qui répond dans la langue de la conversation.
+- Site bilingue anglais/français (issue #74, lot interface) : anglais par défaut,
+  bâti sur **`next-intl`**. Segment `[locale]` au-dessus de `(site)`, négociation
+  par `createMiddleware` dans `src/proxy.ts`, catalogues ICU dans `messages/*.json`,
+  sélecteur de langue dans l'en-tête, sitemap et `hreflang` par locale, assistant
+  qui répond dans la langue de la conversation.
   Reste à faire : localisation du contenu éditorial Payload (voir #74).
 - Code hérité de l'ère Express retiré : `lib/api.ts`, `lib/query-client.ts`,
   `providers.tsx`, `data/portfolio.ts`, pages `/liens` et `/demo`. React Query,
@@ -150,14 +150,16 @@
 - `next/root-params` est inutilisable ici : il exige que **toutes** les routes
   vivent sous le segment dynamique, or Payload sert `/admin` et `/api` en dehors
   — d'où « No root params detected ». La locale descend donc par `params`
-  (`resolveLocale`), ce qui garde aussi les pages prérendues, alors que la lire
-  depuis `headers()` les rendrait toutes dynamiques.
-- Les routes `/api/chat*` sont restées **hors** de `[lang]` : le client appelle
+  (`getPageLocale`), et chaque page appelle `setRequestLocale` : sans lui,
+  next-intl lit la locale depuis la requête et bascule tout en rendu dynamique.
+  Les 16 pages restent prérendues, 8 par langue.
+- Les routes `/api/chat*` sont restées **hors** de `[locale]` : le client appelle
   `/api/chat`, qui sous `[lang]` serait tombé dans le catch-all Payload
   `/api/[...slug]`. La locale voyage donc dans le corps de la requête, un
-  route handler ne pouvant pas lire le segment.
+  route handler ne pouvant pas lire le segment — d'où le `getTranslations({ locale })`
+  explicite côté serveur.
 - Invalidation et locales : `PAGES_BY_TAG` cible des **motifs** de route
-  (`/[lang]/projets` + `type`), jamais une locale littérale — sinon les autres
+  (`/[locale]/projets` + `type`), jamais une locale littérale — sinon les autres
   langues serviraient indéfiniment du contenu périmé.
 - Les états de filtre (`veille`, `outils-ia`) utilisent une sentinelle stable
   (`' all'`, `'all'`), pas le libellé traduit : changer de langue ne doit

@@ -1,9 +1,7 @@
 'use client'
 
+import { useLocale, useTranslations } from 'next-intl'
 import { useCallback, useRef, useState } from 'react'
-
-import { useLocale } from '@/components/i18n/locale-context'
-import { getAssistantMessages } from '@/lib/i18n/assistant-messages'
 
 /**
  * Drives the conversation with the public assistant.
@@ -38,7 +36,7 @@ interface UseAssistantResult {
 
 const useAssistant = (): UseAssistantResult => {
   const locale = useLocale()
-  const networkError = getAssistantMessages(locale).networkError
+  const networkError = useTranslations('Assistant')('networkError')
   const [turns, setTurns] = useState<AssistantTurn[]>([])
   const [streaming, setStreaming] = useState('')
   const [pending, setPending] = useState(false)

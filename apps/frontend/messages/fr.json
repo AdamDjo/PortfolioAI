@@ -1,0 +1,216 @@
+{
+  "Meta": {
+    "title": "Adem — Développeur Frontend Senior",
+    "description": "Développeur frontend senior en Île-de-France. Interfaces React et Next.js rapides, accessibles et maintenables."
+  },
+  "Layout": {
+    "skipLink": "Aller au contenu",
+    "language": "Langue"
+  },
+  "Nav": {
+    "label": "Navigation principale",
+    "openMenu": "Ouvrir le menu",
+    "home": "Accueil",
+    "projects": "Projets",
+    "veille": "Veille",
+    "tools": "Outils IA",
+    "about": "À propos",
+    "contact": "Contact"
+  },
+  "Footer": {
+    "contact": "Me contacter",
+    "privacy": "Confidentialité",
+    "legal": "Mentions légales"
+  },
+  "Home": {
+    "hero": {
+      "titleLine1": "Je transforme",
+      "titleLine2": "des idées en",
+      "titleLine3": "interfaces nettes.",
+      "lead": "Développeur frontend passionné par la création d’expériences web modernes, rapides et accessibles.",
+      "primaryAction": "Voir mes projets",
+      "secondaryAction": "Me contacter"
+    },
+    "chat": {
+      "header": "Discuter avec mon portfolio",
+      "status": "En ligne",
+      "userMessage": "Bonjour ! 👋",
+      "aiMessage": "Pose-moi une question sur mes projets, mon parcours, mes compétences ou ma façon de travailler.",
+      "inputLabel": "Posez votre question",
+      "inputPlaceholder": "Posez votre question…",
+      "submitLabel": "Envoyer",
+      "feedbackPrompt": "Cette réponse vous a-t-elle aidé ?",
+      "feedbackUseful": "Réponse utile",
+      "feedbackNotUseful": "Réponse pas utile",
+      "feedbackThanks": "Merci pour votre retour.",
+      "privacyLink": "En savoir plus",
+      "typing": "Réponse en cours"
+    },
+    "profile": {
+      "heading": "Profil",
+      "action": "Voir mon parcours"
+    },
+    "skills": {
+      "heading": "Compétences"
+    },
+    "stats": {
+      "projects": "{count, plural, =0 {Projets réalisés} one {Projet réalisé} other {Projets réalisés}}",
+      "experience": "{count, plural, one {An d’expérience} other {Ans d’expérience}}",
+      "satisfaction": "Engagement"
+    },
+    "rail": {
+      "label": "Raccourcis de la page d’accueil",
+      "assistantTitle": "Assistant IA",
+      "assistantDescription": "Posez une question, obtenez une réponse.",
+      "projectsTitle": "Projets",
+      "projectsDescription": "Découvrez mes réalisations.",
+      "journeyTitle": "Parcours",
+      "journeyDescription": "Mon expérience et mon parcours.",
+      "contactTitle": "Informations",
+      "contactDescription": "Coordonnées et disponibilités."
+    },
+    "projects": {
+      "eyebrow": "Projets sélectionnés",
+      "heading": "Quelques réalisations",
+      "action": "Voir tous les projets",
+      "assistantHeading": "Demandez à mon IA",
+      "prompt1": "Parle-moi de ton meilleur projet",
+      "prompt2": "Quelles technologies utilises-tu ?",
+      "prompt3": "Comment travailles-tu ?",
+      "prompt4": "Quel est ton parcours ?",
+      "assistantAction": "Discuter avec mon portfolio",
+      "helper": "Je suis là pour aider !"
+    },
+    "quality": {
+      "fastLabel": "Rapide",
+      "fastDetail": "Sites optimisés pour la performance.",
+      "responsiveLabel": "Responsive",
+      "responsiveDetail": "Expérience parfaite sur tous les écrans.",
+      "accessibleLabel": "Accessible",
+      "accessibleDetail": "Des interfaces inclusives et modernes.",
+      "seoLabel": "SEO Friendly",
+      "seoDetail": "Optimisées pour le référencement."
+    }
+  },
+  "Projects": {
+    "metaTitle": "Projets",
+    "metaDescription": "Une sélection de projets personnels, en ligne et consultables.",
+    "eyebrow": "Projets personnels",
+    "title": "Des projets en ligne, pas des maquettes.",
+    "lead": "Chaque projet ci-dessous est déployé et son code est ouvert. Mes missions en entreprise portent sur des back-offices internes : elles sont décrites dans mon parcours, sans lien public à montrer.",
+    "viewAction": "Voir le projet",
+    "codeAction": "Code source"
+  },
+  "About": {
+    "metaTitle": "À propos",
+    "metaDescription": "Le parcours, les compétences et l’approche frontend d’Adem.",
+    "eyebrow": "À propos",
+    "portraitAlt": "Illustration d’un cerveau relié par un réseau neuronal",
+    "yearsLabel": "Années d’expérience",
+    "skillsEyebrow": "Compétences",
+    "skillsHeading": "Ce que j’utilise au quotidien.",
+    "careerEyebrow": "Parcours",
+    "careerHeading": "Où j’ai travaillé, et sur quoi.",
+    "principlesEyebrow": "Principes",
+    "principlesHeading": "Comment je travaille."
+  },
+  "Contact": {
+    "metaTitle": "Contact",
+    "metaDescription": "Me joindre pour une mission frontend ou une question technique.",
+    "eyebrow": "Contact",
+    "title": "Parlons de ce que tu veux construire.",
+    "lead": "Une mission frontend, un produit à restructurer ou simplement une question technique : écris-moi.",
+    "emailLabel": "Email",
+    "locationLabel": "Localisation",
+    "nameLabel": "Nom",
+    "subjectLabel": "Sujet",
+    "messageLabel": "Message",
+    "submitLabel": "Envoyer le message",
+    "pendingLabel": "Envoi en cours…",
+    "successMessage": "Message envoyé. Je te réponds au plus vite.",
+    "unconfiguredMessage": "L’envoi n’est pas encore actif. En attendant, écris-moi directement à"
+  },
+  "Veille": {
+    "metaTitle": "Veille",
+    "metaDescription": "Ma bibliothèque de liens techniques, triée par tags.",
+    "eyebrow": "Veille active",
+    "title": "Ma bibliothèque de liens, triée par tags.",
+    "lead": "Les références que je garde sous la main, avec leur aperçu. Filtre par tag pour retrouver une ressource en quelques secondes.",
+    "allTag": "Tous",
+    "filterAriaLabel": "Filtrer par tag",
+    "composerInputLabel": "Ajouter un lien",
+    "composerPlaceholder": "Collez votre lien ici…",
+    "composerSubmitIdle": "Ajouter",
+    "composerSubmitSaving": "Ajout…",
+    "composerInvalidUrl": "Ce lien ne ressemble pas à une URL valide.",
+    "composerSessionExpired": "Session expirée. Reconnecte-toi depuis /admin.",
+    "composerSaveFailed": "Ce lien existe déjà ou n’a pas pu être enregistré.",
+    "composerNetworkError": "Enregistrement impossible. Vérifie ta connexion.",
+    "tagPickerComposerLabel": "Tags à associer au lien",
+    "tagPickerCardLabel": "Modifier les tags de ce lien",
+    "tagPickerNoTags": "Aucun tag pour l’instant. Créez-en dans /admin.",
+    "tagPickerOpenLabel": "Modifier les tags",
+    "tagPickerSaveFailed": "Les tags n’ont pas pu être enregistrés.",
+    "emptyState": "Aucun lien publié pour l’instant.",
+    "emptyFilteredState": "Aucun lien avec ce tag pour l’instant."
+  },
+  "Tools": {
+    "metaTitle": "Outils IA",
+    "metaDescription": "Les skills, plugins et serveurs MCP que j’utilise au quotidien, prêts à copier.",
+    "eyebrow": "Outils IA",
+    "title": "Mes skills, plugins et MCP, prêts à copier.",
+    "lead": "Ce que j’installe sur mes propres postes. Chaque carte porte sa commande ou sa configuration : un clic sur « Copier » et c’est dans ton presse-papier.",
+    "allKinds": "Tous",
+    "filterAriaLabel": "Filtrer par type d’outil",
+    "skillLabel": "Skills",
+    "skillSnippetLabel": "Commande d’installation",
+    "pluginLabel": "Plugins",
+    "pluginSnippetLabel": "Commande d’installation",
+    "mcpLabel": "MCP",
+    "mcpSnippetLabel": "Configuration",
+    "copyIdle": "Copier",
+    "copyDone": "Copié",
+    "copyFailed": "Échec",
+    "copyAriaLabel": "Copier le contenu de {name}",
+    "copyUnavailable": "La copie automatique est indisponible ici. Sélectionne le texte pour le copier à la main.",
+    "linkLabel": "Documentation",
+    "emptyState": "Aucun outil publié pour l’instant.",
+    "emptyFilteredState": "Aucun outil de ce type pour l’instant."
+  },
+  "Legal": {
+    "metaTitle": "Mentions légales",
+    "metaDescription": "Éditeur, hébergeur et traitement des données de ce site.",
+    "eyebrow": "Informations",
+    "title": "Mentions légales",
+    "publisherTitle": "Éditeur",
+    "contactLabel": "Contact :",
+    "publisherFallback": "L’identité de l’éditeur sera précisée ici avant la mise en ligne publique du site.",
+    "publisherStatement": "Ce site est édité à titre personnel par {publisher}, {role}.",
+    "hostingTitle": "Hébergement",
+    "hostingFallback": "L’hébergeur sera précisé ici avant la mise en ligne publique du site.",
+    "dataPolicyTitle": "Données personnelles",
+    "dataPolicyFallback": "Ce site ne dépose aucun cookie de mesure d’audience et ne collecte aucune donnée de navigation. Le seul choix conservé est la préférence de thème clair ou sombre, stockée localement dans le navigateur et jamais transmise.",
+    "intellectualPropertyTitle": "Propriété intellectuelle",
+    "intellectualPropertyBody": "Les textes et visuels de ce site sont la propriété de {owner}, sauf mention contraire. Le code source des projets présentés est publié sous licence libre sur les dépôts indiqués."
+  },
+  "Privacy": {
+    "metaTitle": "Politique de confidentialité",
+    "metaDescription": "Ce que l’assistant du portfolio collecte, pourquoi, combien de temps c’est conservé et comment demander une suppression.",
+    "eyebrow": "Confidentialité",
+    "title": "Politique de confidentialité",
+    "lead": "Cette page ne concerne que l’assistant conversationnel du site. Le reste de la navigation ne collecte rien de personnel.",
+    "collectedTitle": "Ce qui est collecté",
+    "collectedBody1": "Lorsque vous écrivez à l’assistant, la conversation est enregistrée : vos questions et ses réponses. Beaucoup de gens y indiquent qui ils sont ou ce qu’ils cherchent — c’est donc traité comme une donnée personnelle.",
+    "collectedBody2": "Aucune adresse IP n’est enregistrée. Pour limiter les abus, une empreinte technique est calculée à partir de votre adresse, mais elle est salée avec un secret et change chaque jour : elle ne permet ni de remonter à l’adresse, ni de vous suivre d’un jour à l’autre.",
+    "whyTitle": "Pourquoi",
+    "whyBody": "Les conversations servent à améliorer l’assistant et à comprendre ce que les visiteurs attendent du site. Le retour « utile / pas utile » que vous pouvez laisser sur une réponse est conservé avec la conversation concernée, toujours de façon anonyme.",
+    "retentionTitle": "Combien de temps",
+    "retentionBody": "Les conversations sont conservées trente jours, puis supprimées automatiquement. Aucune n’est gardée au-delà.",
+    "rightsTitle": "Vos droits",
+    "rightsBody": "Une conversation n’étant liée à aucune identité, elle ne peut pas être retrouvée à partir de votre nom. Si vous souhaitez malgré tout qu’un échange soit supprimé avant son échéance, écrivez-moi depuis la page de contact en indiquant un repère (la date, le sujet abordé) et je m’en occupe."
+  },
+  "Assistant": {
+    "rateLimited": "Vous avez posé beaucoup de questions d’affilée. Laissez souffler l’assistant une minute, ou écrivez-moi directement depuis la page /contact.",
+    "networkError": "La connexion a échoué. Vérifiez votre réseau et réessayez, ou contactez-moi directement."
+  }
+}

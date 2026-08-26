@@ -1,13 +1,13 @@
 import { headers } from 'next/headers'
+import { getTranslations } from 'next-intl/server'
 import { z } from 'zod'
 
+import { routing } from '@/i18n/routing'
 import { ProviderError, resolveProvider } from '@/lib/ai'
 import { computeFingerprint } from '@/lib/ai/client-fingerprint'
 import { checkRateLimit } from '@/lib/ai/rate-limit'
 import { buildContext, getAssistantConfig } from '@/lib/assistant-context'
 import { recordExchange } from '@/lib/conversation-store'
-import { getAssistantMessages } from '@/lib/i18n/assistant-messages'
-import { DEFAULT_LOCALE, LOCALES } from '@/lib/i18n/config'
 
 import type { ChatMessage } from '@/lib/ai'
 
@@ -47,7 +47,7 @@ const requestSchema = z.object({
    * route handler cannot read the `[lang]` root param, and validated against the
    * supported set so it can only ever select one of our own prompts.
    */
-  locale: z.enum(LOCALES).optional(),
+  locale: z.enum(routing.locales).optional(),
   /**
    * Prior turns, sent by the client because the server keeps no session. They are
    * capped and re-validated: this is visitor input like any other, and a caller
@@ -63,6 +63,18 @@ const requestSchema = z.object({
     .max(MAX_HISTORY_TURNS)
     .optional(),
 })
+
+/**
+ * Pins the model's reply language.
+ *
+ * Not a translation catalogue entry: this is an instruction addressed to the
+ * model, never shown to a visitor, and each string has to describe the target
+ * language rather than be written in it.
+ */
+const LANGUAGE_INSTRUCTION: Record<(typeof routing.locales)[number], string> = {
+  en: 'The visitor is browsing the site in English. Answer in English, even though the context below is written in French.',
+  fr: 'Le visiteur consulte le site en français. Réponds en français.',
+}
 
 /** Plain-text stream, marked no-store so no proxy replays one visitor's answer to another. */
 const streamHeaders = {
@@ -94,11 +106,10 @@ export async function POST(request: Request): Promise<Response> {
     return Response.json({ error: 'Question invalide' }, { status: 400 })
   }
 
-  const locale = parsed.data.locale ?? DEFAULT_LOCALE
-  // Shown when a caller has spent their allowance. It reads as the assistant's
-  // own reply and points at the contact page, so a real person who happened to
-  // hit the ceiling still has a way through rather than a dead error.
-  const assistantMessages = getAssistantMessages(locale)
+  const locale = parsed.data.locale ?? routing.defaultLocale
+  // An explicit locale is required: a route handler renders outside the
+  // `[locale]` segment, so next-intl has no request locale to infer from.
+  const t = await getTranslations({ locale, namespace: 'Assistant' })
 
   // Throttle before touching the provider: a refused caller must cost no token
   // and reach no context build. The fingerprint is anonymous and per-day; when
@@ -109,7 +120,9 @@ export async function POST(request: Request): Promise<Response> {
     const verdict = checkRateLimit(fingerprint)
     if (!verdict.allowed) {
       console.warn(`[assistant] rate-limited: ${verdict.reason}`)
-      return new Response(assistantMessages.rateLimited, { status: 429, headers: streamHeaders })
+      // Reads as the assistant's own reply and points at the contact page, so a
+      // real person who hit the ceiling still has a way through.
+      return new Response(t('rateLimited'), { status: 429, headers: streamHeaders })
     }
   }
 
@@ -131,7 +144,7 @@ export async function POST(request: Request): Promise<Response> {
   const messages: ChatMessage[] = [
     {
       role: 'system',
-      content: `${settings.systemPrompt}\n\n${assistantMessages.languageInstruction}\n\n# Contexte\n\n${context}`,
+      content: `${settings.systemPrompt}\n\n${LANGUAGE_INSTRUCTION[locale]}\n\n# Contexte\n\n${context}`,
     },
     ...(parsed.data.history ?? []),
     { role: 'user', content: parsed.data.question },

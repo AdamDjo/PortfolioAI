@@ -1,0 +1,216 @@
+{
+  "Meta": {
+    "title": "Adem — Senior Frontend Developer",
+    "description": "Senior frontend developer near Paris. Fast, accessible and maintainable React and Next.js interfaces."
+  },
+  "Layout": {
+    "skipLink": "Skip to content",
+    "language": "Language"
+  },
+  "Nav": {
+    "label": "Main navigation",
+    "openMenu": "Open the menu",
+    "home": "Home",
+    "projects": "Projects",
+    "veille": "Reading list",
+    "tools": "AI tools",
+    "about": "About",
+    "contact": "Contact"
+  },
+  "Footer": {
+    "contact": "Get in touch",
+    "privacy": "Privacy",
+    "legal": "Legal notice"
+  },
+  "Home": {
+    "hero": {
+      "titleLine1": "I turn ideas",
+      "titleLine2": "into interfaces",
+      "titleLine3": "that feel effortless.",
+      "lead": "Frontend developer focused on building modern, fast and accessible web experiences.",
+      "primaryAction": "See my work",
+      "secondaryAction": "Get in touch"
+    },
+    "chat": {
+      "header": "Chat with my portfolio",
+      "status": "Online",
+      "userMessage": "Hi there! 👋",
+      "aiMessage": "Ask me about my projects, my background, my skills or how I work.",
+      "inputLabel": "Ask your question",
+      "inputPlaceholder": "Ask your question…",
+      "submitLabel": "Send",
+      "feedbackPrompt": "Was this answer helpful?",
+      "feedbackUseful": "Helpful answer",
+      "feedbackNotUseful": "Unhelpful answer",
+      "feedbackThanks": "Thanks for the feedback.",
+      "privacyLink": "Learn more",
+      "typing": "Answer in progress"
+    },
+    "profile": {
+      "heading": "Profile",
+      "action": "See my background"
+    },
+    "skills": {
+      "heading": "Skills"
+    },
+    "stats": {
+      "projects": "{count, plural, =0 {Projects shipped} one {Project shipped} other {Projects shipped}}",
+      "experience": "{count, plural, one {Year of experience} other {Years of experience}}",
+      "satisfaction": "Commitment"
+    },
+    "rail": {
+      "label": "Home page shortcuts",
+      "assistantTitle": "AI assistant",
+      "assistantDescription": "Ask a question, get an answer.",
+      "projectsTitle": "Projects",
+      "projectsDescription": "Take a look at what I build.",
+      "journeyTitle": "Background",
+      "journeyDescription": "My experience and career path.",
+      "contactTitle": "Details",
+      "contactDescription": "Contact details and availability."
+    },
+    "projects": {
+      "eyebrow": "Selected projects",
+      "heading": "A few things I have built",
+      "action": "See every project",
+      "assistantHeading": "Ask my AI",
+      "prompt1": "Tell me about your best project",
+      "prompt2": "Which technologies do you use?",
+      "prompt3": "How do you work?",
+      "prompt4": "What is your background?",
+      "assistantAction": "Chat with my portfolio",
+      "helper": "I’m here to help!"
+    },
+    "quality": {
+      "fastLabel": "Fast",
+      "fastDetail": "Sites tuned for performance.",
+      "responsiveLabel": "Responsive",
+      "responsiveDetail": "A polished experience on every screen.",
+      "accessibleLabel": "Accessible",
+      "accessibleDetail": "Inclusive, modern interfaces.",
+      "seoLabel": "SEO friendly",
+      "seoDetail": "Built to be found."
+    }
+  },
+  "Projects": {
+    "metaTitle": "Projects",
+    "metaDescription": "A selection of personal projects, live and open to browse.",
+    "eyebrow": "Personal projects",
+    "title": "Live projects, not mockups.",
+    "lead": "Every project below is deployed and its code is open. My client work covers internal back-offices: they are described in my background, with no public link to show.",
+    "viewAction": "View project",
+    "codeAction": "Source code"
+  },
+  "About": {
+    "metaTitle": "About",
+    "metaDescription": "Adem’s background, skills and approach to frontend work.",
+    "eyebrow": "About",
+    "portraitAlt": "Illustration of a brain wired as a neural network",
+    "yearsLabel": "Years of experience",
+    "skillsEyebrow": "Skills",
+    "skillsHeading": "What I work with every day.",
+    "careerEyebrow": "Background",
+    "careerHeading": "Where I have worked, and on what.",
+    "principlesEyebrow": "Principles",
+    "principlesHeading": "How I work."
+  },
+  "Contact": {
+    "metaTitle": "Contact",
+    "metaDescription": "Get in touch about frontend work or a technical question.",
+    "eyebrow": "Contact",
+    "title": "Let’s talk about what you want to build.",
+    "lead": "A frontend engagement, a product to restructure, or simply a technical question: drop me a line.",
+    "emailLabel": "Email",
+    "locationLabel": "Location",
+    "nameLabel": "Name",
+    "subjectLabel": "Subject",
+    "messageLabel": "Message",
+    "submitLabel": "Send message",
+    "pendingLabel": "Sending…",
+    "successMessage": "Message sent. I’ll get back to you shortly.",
+    "unconfiguredMessage": "Sending is not live yet. In the meantime, write to me directly at"
+  },
+  "Veille": {
+    "metaTitle": "Reading list",
+    "metaDescription": "My library of technical links, sorted by tag.",
+    "eyebrow": "Always reading",
+    "title": "My link library, sorted by tag.",
+    "lead": "The references I keep close at hand, with their previews. Filter by tag to find a resource in seconds.",
+    "allTag": "All",
+    "filterAriaLabel": "Filter by tag",
+    "composerInputLabel": "Add a link",
+    "composerPlaceholder": "Paste your link here…",
+    "composerSubmitIdle": "Add",
+    "composerSubmitSaving": "Adding…",
+    "composerInvalidUrl": "That does not look like a valid URL.",
+    "composerSessionExpired": "Session expired. Sign in again from /admin.",
+    "composerSaveFailed": "This link already exists or could not be saved.",
+    "composerNetworkError": "Could not save. Check your connection.",
+    "tagPickerComposerLabel": "Tags for this link",
+    "tagPickerCardLabel": "Edit this link’s tags",
+    "tagPickerNoTags": "No tags yet. Create some in /admin.",
+    "tagPickerOpenLabel": "Edit tags",
+    "tagPickerSaveFailed": "The tags could not be saved.",
+    "emptyState": "No links published yet.",
+    "emptyFilteredState": "No links with this tag yet."
+  },
+  "Tools": {
+    "metaTitle": "AI tools",
+    "metaDescription": "The skills, plugins and MCP servers I use daily, ready to copy.",
+    "eyebrow": "AI tools",
+    "title": "My skills, plugins and MCP servers, ready to copy.",
+    "lead": "What I install on my own machines. Every card carries its command or its configuration: one click on “Copy” and it is on your clipboard.",
+    "allKinds": "All",
+    "filterAriaLabel": "Filter by tool type",
+    "skillLabel": "Skills",
+    "skillSnippetLabel": "Install command",
+    "pluginLabel": "Plugins",
+    "pluginSnippetLabel": "Install command",
+    "mcpLabel": "MCP",
+    "mcpSnippetLabel": "Configuration",
+    "copyIdle": "Copy",
+    "copyDone": "Copied",
+    "copyFailed": "Failed",
+    "copyAriaLabel": "Copy the contents of {name}",
+    "copyUnavailable": "Automatic copying is unavailable here. Select the text to copy it by hand.",
+    "linkLabel": "Documentation",
+    "emptyState": "No tools published yet.",
+    "emptyFilteredState": "No tools of this type yet."
+  },
+  "Legal": {
+    "metaTitle": "Legal notice",
+    "metaDescription": "Publisher, host and data handling for this site.",
+    "eyebrow": "Information",
+    "title": "Legal notice",
+    "publisherTitle": "Publisher",
+    "contactLabel": "Contact:",
+    "publisherFallback": "The publisher’s identity will be stated here before the site goes public.",
+    "publisherStatement": "This site is published in a personal capacity by {publisher}, {role}.",
+    "hostingTitle": "Hosting",
+    "hostingFallback": "The host will be stated here before the site goes public.",
+    "dataPolicyTitle": "Personal data",
+    "dataPolicyFallback": "This site sets no analytics cookie and collects no browsing data. The only choice kept is the light or dark theme preference, stored locally in the browser and never transmitted.",
+    "intellectualPropertyTitle": "Intellectual property",
+    "intellectualPropertyBody": "The text and visuals on this site belong to {owner}, unless stated otherwise. The source code of the projects shown is published under an open licence in the repositories listed."
+  },
+  "Privacy": {
+    "metaTitle": "Privacy policy",
+    "metaDescription": "What the portfolio assistant collects, why, how long it is kept and how to ask for deletion.",
+    "eyebrow": "Privacy",
+    "title": "Privacy policy",
+    "lead": "This page covers the site’s conversational assistant only. The rest of the site collects nothing personal.",
+    "collectedTitle": "What is collected",
+    "collectedBody1": "When you write to the assistant, the conversation is stored: your questions and its answers. Many people mention who they are or what they are looking for — so it is treated as personal data.",
+    "collectedBody2": "No IP address is stored. To limit abuse, a technical fingerprint is derived from your address, but it is salted with a secret and rotates daily: it cannot be traced back to the address, nor used to follow you from one day to the next.",
+    "whyTitle": "Why",
+    "whyBody": "Conversations are used to improve the assistant and to understand what visitors expect from the site. The “helpful / not helpful” feedback you can leave on an answer is kept with the conversation it belongs to, always anonymously.",
+    "retentionTitle": "For how long",
+    "retentionBody": "Conversations are kept for thirty days, then deleted automatically. None is kept beyond that.",
+    "rightsTitle": "Your rights",
+    "rightsBody": "Because a conversation is tied to no identity, it cannot be found from your name. If you would still like an exchange deleted before its deadline, write to me from the contact page with something to go on (the date, the topic) and I will take care of it."
+  },
+  "Assistant": {
+    "rateLimited": "You have asked a lot of questions in a row. Give the assistant a minute to catch up, or write to me directly from the /contact page.",
+    "networkError": "The connection failed. Check your network and try again, or contact me directly."
+  }
+}

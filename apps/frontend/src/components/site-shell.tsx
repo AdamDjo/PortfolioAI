@@ -1,14 +1,13 @@
 import { Github, Linkedin } from 'lucide-react'
+import { getTranslations } from 'next-intl/server'
 
-import { LocaleLink } from '@/components/i18n/locale-link'
 import { AmbientField } from '@/components/motion/ambient-field'
 import { SiteHeaderShell } from '@/components/site-header-shell'
 import { SiteNav } from '@/components/site-nav'
 import { ThemeToggle } from '@/components/theme-toggle'
-import { getMessages } from '@/lib/i18n/messages'
+import { Link } from '@/i18n/navigation'
 import { getIdentity } from '@/lib/site-content'
 
-import type { Locale } from '@/lib/i18n/config'
 import type { ReactNode } from 'react'
 
 /**
@@ -18,27 +17,27 @@ import type { ReactNode } from 'react'
  * islands — `SiteNav` for the active link and the mobile menu, `ThemeToggle` for
  * the theme, `SiteHeaderShell` for the entry animation. The wordmark, the social
  * links and the whole footer never reach the browser as JavaScript.
- *
- * The frame's own copy comes from the shared UI messages rather than a route's
- * `_content.ts`: no single route owns the navigation or the footer.
  */
-export async function SiteShell({ children, locale }: { children: ReactNode; locale: Locale }) {
-  const messages = getMessages(locale)
-  const { role, location, githubUrl, linkedinUrl } = await getIdentity()
+export async function SiteShell({ children }: { children: ReactNode }) {
+  const [tLayout, tFooter, identity] = await Promise.all([
+    getTranslations('Layout'),
+    getTranslations('Footer'),
+    getIdentity(),
+  ])
+  const { role, location, githubUrl, linkedinUrl } = identity
 
   return (
     <>
       <a className="skip-link" href="#main-content">
-        {messages.skipLink}
+        {tLayout('skipLink')}
       </a>
       <AmbientField />
       <SiteHeaderShell>
         <div className="shell header-inner">
-          <LocaleLink className="wordmark" href="/">
+          <Link className="wordmark" href="/">
             ADEM<span>.</span>
-          </LocaleLink>
+          </Link>
           <SiteNav
-            messages={messages.nav}
             actions={
               <>
                 {githubUrl ? (
@@ -82,9 +81,9 @@ export async function SiteShell({ children, locale }: { children: ReactNode; loc
             {location ? ` · ${location}` : ''}
           </p>
           <div className="footer-links">
-            <LocaleLink href="/contact">{messages.footer.contact}</LocaleLink>
-            <LocaleLink href="/confidentialite">{messages.footer.privacy}</LocaleLink>
-            <LocaleLink href="/mentions-legales">{messages.footer.legal}</LocaleLink>
+            <Link href="/contact">{tFooter('contact')}</Link>
+            <Link href="/confidentialite">{tFooter('privacy')}</Link>
+            <Link href="/mentions-legales">{tFooter('legal')}</Link>
           </div>
         </div>
       </footer>
