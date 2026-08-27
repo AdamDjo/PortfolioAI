@@ -228,6 +228,73 @@
 - `pnpm start` depuis la racine échoue (`ERR_PNPM_NO_SCRIPT_OR_SERVER`) : lancer
   `pnpm --filter @portfolio/frontend start`.
 
+## Performance (Lighthouse)
+
+**Toute mesure se fait sur un build de production.** Un rapport pris sur `next dev`
+est ininterprétable : Turbopack ne minifie ni ne tree-shake en dev, donc le
+barrel `simple-icons` y pèse 2,1 Mo alors que le build de production n'en garde
+que les 27 icônes utilisées (chunk de 41 Ko). S'ajoutent les scripts de
+`next-devtools` et ceux des extensions Chrome, attribués à la page.
+
+Scores sur `/fr`, build de production, cache d'images chaud :
+
+|         | Perf | A11y | Best practices | SEO |
+| ------- | ---- | ---- | -------------- | --- |
+| Desktop | 100  | 100  | 100            | 100 |
+| Mobile  | 92   | 100  | 100            | 100 |
+
+Ce qui a été corrigé et pourquoi :
+
+- **`Critical-CH` sur tout le site.** `withPayload` pose
+  `Accept-CH`/`Vary`/`Critical-CH: Sec-CH-Prefers-Color-Scheme` sur `/:path*`.
+  `Critical-CH` fait **redémarrer la navigation** au premier chargement : 607 ms
+  perdus sur mobile, pour un indice qu'aucune page publique ne lit.
+  `next.config.ts` ramène ce bloc sur `/admin/:path*` (et avec lui le
+  `X-Powered-By` de Payload).
+- **`priority` ne suffit plus en Next 16** : il n'émet que le `<link rel=preload>`,
+  sans `fetchpriority`. L'image LCP porte donc `fetchPriority="high"` explicitement.
+- **AVIF** (`images.formats`) : la mascotte passe de 56 Ko à 27,6 Ko, soit −51 %.
+  C'est le gain LCP le plus net. Encodage à la volée coûteux au premier accès :
+  un cache d'images froid fausse toute mesure.
+- **`images.deviceSizes` commence à 384.** `getWidths` ne retient que les
+  candidats ≥ `deviceSizes[0] × (plus petit vw des sizes)` ; avec 640 comme
+  plancher, une image en `70vw` ne pouvait rien recevoir sous 640px.
+- **`experimental.inlineCss`** : supprime l'aller-retour bloquant du rendu sur la
+  feuille de styles (~15 Ko). La CSP autorise déjà `style-src 'unsafe-inline'`.
+- **`filter: blur()` retiré des animations** (`template.tsx`, `riseItem`,
+  `Reveal`). `filter` ne tourne pas sur le compositeur : chaque frame repeignait
+  la page entière sur le thread principal, pendant l'hydratation. Idem pour le
+  `height: 'auto'` du message d'erreur du chat.
+- **Reflows forcés** : `Tilt` mesurait `getBoundingClientRect()` à chaque
+  `pointermove` pendant que le ressort tournait ; la mesure se fait maintenant une
+  fois à l'entrée du pointeur. Le suivi du fil de discussion lit sa géométrie dans
+  un `requestAnimationFrame` au lieu de le faire juste après le commit React.
+- **Beacons Vercel** : `@vercel/analytics` et `@vercel/speed-insights` appellent
+  `/_vercel/insights/*`, qui n'existe que chez Vercel. Hors Vercel c'était deux
+  404 et deux erreurs MIME par page — Best Practices à 93. Ils sont désormais
+  conditionnés à `process.env.VERCEL === '1'`.
+- **Tailles de police** : dix-huit sélecteurs descendaient sous le plancher de
+  l'échelle (jusqu'à 8px), et Lighthouse ne jugeait que 27 % du texte lisible sur
+  mobile. Tous ramenés sur `var(--text-2xs)`.
+- **`browserslist`** dans `apps/frontend/package.json` : cale les cibles sur ce que
+  la feuille de styles exige déjà (`color-mix(in srgb, ...)` → Chrome 111,
+  Firefox 113, Safari 16.4), ce qui évite d'expédier des polyfills pour
+  `Array.prototype.at`, `Object.hasOwn` et consorts.
+
+**Ce qui reste, et pourquoi c'est architectural.** Sur mobile le score bute sur le
+LCP (3,3 s d'après Lighthouse). Le LCP _observé_ dans la trace est à 298 ms, et une
+mesure réelle sous throttling 4G + CPU ×4 donne 1196 ms : les 3,3 s sont l'estimation
+pessimiste de Lantern, qui modélise le téléchargement et l'exécution des **290 Ko de
+JavaScript répartis sur 17 requêtes** avant la peinture. La cause de fond est que
+toute la page d'accueil est un arbre client : `ConversationSection` est `'use client'`
+uniquement pour relayer un `chatRef` entre les prompts de `ProjectsTeaser` et le champ
+du chat, ce qui entraîne `Hero`, `HomeRail` et `ProjectsTeaser` avec lui — et avec eux
+`simple-icons` (18 Ko) et une bonne part de `lucide-react`. Descendre sous les 2 s
+suppose de rendre le hero côté serveur et de n'isoler que le chat en îlot client, le
+pont passant par un store Zustand plutôt que par un ref partagé. C'est le sens de la
+convention « Server Components par défaut » : ce n'est pas un réglage, c'est une
+refonte de la page d'accueil.
+
 ## Validation
 
 - `pnpm type-check`
