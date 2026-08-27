@@ -241,4 +241,66 @@ const projects: ProjectSeed[] = [
   },
 ]
 
-export { experiences, identity, profile, projects }
+/**
+ * English versions of the fields marked `localized` in the CMS.
+ *
+ * Only those fields appear here: everything else — names, URLs, dates,
+ * technologies — is single-valued by design and lives in the French objects
+ * above. Keeping the two side by side makes a missing translation visible when
+ * reading the file, which a separate file would hide.
+ *
+ * The career path is deliberately absent: it is already written in English, so
+ * the seeded values serve both languages. Writing French versions of it is an
+ * editorial decision, not a technical gap.
+ */
+const identityEn = {
+  contact: {
+    // The French form names the region first, which reads backwards in English.
+    location: 'Paris, France',
+  },
+}
+
+const profileEn = {
+  headline: 'I build the interface between an idea and the people who use it.',
+  bio: 'Senior frontend developer in R&D at CAST Software, rebuilding a SaaS code-analysis platform from scratch in React 19. I work on what makes a team fast as much as on the interface itself: design system, shared conventions, and AI-assisted tooling.',
+  skillGroupLabels: [
+    'Frontend',
+    'Interface and design system',
+    'Quality and tooling',
+    'Backend and data',
+    'AI-assisted development',
+  ],
+  principles: [
+    {
+      statement: 'Understand before composing.',
+      detail:
+        'I start from the real user journey and the business constraint, not from an isolated screen to reproduce.',
+    },
+    {
+      statement: 'Make every state explicit.',
+      detail:
+        'Loading, empty, error and success are designed together: a forgotten state is a shipped bug.',
+    },
+    {
+      statement: 'Measure before optimizing.',
+      detail: 'Lighthouse and end-to-end tests decide, not intuition.',
+    },
+    {
+      statement: 'Equip the team, not just the product.',
+      detail:
+        'Shared conventions, automated review and executable documentation: what holds up without me.',
+    },
+  ],
+}
+
+/** Keyed by URL, the same natural key the seed matches projects on. */
+const projectDescriptionsEn: Record<string, string> = {
+  'https://grimoire-game-frontend.vercel.app':
+    'A web game built as a pnpm and Turborepo monorepo, designed as a proving ground for my team practices: .md-based agent configuration, automated review, Docker, commit hooks and continuous integration.',
+  'https://ethswap-dapp.vercel.app':
+    'A decentralized token-swap application on the Sepolia network: MetaMask connection, balance reading and transfers, with the Solidity contract written and deployed for it.',
+  'https://fitapp-redux.vercel.app':
+    'A workout tracker in Next.js and Redux: session building, state persistence, and an interface designed mobile-first.',
+}
+
+export { experiences, identity, identityEn, profile, profileEn, projectDescriptionsEn, projects }
