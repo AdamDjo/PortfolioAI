@@ -3,6 +3,7 @@ import { getPayload } from 'payload'
 import { CONTENT_TAGS, cachedRead } from '@/lib/content-cache'
 import config from '@payload-config'
 
+import type { Locale } from '@/i18n/routing'
 import type { Bookmark } from '@/payload-types'
 
 /**
@@ -93,11 +94,12 @@ const toView = (doc: Bookmark): BookmarkView => {
  * Unchecked links (`active: false`) are excluded here rather than filtered in the
  * view: they must not reach the browser at all.
  */
-const readPublicBookmarks = async (): Promise<BookmarkView[]> => {
+const readPublicBookmarks = async (locale: Locale): Promise<BookmarkView[]> => {
   const payload = await getPayload({ config })
 
   const result = await payload.find({
     collection: 'bookmarks',
+    locale,
     where: { active: { equals: true } },
     sort: '-createdAt',
     limit: 200,

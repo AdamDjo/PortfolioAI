@@ -8,6 +8,14 @@
 
 Respond conversationally in the user's language (detect from their messages). Always generate file content in English — docs, commit messages, issue titles, PR bodies, code comments.
 
+## ⚠️ IMPORTANT: Established libraries over hand-rolled code
+
+**Reach for the convention the ecosystem already settled on, not a bespoke implementation.** When a problem has a standard solution — i18n, forms, dates, validation, auth — use the library the framework's own documentation points to, and follow its conventions rather than inventing a parallel structure around it.
+
+- Prefer the option that is idiomatic for **this** stack (Next.js App Router + Server Components), not merely the most downloaded. A popular library that predates Server Components and needs adapters is the wrong choice here.
+- Hand-rolling is acceptable only for something genuinely specific to this project, and the reason belongs in `docs/MEMORY.md`.
+- When the choice is not obvious, present the options and ask before building.
+
 ## ⚠️ IMPORTANT: Git Commit Rules
 
 **Always apply these rules for every commit, no exceptions:**

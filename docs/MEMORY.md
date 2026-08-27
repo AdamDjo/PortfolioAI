@@ -46,6 +46,16 @@
   `/api/chat/feedback`. Avis de conservation éditable (`retentionNotice` sur le
   global assistant) affiché sous le champ du chat, page `/confidentialite` liée
   depuis là et depuis le footer.
+- Site bilingue anglais/français (issue #74, lot interface) : anglais par défaut,
+  bâti sur **`next-intl`**. Segment `[locale]` au-dessus de `(site)`, négociation
+  par `createMiddleware` dans `src/proxy.ts`, catalogues ICU dans `messages/*.json`,
+  sélecteur de langue dans l'en-tête, sitemap et `hreflang` par locale, assistant
+  qui répond dans la langue de la conversation.
+- Contenu éditorial localisé dans Payload (issue #74, 2e lot) : `localization`
+  activée (`fr` par défaut, `fallback: true`), champs de prose marqués
+  `localized: true`. `/admin` affiche un sélecteur de langue par document. Les
+  lectures serveur reçoivent la locale et le cache est clé par langue. Reste à
+  faire, et c'est éditorial : écrire les traductions anglaises du contenu réel.
 - Code hérité de l'ère Express retiré : `lib/api.ts`, `lib/query-client.ts`,
   `providers.tsx`, `data/portfolio.ts`, pages `/liens` et `/demo`. React Query,
   Axios et quatre autres dépendances désinstallées.
@@ -131,6 +141,64 @@
   variable. Sans sel, `computeFingerprint` renvoie `null` et le limiteur reste
   éteint plutôt que de hacher une valeur réversible ou de regrouper tout le
   monde. Aucune IP brute n'est jamais stockée ni journalisée.
+- **i18n sans bibliothèque, volontairement.** Next 16 documente lui-même
+  l'approche : segment `[lang]`, `proxy.ts`, dictionnaires. `react-i18next` est
+  antérieur aux Server Components et forcerait des `'use client'` là où le site
+  rend côté serveur. Le vrai concurrent serait `next-intl` : il apporte l'ICU
+  (pluriels, genre), les dates/nombres localisés et des JSON pour un traducteur
+  externe — rien dont le site ait besoin aujourd'hui. Chaque locale est typée
+  d'après `en`, donc **une clé oubliée casse la compilation**. Bascule vers
+  `next-intl` le jour où arrivent une 3ᵉ langue avec traducteur, des pluriels ou
+  des dates affichées ; la migration est mécanique, `[lang]`/proxy/switcher ne
+  bougent pas.
+- `next/root-params` est inutilisable ici : il exige que **toutes** les routes
+  vivent sous le segment dynamique, or Payload sert `/admin` et `/api` en dehors
+  — d'où « No root params detected ». La locale descend donc par `params`
+  (`getPageLocale`), et chaque page appelle `setRequestLocale` : sans lui,
+  next-intl lit la locale depuis la requête et bascule tout en rendu dynamique.
+  Les 16 pages restent prérendues, 8 par langue.
+- Les routes `/api/chat*` sont restées **hors** de `[locale]` : le client appelle
+  `/api/chat`, qui sous `[lang]` serait tombé dans le catch-all Payload
+  `/api/[...slug]`. La locale voyage donc dans le corps de la requête, un
+  route handler ne pouvant pas lire le segment — d'où le `getTranslations({ locale })`
+  explicite côté serveur.
+- Invalidation et locales : `PAGES_BY_TAG` cible des **motifs** de route
+  (`/[locale]/projets` + `type`), jamais une locale littérale — sinon les autres
+  langues serviraient indéfiniment du contenu périmé.
+- Les états de filtre (`veille`, `outils-ia`) utilisent une sentinelle stable
+  (`' all'`, `'all'`), pas le libellé traduit : changer de langue ne doit
+  pas réinitialiser le filtre.
+- **Localisation Payload : ce qui est traduit et ce qui ne l'est pas.** Sont
+  `localized` la prose écrite à la main (headline, bio, principes, rôle, contexte
+  et réalisations d'expérience, descriptions de projets et d'outils, questions et
+  réponses `ai-knowledge`, avis de conservation). Ne le sont pas, volontairement :
+  les noms propres (entreprise, titre de projet, nom d'outil), les données
+  factuelles (URL, email, dates, hébergeur, éditeur légal), les technologies, les
+  snippets de commandes — un `pnpm install` ne se traduit pas — et la veille,
+  dont les titres viennent de la source. Les tags restent non localisés : ce sont
+  des termes techniques, le gain ne vaut pas la charge de saisie.
+- `defaultLocale: 'fr'` côté Payload alors que le site sert l'anglais par défaut.
+  Ce n'est pas une incohérence : l'un dit quelle langue voit le visiteur, l'autre
+  quelle langue sert de repli quand une traduction manque. Le contenu existant
+  étant français, c'est lui la source.
+- Le type `Locale` de Payload déclare **`code`**, pas `value` — alors que le
+  commentaire d'exemple sur `LocalizationConfigWithLabels` montre `value`. Se
+  tromper de clé produit un enum `_locales` vide et fait échouer `migrate:create`
+  sur un message obscur.
+- **`migrate:create` ne migre pas les données.** La migration générée pour la
+  localisation créait les tables `_locales` puis supprimait les colonnes
+  d'origine, sans rien recopier : l'appliquer telle quelle vidait tout le contenu.
+  Les `INSERT … SELECT` vers la locale `fr` ont été ajoutés à la main avant les
+  `DROP`, et le `down()` réécrit pour rajouter les colonnes en nullable, recopier,
+  puis remettre `NOT NULL` — sinon le rollback échoue sur une table non vide.
+  Vérifié dans les deux sens sur une base peuplée.
+- **Invalidation : purger le chemin ne suffit plus.** Les lectures sont en
+  `revalidate: false` et existent désormais une fois par langue ; régénérer le
+  HTML seul le reconstruit à partir de l'entrée périmée, et avec le repli actif
+  une valeur anglaise fraîchement saisie continuait d'afficher du français.
+  `purge` fait donc les deux : `revalidateTag(tag, { expire: 0 })` puis
+  `revalidatePath`. Le profil par défaut de `revalidateTag` ne fait que marquer
+  périmé et resservirait l'ancienne valeur une fois de plus.
 - Prettier et ESLint doivent être lancés depuis le workspace
   (`pnpm --filter @portfolio/frontend exec …`), pas depuis la racine.
 - Un écran `500` sur toutes les routes `/api/*` et `/admin` après plusieurs

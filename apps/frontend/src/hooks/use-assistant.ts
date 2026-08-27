@@ -1,5 +1,6 @@
 'use client'
 
+import { useLocale, useTranslations } from 'next-intl'
 import { useCallback, useRef, useState } from 'react'
 
 /**
@@ -20,9 +21,6 @@ type Feedback = 'useful' | 'not_useful'
 /** Turns kept and replayed to the server, which holds no session of its own. */
 const MAX_HISTORY_TURNS = 8
 
-const NETWORK_ERROR =
-  'La connexion a échoué. Vérifiez votre réseau et réessayez, ou contactez-moi directement.'
-
 interface UseAssistantResult {
   turns: AssistantTurn[]
   /** Text streaming in right now; empty once the turn is complete. */
@@ -37,6 +35,8 @@ interface UseAssistantResult {
 }
 
 const useAssistant = (): UseAssistantResult => {
+  const locale = useLocale()
+  const networkError = useTranslations('Assistant')('networkError')
   const [turns, setTurns] = useState<AssistantTurn[]>([])
   const [streaming, setStreaming] = useState('')
   const [pending, setPending] = useState(false)
@@ -83,6 +83,7 @@ const useAssistant = (): UseAssistantResult => {
             question: trimmed,
             history,
             conversationId: conversationIdRef.current,
+            locale,
           }),
           signal: controller.signal,
         })
@@ -98,7 +99,7 @@ const useAssistant = (): UseAssistantResult => {
         }
 
         if (!response.ok || !response.body) {
-          setError(NETWORK_ERROR)
+          setError(networkError)
           return
         }
 
@@ -119,7 +120,7 @@ const useAssistant = (): UseAssistantResult => {
       } catch (cause) {
         // An abort is a deliberate cancellation, not a failure to report.
         if (cause instanceof DOMException && cause.name === 'AbortError') return
-        setError(NETWORK_ERROR)
+        setError(networkError)
       } finally {
         // A superseded request must not clear the flag of the one that replaced it.
         if (abortRef.current === controller) {
@@ -128,7 +129,7 @@ const useAssistant = (): UseAssistantResult => {
         }
       }
     },
-    [turns]
+    [turns, locale, networkError]
   )
 
   const rate = useCallback((next: Feedback) => {

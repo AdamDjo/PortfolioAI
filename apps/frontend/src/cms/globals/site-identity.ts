@@ -43,12 +43,14 @@ const SiteIdentity: GlobalConfig = {
         {
           name: 'role',
           type: 'text',
+          localized: true,
           label: 'Intitulé de poste',
           required: true,
         },
         {
           name: 'location',
           type: 'text',
+          localized: true,
           label: 'Localisation',
           admin: {
             description: 'Affichée dans le pied de page et sur la page À propos.',
@@ -109,6 +111,7 @@ const SiteIdentity: GlobalConfig = {
         {
           name: 'dataPolicy',
           type: 'textarea',
+          localized: true,
           label: 'Traitement des données',
           admin: {
             description: 'Ce que le site collecte, et ce qu’il n’en fait pas.',

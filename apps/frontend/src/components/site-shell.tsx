@@ -1,10 +1,11 @@
 import { Github, Linkedin } from 'lucide-react'
-import Link from 'next/link'
+import { getLocale, getTranslations } from 'next-intl/server'
 
 import { AmbientField } from '@/components/motion/ambient-field'
 import { SiteHeaderShell } from '@/components/site-header-shell'
 import { SiteNav } from '@/components/site-nav'
 import { ThemeToggle } from '@/components/theme-toggle'
+import { Link } from '@/i18n/navigation'
 import { getIdentity } from '@/lib/site-content'
 
 import type { ReactNode } from 'react'
@@ -18,12 +19,18 @@ import type { ReactNode } from 'react'
  * links and the whole footer never reach the browser as JavaScript.
  */
 export async function SiteShell({ children }: { children: ReactNode }) {
-  const { role, location, githubUrl, linkedinUrl } = await getIdentity()
+  const locale = await getLocale()
+  const [tLayout, tFooter, identity] = await Promise.all([
+    getTranslations('Layout'),
+    getTranslations('Footer'),
+    getIdentity(locale),
+  ])
+  const { role, location, githubUrl, linkedinUrl } = identity
 
   return (
     <>
       <a className="skip-link" href="#main-content">
-        Aller au contenu
+        {tLayout('skipLink')}
       </a>
       <AmbientField />
       <SiteHeaderShell>
@@ -75,9 +82,9 @@ export async function SiteShell({ children }: { children: ReactNode }) {
             {location ? ` · ${location}` : ''}
           </p>
           <div className="footer-links">
-            <Link href="/contact">Me contacter</Link>
-            <Link href="/confidentialite">Confidentialité</Link>
-            <Link href="/mentions-legales">Mentions légales</Link>
+            <Link href="/contact">{tFooter('contact')}</Link>
+            <Link href="/confidentialite">{tFooter('privacy')}</Link>
+            <Link href="/mentions-legales">{tFooter('legal')}</Link>
           </div>
         </div>
       </footer>

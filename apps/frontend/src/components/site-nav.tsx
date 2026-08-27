@@ -2,18 +2,25 @@
 
 import { Menu, X } from 'lucide-react'
 import { m } from 'motion/react'
-import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { useTranslations } from 'next-intl'
 import { useState } from 'react'
 
+import { LanguageSwitcher } from '@/components/language-switcher'
+import { Link, usePathname } from '@/i18n/navigation'
+
+/**
+ * Paths are the ones the app is written with, without a locale prefix: the
+ * `Link` and `usePathname` from `@/i18n/navigation` add and strip it, so the
+ * active check compares like with like.
+ */
 const NAV_ITEMS = [
-  { href: '/', label: 'Accueil' },
-  { href: '/projets', label: 'Projets' },
-  { href: '/veille', label: 'Veille' },
-  { href: '/outils-ia', label: 'Outils IA' },
-  { href: '/a-propos', label: 'À propos' },
-  { href: '/contact', label: 'Contact' },
-]
+  { href: '/', key: 'home' },
+  { href: '/projets', key: 'projects' },
+  { href: '/veille', key: 'veille' },
+  { href: '/outils-ia', key: 'tools' },
+  { href: '/a-propos', key: 'about' },
+  { href: '/contact', key: 'contact' },
+] as const
 
 /**
  * Primary navigation and its mobile trigger.
@@ -26,15 +33,13 @@ const NAV_ITEMS = [
  * action group by the parent, which passes it through as a separate slot.
  */
 export function SiteNav({ actions }: { actions: React.ReactNode }) {
+  const t = useTranslations('Nav')
   const pathname = usePathname()
   const [menuOpen, setMenuOpen] = useState(false)
 
   return (
     <>
-      <nav
-        className={menuOpen ? 'nav-links is-open' : 'nav-links'}
-        aria-label="Navigation principale"
-      >
+      <nav className={menuOpen ? 'nav-links is-open' : 'nav-links'} aria-label={t('label')}>
         {NAV_ITEMS.map((item) => {
           const active = pathname === item.href
           return (
@@ -54,17 +59,18 @@ export function SiteNav({ actions }: { actions: React.ReactNode }) {
                 />
               ) : null}
               <span className="active-dot" aria-hidden="true" />
-              <span className="nav-label">{item.label}</span>
+              <span className="nav-label">{t(item.key)}</span>
             </Link>
           )
         })}
       </nav>
       <div className="header-actions">
+        <LanguageSwitcher />
         {actions}
         <button
           className="icon-link menu-trigger"
           onClick={() => setMenuOpen((current) => !current)}
-          aria-label="Ouvrir le menu"
+          aria-label={t('openMenu')}
           aria-expanded={menuOpen}
           type="button"
         >
