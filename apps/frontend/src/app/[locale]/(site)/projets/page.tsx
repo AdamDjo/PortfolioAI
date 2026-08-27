@@ -26,7 +26,7 @@ async function ProjectsPage({ params }: PageProps<'/[locale]/projets'>) {
   const locale = await getPageLocale(params)
   setRequestLocale(locale)
 
-  const [t, projects] = await Promise.all([getTranslations('Projects'), listProjects()])
+  const [t, projects] = await Promise.all([getTranslations('Projects'), listProjects(locale)])
 
   return (
     <div className="page shell">

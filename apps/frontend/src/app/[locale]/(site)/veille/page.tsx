@@ -1,5 +1,5 @@
 import { headers } from 'next/headers'
-import { getTranslations } from 'next-intl/server'
+import { getLocale, getTranslations } from 'next-intl/server'
 import { getPayload } from 'payload'
 
 import { buildAlternates } from '@/i18n/metadata'
@@ -40,13 +40,16 @@ async function isOwner(): Promise<boolean> {
 }
 
 async function WatchPage() {
+  // Rendered on demand, so the locale comes from the request rather than params.
+  const locale = await getLocale()
+
   // Reading is public and the session only decides whether the editing controls
   // are rendered: the queries are independent.
   const [t, bookmarks, owner, allTags] = await Promise.all([
     getTranslations('Veille'),
-    listPublicBookmarks(),
+    listPublicBookmarks(locale),
     isOwner(),
-    listAllTags(),
+    listAllTags(locale),
   ])
 
   return (

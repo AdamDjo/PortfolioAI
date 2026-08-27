@@ -1,5 +1,5 @@
 import { Github, Linkedin } from 'lucide-react'
-import { getTranslations } from 'next-intl/server'
+import { getLocale, getTranslations } from 'next-intl/server'
 
 import { AmbientField } from '@/components/motion/ambient-field'
 import { SiteHeaderShell } from '@/components/site-header-shell'
@@ -19,10 +19,11 @@ import type { ReactNode } from 'react'
  * links and the whole footer never reach the browser as JavaScript.
  */
 export async function SiteShell({ children }: { children: ReactNode }) {
+  const locale = await getLocale()
   const [tLayout, tFooter, identity] = await Promise.all([
     getTranslations('Layout'),
     getTranslations('Footer'),
-    getIdentity(),
+    getIdentity(locale),
   ])
   const { role, location, githubUrl, linkedinUrl } = identity
 

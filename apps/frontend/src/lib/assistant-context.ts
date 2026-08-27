@@ -11,6 +11,7 @@ import {
 } from '@/lib/site-content'
 import config from '@payload-config'
 
+import type { Locale } from '@/i18n/routing'
 import type { AiKnowledge, AssistantSetting } from '@/payload-types'
 
 /**
@@ -58,10 +59,11 @@ const toConfig = (doc: AssistantSetting): AssistantConfig => ({
  * `published` is enforced in the query rather than in a filter afterwards, so an
  * unpublished entry is never even loaded into memory.
  */
-const readKnowledge = async (): Promise<KnowledgeEntry[]> => {
+const readKnowledge = async (locale: Locale): Promise<KnowledgeEntry[]> => {
   const payload = await getPayload({ config })
   const result = await payload.find({
     collection: 'ai-knowledge',
+    locale,
     where: { published: { equals: true } },
     sort: 'category',
     limit: 200,
@@ -75,9 +77,9 @@ const readKnowledge = async (): Promise<KnowledgeEntry[]> => {
   }))
 }
 
-const readAssistantConfig = async (): Promise<AssistantConfig> => {
+const readAssistantConfig = async (locale: Locale): Promise<AssistantConfig> => {
   const payload = await getPayload({ config })
-  const doc = await payload.findGlobal({ slug: 'assistant-settings', overrideAccess: true })
+  const doc = await payload.findGlobal({ slug: 'assistant-settings', locale, overrideAccess: true })
   return toConfig(doc)
 }
 
@@ -100,16 +102,16 @@ const list = (items: string[]): string => items.map((item) => `- ${item}`).join(
  * Markdown because it is what these models are trained on, and because the
  * headings give the model something to cite implicitly when it answers.
  */
-const buildContext = async (): Promise<string> => {
+const buildContext = async (locale: Locale): Promise<string> => {
   const [identity, availability, profile, experiences, projects, bookmarks, knowledge] =
     await Promise.all([
-      getIdentity(),
-      getAvailability(),
-      getProfile(),
-      listExperiences(),
-      listProjects(),
-      listPublicBookmarks(),
-      getKnowledge(),
+      getIdentity(locale),
+      getAvailability(locale),
+      getProfile(locale),
+      listExperiences(locale),
+      listProjects(locale),
+      listPublicBookmarks(locale),
+      getKnowledge(locale),
     ])
 
   // Availability comes first and is stated as authoritative: it is the one fact

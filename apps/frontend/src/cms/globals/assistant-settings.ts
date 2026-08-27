@@ -91,6 +91,7 @@ const AssistantSettings: GlobalConfig = {
     {
       name: 'unavailableMessage',
       type: 'textarea',
+      localized: true,
       label: 'Message de repli',
       required: true,
       defaultValue:
@@ -103,6 +104,7 @@ const AssistantSettings: GlobalConfig = {
     {
       name: 'retentionNotice',
       type: 'textarea',
+      localized: true,
       label: 'Avis de conservation',
       required: true,
       defaultValue:

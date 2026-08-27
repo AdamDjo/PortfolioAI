@@ -58,6 +58,7 @@ const AITools: CollectionConfig = {
     {
       name: 'description',
       type: 'textarea',
+      localized: true,
       label: 'Description',
       admin: {
         description: 'Une ou deux phrases : à quoi sert l’outil, pas comment il marche.',

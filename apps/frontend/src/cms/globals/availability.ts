@@ -40,6 +40,7 @@ const Availability: GlobalConfig = {
     {
       name: 'label',
       type: 'text',
+      localized: true,
       label: 'Texte affiché',
       required: true,
       defaultValue: 'Disponible pour des opportunités',
@@ -50,6 +51,7 @@ const Availability: GlobalConfig = {
     {
       name: 'detail',
       type: 'textarea',
+      localized: true,
       label: 'Précision pour l’assistant',
       admin: {
         description:

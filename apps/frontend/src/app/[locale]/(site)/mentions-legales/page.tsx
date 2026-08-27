@@ -23,7 +23,7 @@ async function LegalPage({ params }: PageProps<'/[locale]/mentions-legales'>) {
   const locale = await getPageLocale(params)
   setRequestLocale(locale)
 
-  const [t, identity] = await Promise.all([getTranslations('Legal'), getIdentity()])
+  const [t, identity] = await Promise.all([getTranslations('Legal'), getIdentity(locale)])
   const { legal } = identity
   const role = identity.location ? `${identity.role}, ${identity.location}` : identity.role
 

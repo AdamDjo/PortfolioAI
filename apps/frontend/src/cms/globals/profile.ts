@@ -24,12 +24,14 @@ const Profile: GlobalConfig = {
     {
       name: 'headline',
       type: 'text',
+      localized: true,
       label: 'Titre de la page',
       required: true,
     },
     {
       name: 'bio',
       type: 'textarea',
+      localized: true,
       label: 'Biographie',
       required: true,
       admin: {
@@ -54,6 +56,7 @@ const Profile: GlobalConfig = {
         {
           name: 'label',
           type: 'text',
+          localized: true,
           label: 'Domaine',
           required: true,
         },
@@ -75,12 +78,14 @@ const Profile: GlobalConfig = {
         {
           name: 'statement',
           type: 'text',
+          localized: true,
           label: 'Énoncé',
           required: true,
         },
         {
           name: 'detail',
           type: 'textarea',
+          localized: true,
           label: 'Précision',
           admin: {
             description: 'Optionnel : ce que le principe change concrètement.',

@@ -33,9 +33,9 @@ async function AboutPage({ params }: PageProps<'/[locale]/a-propos'>) {
   // Independent reads: they go out in parallel rather than in series.
   const [t, identity, profile, experiences] = await Promise.all([
     getTranslations('About'),
-    getIdentity(),
-    getProfile(),
-    listExperiences(),
+    getIdentity(locale),
+    getProfile(locale),
+    listExperiences(locale),
   ])
 
   return (

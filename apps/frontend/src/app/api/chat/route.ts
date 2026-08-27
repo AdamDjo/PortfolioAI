@@ -126,7 +126,7 @@ export async function POST(request: Request): Promise<Response> {
     }
   }
 
-  const settings = await getAssistantConfig()
+  const settings = await getAssistantConfig(locale)
   if (!settings.enabled) return fallbackResponse(settings.unavailableMessage)
 
   let provider
@@ -139,7 +139,7 @@ export async function POST(request: Request): Promise<Response> {
   }
   if (!provider) return fallbackResponse(settings.unavailableMessage)
 
-  const context = await buildContext()
+  const context = await buildContext(locale)
 
   const messages: ChatMessage[] = [
     {

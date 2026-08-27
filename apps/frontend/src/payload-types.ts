@@ -102,7 +102,7 @@ export interface Config {
   db: {
     defaultIDType: number
   }
-  fallbackLocale: null
+  fallbackLocale: ('false' | 'none' | 'null') | false | null | ('fr' | 'en') | ('fr' | 'en')[]
   globals: {
     'site-identity': SiteIdentity
     availability: Availability
@@ -115,7 +115,7 @@ export interface Config {
     profile: ProfileSelect<false> | ProfileSelect<true>
     'assistant-settings': AssistantSettingsSelect<false> | AssistantSettingsSelect<true>
   }
-  locale: null
+  locale: 'fr' | 'en'
   widgets: {
     collections: CollectionsWidget
   }

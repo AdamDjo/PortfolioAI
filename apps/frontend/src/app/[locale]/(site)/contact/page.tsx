@@ -26,7 +26,7 @@ async function ContactPage({ params }: PageProps<'/[locale]/contact'>) {
   const locale = await getPageLocale(params)
   setRequestLocale(locale)
 
-  const [t, identity] = await Promise.all([getTranslations('Contact'), getIdentity()])
+  const [t, identity] = await Promise.all([getTranslations('Contact'), getIdentity(locale)])
 
   return (
     <div className="page shell">
