@@ -1,11 +1,16 @@
 import bundleAnalyzer from '@next/bundle-analyzer'
 import { withPayload } from '@payloadcms/next/withPayload'
+import createNextIntlPlugin from 'next-intl/plugin'
 
 import type { NextConfig } from 'next'
 
 const withBundleAnalyzer = bundleAnalyzer({
   enabled: process.env.ANALYZE === 'true',
 })
+
+// Points next-intl at the request config; without it the plugin looks for
+// `./i18n/request.ts` at the project root rather than under `src/`.
+const withNextIntl = createNextIntlPlugin('./src/i18n/request.ts')
 
 /**
  * Content Security Policy, applied to every route.
@@ -68,4 +73,4 @@ const nextConfig: NextConfig = {
   headers: () => Promise.resolve([{ source: '/:path*', headers: securityHeaders }]),
 }
 
-export default withPayload(withBundleAnalyzer(nextConfig))
+export default withPayload(withBundleAnalyzer(withNextIntl(nextConfig)))

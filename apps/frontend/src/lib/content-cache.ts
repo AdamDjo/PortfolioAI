@@ -46,15 +46,39 @@ type ContentTag = (typeof CONTENT_TAGS)[keyof typeof CONTENT_TAGS]
  *
  * Identity feeds the header and footer defined in the shared layout, so every
  * page depends on it — hence the root invalidated in `layout` mode.
+ *
+ * Paths are stored bare (`/`, `/a-propos`); `purge` turns each into the route
+ * pattern `/[locale]/…` before calling `revalidatePath`.
+ *
+ * The pattern is what makes this work across languages, and the rule is not
+ * obvious: `revalidatePath` takes a *literal* path with no `type` to refresh one
+ * page, or a *route pattern* with a `type` to refresh every page matching it.
+ * Mixing them — a literal path plus a `type` — refreshes nothing, and nothing
+ * reports it: the call returns void either way while the pages keep serving
+ * stale HTML.
+ *
+ * Measured against a running production build: writing through the admin API
+ * with the pattern form updates `/en` and `/fr` on the next request; with a
+ * literal path plus `type`, neither ever updates.
+ *
+ * Locales are therefore never enumerated here — one pattern covers them all, so
+ * adding a language needs no change.
  */
-const PAGES_BY_TAG: Record<ContentTag, { path: string; type?: 'layout' | 'page' }[]> = {
+
+const PAGES_BY_TAG: Record<ContentTag, { path: string; type: 'layout' | 'page' }[]> = {
   [CONTENT_TAGS.identity]: [{ path: '/', type: 'layout' }],
-  [CONTENT_TAGS.availability]: [{ path: '/' }],
-  [CONTENT_TAGS.profile]: [{ path: '/a-propos' }],
-  [CONTENT_TAGS.experiences]: [{ path: '/a-propos' }],
-  [CONTENT_TAGS.projects]: [{ path: '/' }, { path: '/projets' }],
-  [CONTENT_TAGS.bookmarks]: [{ path: '/' }, { path: '/veille' }],
-  [CONTENT_TAGS.aiTools]: [{ path: '/outils-ia' }],
+  [CONTENT_TAGS.availability]: [{ path: '/', type: 'page' }],
+  [CONTENT_TAGS.profile]: [{ path: '/a-propos', type: 'page' }],
+  [CONTENT_TAGS.experiences]: [{ path: '/a-propos', type: 'page' }],
+  [CONTENT_TAGS.projects]: [
+    { path: '/', type: 'page' },
+    { path: '/projets', type: 'page' },
+  ],
+  [CONTENT_TAGS.bookmarks]: [
+    { path: '/', type: 'page' },
+    { path: '/veille', type: 'page' },
+  ],
+  [CONTENT_TAGS.aiTools]: [{ path: '/outils-ia', type: 'page' }],
   // The assistant answers from a route handler, so no page holds this content:
   // purging the cache entry is enough, there is no HTML to replace.
   [CONTENT_TAGS.aiKnowledge]: [],
@@ -93,7 +117,7 @@ const cachedRead = <T>(tag: ContentTag, key: string, read: () => Promise<T>): ((
 const purge = (tag: ContentTag): void => {
   try {
     for (const { path, type } of PAGES_BY_TAG[tag]) {
-      revalidatePath(path, type)
+      revalidatePath(`/[locale]${path === '/' ? '' : path}`, type)
     }
   } catch (error) {
     const message = error instanceof Error ? error.message : ''
@@ -134,4 +158,4 @@ const revalidateCollection = (
  * is inferred anyway. Exporting it would invite declaring a tag elsewhere, while
  * the list has to stay defined here.
  */
-export { CONTENT_TAGS, cachedRead, revalidateCollection, revalidateGlobal }
+export { CONTENT_TAGS, PAGES_BY_TAG, cachedRead, revalidateCollection, revalidateGlobal }
