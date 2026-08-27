@@ -76,15 +76,23 @@ export function Hero({
   const canRate = turns.some((turn) => turn.role === 'assistant') && !pending && !streaming
   const shownSkills = (skills.length > 0 ? skills : [...SKILL_FALLBACK]).slice(0, 5)
 
+  // Reading `scrollHeight` inside the effect would force a synchronous layout:
+  // the effect runs right after React has committed the new turns, so the style
+  // and layout of the thread are still invalid. Deferring the measurement to the
+  // next frame lets the browser lay out once, on its own schedule.
   useEffect(() => {
     const thread = threadRef.current
     if (!thread) return
 
-    const distanceFromBottom = thread.scrollHeight - thread.scrollTop - thread.clientHeight
-    if (distanceFromBottom > FOLLOW_TAIL_THRESHOLD) return
+    const frame = window.requestAnimationFrame(() => {
+      const distanceFromBottom = thread.scrollHeight - thread.scrollTop - thread.clientHeight
+      if (distanceFromBottom > FOLLOW_TAIL_THRESHOLD) return
 
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    thread.scrollTo({ top: thread.scrollHeight, behavior: reduceMotion ? 'auto' : 'smooth' })
+      const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+      thread.scrollTo({ top: thread.scrollHeight, behavior: reduceMotion ? 'auto' : 'smooth' })
+    })
+
+    return () => window.cancelAnimationFrame(frame)
   }, [turns, streaming, pending])
 
   useImperativeHandle(chatRef, () => ({
@@ -168,6 +176,12 @@ export function Hero({
         <span className="home-mascot-doodle doodle-spark" aria-hidden="true">
           <Sparkles size={24} />
         </span>
+        {/*
+          `fetchPriority` is set explicitly on top of `priority`. In Next 16
+          `priority` only emits the `<link rel="preload">`; it no longer forwards
+          a priority hint, so both the preload and the `<img>` were requested at
+          default priority and competed with the scripts below them.
+        */}
         <Image
           src="/images/adem-mascot.webp"
           alt="Mascotte illustrée d’Adem tenant une tablette"
@@ -175,6 +189,7 @@ export function Hero({
           height={1536}
           sizes="(max-width: 760px) 70vw, 300px"
           priority
+          fetchPriority="high"
         />
       </div>
 
@@ -297,14 +312,19 @@ export function Hero({
             </div>
           ) : null}
 
+          {/*
+            The error animates `opacity` and `y`, not `height: auto`: animating
+            height relayouts the chat card on every frame and cannot run on the
+            compositor.
+          */}
           <AnimatePresence>
             {error ? (
               <m.p
                 className="chat-error"
                 role="alert"
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
+                initial={{ opacity: 0, y: -6 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -6 }}
               >
                 {error}
               </m.p>
