@@ -44,7 +44,7 @@ const requestSchema = z.object({
   conversationId: z.uuid().optional(),
   /**
    * The locale the visitor is reading the site in. Sent by the client because a
-   * route handler cannot read the `[lang]` root param, and validated against the
+   * route handler cannot read the `[locale]` segment, and validated against the
    * supported set so it can only ever select one of our own prompts.
    */
   locale: z.enum(routing.locales).optional(),
