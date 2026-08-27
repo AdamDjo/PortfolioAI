@@ -46,6 +46,7 @@ const AIKnowledge: CollectionConfig = {
     {
       name: 'question',
       type: 'text',
+      localized: true,
       label: 'Question',
       required: true,
       admin: {
@@ -55,6 +56,7 @@ const AIKnowledge: CollectionConfig = {
     {
       name: 'answer',
       type: 'textarea',
+      localized: true,
       label: 'Réponse',
       required: true,
       admin: {

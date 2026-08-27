@@ -3,6 +3,7 @@ import { getPayload } from 'payload'
 import { CONTENT_TAGS, cachedRead } from '@/lib/content-cache'
 import config from '@payload-config'
 
+import type { Locale } from '@/i18n/routing'
 import type { Availability, Experience, Profile, Project, SiteIdentity } from '@/payload-types'
 
 /**
@@ -140,31 +141,40 @@ const toProfileView = (doc: Profile): ProfileView => ({
 })
 
 /**
- * Formats a date as "août 2025".
+ * Formats a date as "août 2025" in French, "August 2025" in English.
  *
  * Dates are entered to the month: the day carries no meaning here, so it is not
  * displayed.
  */
-const formatMonth = (value: string): string =>
-  new Intl.DateTimeFormat('fr-FR', { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(
+const formatMonth = (value: string, locale: Locale): string =>
+  new Intl.DateTimeFormat(locale, { month: 'long', year: 'numeric', timeZone: 'UTC' }).format(
     new Date(value)
   )
 
+/**
+ * The one word a period needs beyond the dates themselves.
+ *
+ * It sits here rather than in the message catalogue because this layer runs
+ * inside `unstable_cache`, where reading translations is not safe, and because
+ * the word only ever appears glued to a formatted date.
+ */
+const PRESENT: Record<Locale, string> = { fr: 'aujourd’hui', en: 'today' }
+
 /** "août 2025 — aujourd’hui" for a current role, otherwise the closed period. */
-const formatPeriod = (doc: Experience): string => {
-  const start = formatMonth(doc.startDate)
-  if (doc.current) return `${start} — aujourd’hui`
+const formatPeriod = (doc: Experience, locale: Locale): string => {
+  const start = formatMonth(doc.startDate, locale)
+  if (doc.current) return `${start} — ${PRESENT[locale]}`
 
   const end = asText(doc.endDate)
-  return end ? `${start} — ${formatMonth(end)}` : start
+  return end ? `${start} — ${formatMonth(end, locale)}` : start
 }
 
-const toExperienceView = (doc: Experience): ExperienceView => ({
+const toExperienceView = (doc: Experience, locale: Locale): ExperienceView => ({
   id: String(doc.id),
   company: doc.company,
   role: doc.role,
   location: asText(doc.location),
-  period: formatPeriod(doc),
+  period: formatPeriod(doc, locale),
   project: asText(doc.project),
   context: asText(doc.context),
   achievements: (doc.achievements ?? []).map((entry) => entry.statement),
@@ -207,41 +217,43 @@ const toAvailabilityView = (doc: Availability): AvailabilityView => ({
  * Each raw read stays private and only its `cachedRead` wrapper is exported, so
  * no caller can sidestep the cache by accident.
  */
-const readIdentity = async (): Promise<IdentityView> => {
+const readIdentity = async (locale: Locale): Promise<IdentityView> => {
   const payload = await getPayload({ config })
-  const doc = await payload.findGlobal({ slug: 'site-identity', overrideAccess: false })
+  const doc = await payload.findGlobal({ slug: 'site-identity', locale, overrideAccess: false })
   return toIdentityView(doc)
 }
 
-const readAvailability = async (): Promise<AvailabilityView> => {
+const readAvailability = async (locale: Locale): Promise<AvailabilityView> => {
   const payload = await getPayload({ config })
-  const doc = await payload.findGlobal({ slug: 'availability', overrideAccess: false })
+  const doc = await payload.findGlobal({ slug: 'availability', locale, overrideAccess: false })
   return toAvailabilityView(doc)
 }
 
-const readProfile = async (): Promise<ProfileView> => {
+const readProfile = async (locale: Locale): Promise<ProfileView> => {
   const payload = await getPayload({ config })
-  const doc = await payload.findGlobal({ slug: 'profile', overrideAccess: false })
+  const doc = await payload.findGlobal({ slug: 'profile', locale, overrideAccess: false })
   return toProfileView(doc)
 }
 
 /** Career path, most recent first. */
-const readExperiences = async (): Promise<ExperienceView[]> => {
+const readExperiences = async (locale: Locale): Promise<ExperienceView[]> => {
   const payload = await getPayload({ config })
   const result = await payload.find({
     collection: 'experiences',
+    locale,
     sort: '-startDate',
     limit: 50,
     overrideAccess: false,
   })
-  return result.docs.map(toExperienceView)
+  return result.docs.map((doc) => toExperienceView(doc, locale))
 }
 
 /** Projects by ascending display order, most recent first on a tie. */
-const readProjects = async (): Promise<ProjectView[]> => {
+const readProjects = async (locale: Locale): Promise<ProjectView[]> => {
   const payload = await getPayload({ config })
   const result = await payload.find({
     collection: 'projects',
+    locale,
     sort: ['order', '-createdAt'],
     limit: 50,
     depth: 1,

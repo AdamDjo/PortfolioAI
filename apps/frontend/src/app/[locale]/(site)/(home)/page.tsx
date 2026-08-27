@@ -28,11 +28,11 @@ async function Home({ params }: PageProps<'/[locale]'>) {
   setRequestLocale(locale)
 
   const [identity, availability, profile, projects, assistant] = await Promise.all([
-    getIdentity(),
-    getAvailability(),
-    getProfile(),
-    listProjects(),
-    getAssistantConfig(),
+    getIdentity(locale),
+    getAvailability(locale),
+    getProfile(locale),
+    listProjects(locale),
+    getAssistantConfig(locale),
   ])
 
   // Without a project flagged as featured, show the first of the sort order

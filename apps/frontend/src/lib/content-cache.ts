@@ -1,5 +1,6 @@
-import { revalidatePath, unstable_cache } from 'next/cache'
+import { revalidatePath, revalidateTag, unstable_cache } from 'next/cache'
 
+import type { Locale } from '@/i18n/routing'
 import type {
   CollectionAfterChangeHook,
   CollectionAfterDeleteHook,
@@ -86,7 +87,7 @@ const PAGES_BY_TAG: Record<ContentTag, { path: string; type: 'layout' | 'page' }
 }
 
 /**
- * Caches a read under its tag.
+ * Caches a read under its tag, once per locale.
  *
  * `revalidate: false` because invalidation comes from the hooks, not from a
  * clock: a periodic refresh would only hit the database for nothing.
@@ -97,12 +98,33 @@ const PAGES_BY_TAG: Record<ContentTag, { path: string; type: 'layout' | 'page' }
  * together and are purged together, but each needs its own entry. Passing the tag
  * as the key too would make the second read overwrite the first.
  *
+ * The locale is part of the cache key, not a detail: editorial fields now hold a
+ * value per language, so a single shared entry would let whichever language was
+ * requested first serve its content to the other.
+ *
+ * One memoized reader is built per locale and kept, rather than one per call: a
+ * fresh `unstable_cache` on every invocation would defeat the cache it creates.
+ *
  * The tag still earns its keep even though invalidation goes through paths: it
  * isolates cache entries from each other and spares `/veille`, rendered
  * dynamically, from replaying the query on every visit.
  */
-const cachedRead = <T>(tag: ContentTag, key: string, read: () => Promise<T>): (() => Promise<T>) =>
-  unstable_cache(read, [key], { tags: [tag], revalidate: false })
+const cachedRead = <T>(
+  tag: ContentTag,
+  key: string,
+  read: (locale: Locale) => Promise<T>
+): ((locale: Locale) => Promise<T>) => {
+  const byLocale = new Map<Locale, () => Promise<T>>()
+
+  return (locale) => {
+    let cached = byLocale.get(locale)
+    if (!cached) {
+      cached = unstable_cache(() => read(locale), [key, locale], { tags: [tag], revalidate: false })
+      byLocale.set(locale, cached)
+    }
+    return cached()
+  }
+}
 
 /**
  * Regenerates the pages that display this content.
@@ -116,6 +138,14 @@ const cachedRead = <T>(tag: ContentTag, key: string, read: () => Promise<T>): ((
  */
 const purge = (tag: ContentTag): void => {
   try {
+    // Two purges, both needed. The cached reads carry `revalidate: false` and
+    // now exist once per language, so replacing the HTML alone would re-render
+    // the page against the very entry that went stale — and with a fallback in
+    // play, a freshly written English value would keep showing French.
+    // `expire: 0` drops the entries at once; the default profile only marks them
+    // stale, which serves the old content one more time.
+    revalidateTag(tag, { expire: 0 })
+
     for (const { path, type } of PAGES_BY_TAG[tag]) {
       revalidatePath(`/[locale]${path === '/' ? '' : path}`, type)
     }

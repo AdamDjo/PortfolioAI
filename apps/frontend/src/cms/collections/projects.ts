@@ -52,6 +52,7 @@ const Projects: CollectionConfig = {
     {
       name: 'description',
       type: 'textarea',
+      localized: true,
       label: 'Description',
       admin: {
         description: 'Laissez vide pour reprendre la description de la page distante.',

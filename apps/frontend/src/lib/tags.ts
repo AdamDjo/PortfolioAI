@@ -3,6 +3,8 @@ import { getPayload } from 'payload'
 import { CONTENT_TAGS, cachedRead } from '@/lib/content-cache'
 import config from '@payload-config'
 
+import type { Locale } from '@/i18n/routing'
+
 /**
  * Server-side access to the tag vocabulary.
  *
@@ -21,11 +23,12 @@ interface TagView {
   name: string
 }
 
-const readAllTags = async (): Promise<TagView[]> => {
+const readAllTags = async (locale: Locale): Promise<TagView[]> => {
   const payload = await getPayload({ config })
 
   const result = await payload.find({
     collection: 'tags',
+    locale,
     sort: 'name',
     limit: 200,
     // Only the name is displayed: the relations are not needed here.

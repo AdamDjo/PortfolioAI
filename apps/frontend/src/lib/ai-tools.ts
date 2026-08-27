@@ -3,6 +3,7 @@ import { getPayload } from 'payload'
 import { CONTENT_TAGS, cachedRead } from '@/lib/content-cache'
 import config from '@payload-config'
 
+import type { Locale } from '@/i18n/routing'
 import type { AiTool } from '@/payload-types'
 
 /**
@@ -60,11 +61,12 @@ const toView = (doc: AiTool): AIToolView => {
  * a reference one comes back to, so a stable alphabetical order is easier to scan
  * than a shifting "most recent first".
  */
-const readPublicAITools = async (): Promise<AIToolView[]> => {
+const readPublicAITools = async (locale: Locale): Promise<AIToolView[]> => {
   const payload = await getPayload({ config })
 
   const result = await payload.find({
     collection: 'ai-tools',
+    locale,
     where: { active: { equals: true } },
     sort: 'name',
     limit: 200,

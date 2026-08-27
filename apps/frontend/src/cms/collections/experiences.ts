@@ -39,12 +39,14 @@ const Experiences: CollectionConfig = {
     {
       name: 'role',
       type: 'text',
+      localized: true,
       label: 'Poste',
       required: true,
     },
     {
       name: 'location',
       type: 'text',
+      localized: true,
       label: 'Lieu',
     },
     {
@@ -80,6 +82,7 @@ const Experiences: CollectionConfig = {
     {
       name: 'project',
       type: 'textarea',
+      localized: true,
       label: 'Produit',
       admin: {
         description: 'Optionnel : le produit sur lequel porte la mission.',
@@ -88,6 +91,7 @@ const Experiences: CollectionConfig = {
     {
       name: 'context',
       type: 'textarea',
+      localized: true,
       label: 'Contexte',
       admin: {
         description: 'Équipe, périmètre, enjeu de la mission.',
@@ -102,6 +106,7 @@ const Experiences: CollectionConfig = {
         {
           name: 'statement',
           type: 'textarea',
+          localized: true,
           label: 'Réalisation',
           required: true,
         },

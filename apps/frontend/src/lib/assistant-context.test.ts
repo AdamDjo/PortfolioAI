@@ -115,7 +115,7 @@ beforeEach(() => {
 
 describe('buildContext — disponibilité', () => {
   it('place la disponibilité en tête, avant toute autre section', async () => {
-    const context = await buildContext()
+    const context = await buildContext('fr')
     expect(context.indexOf('## Disponibilité')).toBe(0)
     expect(context.indexOf('## Disponibilité')).toBeLessThan(context.indexOf('## Parcours'))
   })
@@ -123,7 +123,7 @@ describe('buildContext — disponibilité', () => {
   it('déclare la section comme faisant autorité', async () => {
     // Without this line the model happily infers availability from an older
     // experience entry further down.
-    const context = await buildContext()
+    const context = await buildContext('fr')
     expect(context).toContain('Cette section fait autorité')
   })
 
@@ -134,7 +134,7 @@ describe('buildContext — disponibilité', () => {
       detail: 'Ouvert aux discussions pour la suite.',
     }
 
-    const context = await buildContext()
+    const context = await buildContext('fr')
     expect(context).toContain('Statut : indisponible')
     expect(context).toContain('En mission jusqu’en mars')
     expect(context).toContain('Ouvert aux discussions pour la suite.')
@@ -144,12 +144,12 @@ describe('buildContext — disponibilité', () => {
 describe('buildContext — confidentialité', () => {
   it('n’expose jamais l’adresse e-mail de contact', async () => {
     // Deliberate: the assistant invites contact, it does not hand out the address.
-    const context = await buildContext()
+    const context = await buildContext('fr')
     expect(context).not.toContain(identity.email)
   })
 
   it('ne demande à Payload que les connaissances publiées', async () => {
-    await buildContext()
+    await buildContext('fr')
     expect(findMock).toHaveBeenCalledWith(
       expect.objectContaining({
         collection: 'ai-knowledge',
@@ -165,18 +165,18 @@ describe('buildContext — confidentialité', () => {
 
     // The query filters, but the assertion is on the output: this is the property
     // that actually matters if the query is ever loosened.
-    const published = await buildContext()
+    const published = await buildContext('fr')
     expect(published).toContain('Réponse interne')
 
     findMock.mockResolvedValue({ docs: [] })
-    const context = await buildContext()
+    const context = await buildContext('fr')
     expect(context).not.toContain('Réponse interne')
   })
 })
 
 describe('buildContext — assemblage', () => {
   it('rend les sections attendues', async () => {
-    const context = await buildContext()
+    const context = await buildContext('fr')
     for (const heading of [
       '## Identité',
       '## Profil',
@@ -194,7 +194,7 @@ describe('buildContext — assemblage', () => {
     state.projects = []
     state.bookmarks = []
 
-    const context = await buildContext()
+    const context = await buildContext('fr')
     expect(context).not.toContain('## Projets')
     expect(context).not.toContain('## Veille récente')
 
@@ -220,7 +220,7 @@ describe('buildContext — assemblage', () => {
       tags: [],
     }))
 
-    const context = await buildContext()
+    const context = await buildContext('fr')
     expect(context).toContain('Article 39')
     expect(context).not.toContain('Article 40')
 

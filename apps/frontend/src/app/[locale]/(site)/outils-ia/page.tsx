@@ -25,7 +25,7 @@ async function AIToolsPage({ params }: PageProps<'/[locale]/outils-ia'>) {
   const locale = await getPageLocale(params)
   setRequestLocale(locale)
 
-  const [t, tools] = await Promise.all([getTranslations('Tools'), listPublicAITools()])
+  const [t, tools] = await Promise.all([getTranslations('Tools'), listPublicAITools(locale)])
 
   return (
     <div className="page shell">
