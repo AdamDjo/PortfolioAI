@@ -188,9 +188,67 @@
   font-size: 12px;
 }
 
+/* Creation field, rendered only for the signed-in owner. */
+.veille-tag-picker-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.veille-tag-create {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+.veille-tag-create input {
+  flex: 1;
+  min-width: 0;
+  padding: 5px 11px;
+  border: 1px dashed var(--line);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-size: 12px;
+}
+.veille-tag-create input::placeholder {
+  color: var(--muted);
+}
+.veille-tag-create input:focus-visible {
+  outline: none;
+  border-style: solid;
+  border-color: var(--accent);
+}
+.veille-tag-create button {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 5px 11px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--muted);
+  font-size: 12px;
+  cursor: pointer;
+  transition:
+    color 180ms ease,
+    border-color 180ms ease;
+}
+.veille-tag-create button:hover:not(:disabled) {
+  border-color: var(--accent);
+  color: var(--text);
+}
+.veille-tag-create button:disabled {
+  opacity: 0.55;
+  cursor: default;
+}
+.veille-tag-create-error {
+  margin: 0;
+  color: var(--muted);
+  font-size: 12px;
+}
+
 /* Composer: the picker sits under the paste bar, never inside it. */
-.veille-add-bar + .veille-tag-picker,
-.veille-add-bar + .veille-tag-picker-empty {
+.veille-add-bar + .veille-tag-picker-shell {
   margin-bottom: 22px;
 }
 
@@ -239,6 +297,15 @@
   background: var(--surface);
   box-shadow: 0 16px 38px rgb(18 24 40 / 16%);
 }
+/*
+  The popover is sized by its content (`width: max-content`), so a short tag list
+  would collapse the creation field to nothing. A floor on the shell keeps the
+  input usable without widening the popover past its max-width.
+*/
+.veille-tag-editor-popover .veille-tag-picker-shell {
+  min-width: 190px;
+}
+
 .veille-tag-editor-error {
   margin: 8px 0 0;
   color: #e5484d;

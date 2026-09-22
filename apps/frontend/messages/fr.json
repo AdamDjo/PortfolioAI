@@ -149,8 +149,13 @@
     "tagPickerComposerLabel": "Tags à associer au lien",
     "tagPickerCardLabel": "Modifier les tags de ce lien",
     "tagPickerNoTags": "Aucun tag pour l’instant. Créez-en dans /admin.",
+    "tagPickerNoTagsOwner": "Aucun tag pour l’instant. Créez le premier ci-dessous.",
     "tagPickerOpenLabel": "Modifier les tags",
     "tagPickerSaveFailed": "Les tags n’ont pas pu être enregistrés.",
+    "tagCreateLabel": "Nom du nouveau tag",
+    "tagCreatePlaceholder": "Nouveau tag…",
+    "tagCreateSubmit": "Créer",
+    "tagCreateFailed": "Le tag n’a pas pu être créé.",
     "emptyState": "Aucun lien publié pour l’instant.",
     "emptyFilteredState": "Aucun lien avec ce tag pour l’instant."
   },

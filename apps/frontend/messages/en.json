@@ -149,8 +149,13 @@
     "tagPickerComposerLabel": "Tags for this link",
     "tagPickerCardLabel": "Edit this link’s tags",
     "tagPickerNoTags": "No tags yet. Create some in /admin.",
+    "tagPickerNoTagsOwner": "No tags yet. Create the first one below.",
     "tagPickerOpenLabel": "Edit tags",
     "tagPickerSaveFailed": "The tags could not be saved.",
+    "tagCreateLabel": "New tag name",
+    "tagCreatePlaceholder": "New tag…",
+    "tagCreateSubmit": "Create",
+    "tagCreateFailed": "The tag could not be created.",
     "emptyState": "No links published yet.",
     "emptyFilteredState": "No links with this tag yet."
   },
