@@ -1,4 +1,5 @@
 import { CONTENT_TAGS, revalidateCollection } from '@/lib/content-cache'
+import { toTagSlug } from '@/lib/tag-slug'
 
 import type { CollectionConfig } from 'payload'
 
@@ -11,7 +12,13 @@ const revalidate = revalidateCollection(CONTENT_TAGS.bookmarks)
  *
  * A collection of their own rather than a free-text field: that is what lets a
  * tag be renamed once and change everywhere, and what keeps near-duplicates
- * ("React" / "react" / "ReactJS") from piling up.
+ * ("React" / "react" / "ReactJS") from piling up — the unique `slug` is what
+ * enforces it, since all three collapse to the same identifier.
+ *
+ * Creation is also offered on `/veille` to the signed-in owner, which is why the
+ * slug rule is shared (see lib/tag-slug): the page resolves a typed name against
+ * the existing vocabulary before posting, so a near-duplicate selects the tag
+ * that already exists instead of failing on the unique index.
  */
 const Tags: CollectionConfig = {
   slug: 'tags',
@@ -46,20 +53,7 @@ const Tags: CollectionConfig = {
         description: 'Généré depuis le nom, utilisé dans les URL de filtre.',
       },
       hooks: {
-        beforeValidate: [
-          ({ data }) => {
-            const name = typeof data?.name === 'string' ? data.name : ''
-            return (
-              name
-                .normalize('NFD')
-                // Strips diacritics: "Accessibilité" becomes "accessibilite".
-                .replace(/[\u0300-\u036f]/g, '')
-                .toLowerCase()
-                .replace(/[^a-z0-9]+/g, '-')
-                .replace(/^-+|-+$/g, '')
-            )
-          },
-        ],
+        beforeValidate: [({ data }) => toTagSlug(typeof data?.name === 'string' ? data.name : '')],
       },
     },
   ],

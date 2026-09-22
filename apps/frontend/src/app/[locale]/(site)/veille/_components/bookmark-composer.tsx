@@ -144,6 +144,18 @@ function BookmarkComposer({ tags }: BookmarkComposerProps) {
         onToggle={toggleTag}
         disabled={saving}
         ariaLabel={t('tagPickerComposerLabel')}
+        // Only rendered for the signed-in owner in the first place.
+        canCreate
+        onCreated={(tag) => {
+          // Select it straight away: creating a tag here always means wanting it
+          // on the link being filed.
+          setSelectedTagIds((current) =>
+            current.includes(tag.id) ? current : [...current, tag.id]
+          )
+          // The vocabulary is rendered server-side; refresh so the new tag also
+          // reaches the per-card editors.
+          router.refresh()
+        }}
       />
       <AnimatePresence>
         {message ? (
