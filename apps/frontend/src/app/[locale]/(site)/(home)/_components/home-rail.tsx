@@ -27,7 +27,7 @@ const RAIL_ITEMS = [
   },
   {
     id: 'journey',
-    href: '/a-propos',
+    href: '/parcours',
     icon: Route,
     title: 'journeyTitle',
     description: 'journeyDescription',

@@ -13,12 +13,13 @@ import { Link, usePathname } from '@/i18n/navigation'
  * `Link` and `usePathname` from `@/i18n/navigation` add and strip it, so the
  * active check compares like with like.
  */
-const NAV_ITEMS = [
+const BASE_NAV_ITEMS = [
   { href: '/', key: 'home' },
   { href: '/projets', key: 'projects' },
   { href: '/veille', key: 'veille' },
   { href: '/outils-ia', key: 'tools' },
-  { href: '/a-propos', key: 'about' },
+  { href: '/parcours', key: 'about' },
+  { href: '/services', key: 'services' },
   { href: '/contact', key: 'contact' },
 ] as const
 
@@ -32,15 +33,25 @@ const NAV_ITEMS = [
  * The trigger renders after the links in the DOM but is placed in the header's
  * action group by the parent, which passes it through as a separate slot.
  */
-export function SiteNav({ actions }: { actions: React.ReactNode }) {
+export function SiteNav({
+  actions,
+  servicesEnabled,
+}: {
+  actions: React.ReactNode
+  /** Hides the `/services` link when the owner turned the page off in `/admin`. */
+  servicesEnabled: boolean
+}) {
   const t = useTranslations('Nav')
   const pathname = usePathname()
   const [menuOpen, setMenuOpen] = useState(false)
+  const navItems = servicesEnabled
+    ? BASE_NAV_ITEMS
+    : BASE_NAV_ITEMS.filter((item) => item.href !== '/services')
 
   return (
     <>
       <nav className={menuOpen ? 'nav-links is-open' : 'nav-links'} aria-label={t('label')}>
-        {NAV_ITEMS.map((item) => {
+        {navItems.map((item) => {
           const active = pathname === item.href
           return (
             <Link

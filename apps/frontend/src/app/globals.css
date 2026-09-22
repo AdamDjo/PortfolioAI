@@ -207,7 +207,8 @@ img {
 @import '../styles/layout.css';
 @import '../styles/responsive.css';
 @import '../styles/motion.css';
+@import '../styles/skills.css';
 @import './[locale]/(site)/veille/_styles.css';
 @import './[locale]/(site)/outils-ia/_styles.css';
-@import './[locale]/(site)/a-propos/_styles.css';
+@import './[locale]/(site)/parcours/_styles.css';
 @import '../styles/overrides.css';

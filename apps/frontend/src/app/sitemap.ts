@@ -1,5 +1,6 @@
 import { getPathname } from '@/i18n/navigation'
 import { routing } from '@/i18n/routing'
+import { getServicesSettings } from '@/lib/site-content'
 
 import type { MetadataRoute } from 'next'
 
@@ -16,7 +17,8 @@ import type { MetadataRoute } from 'next'
 const ROUTES = [
   { path: '/', priority: 1 },
   { path: '/projets', priority: 0.8 },
-  { path: '/a-propos', priority: 0.8 },
+  { path: '/parcours', priority: 0.8 },
+  { path: '/services', priority: 0.8 },
   { path: '/veille', priority: 0.6 },
   { path: '/outils-ia', priority: 0.6 },
   { path: '/contact', priority: 0.6 },
@@ -29,10 +31,14 @@ const BASE = process.env.NEXT_PUBLIC_SERVER_URL ?? 'http://localhost:3000'
 const url = (path: string, locale: (typeof routing.locales)[number]) =>
   `${BASE}${getPathname({ href: path, locale })}`
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const lastModified = new Date()
+  // The toggle has no locale of its own: a page either exists or it does not,
+  // for every language at once, so one read decides for the whole sitemap.
+  const { enabled: servicesEnabled } = await getServicesSettings(routing.defaultLocale)
+  const routes = servicesEnabled ? ROUTES : ROUTES.filter((route) => route.path !== '/services')
 
-  return ROUTES.flatMap(({ path, priority }) => {
+  return routes.flatMap(({ path, priority }) => {
     const languages: Record<string, string> = {}
     for (const locale of routing.locales) languages[locale] = url(path, locale)
     languages['x-default'] = url(path, routing.defaultLocale)
