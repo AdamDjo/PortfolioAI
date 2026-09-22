@@ -204,7 +204,7 @@ export function Hero({
             <strong>{name}</strong>
             <small>{role}</small>
             {location ? <small>{location}</small> : null}
-            <Link href="/a-propos">
+            <Link href="/parcours">
               {t('profile.action')} <ArrowRight size={14} />
             </Link>
           </article>
