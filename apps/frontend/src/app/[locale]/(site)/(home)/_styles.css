@@ -248,9 +248,15 @@
   box-shadow: 0 8px 20px rgb(103 85 245 / 20%);
 }
 .message-ai {
+  /* Beside the avatar it must take the rest of the row and wrap inside it:
+     the base `.message` keeps its natural width (`flex: 0 0 auto`), which here
+     meant one unwrapped line overflowing the thread sideways. */
+  flex: 1 1 auto;
+  min-width: 0;
   max-width: none;
   padding: 0;
   color: var(--text);
+  overflow-wrap: anywhere;
 }
 /* The live conversation, below the scripted example. */
 .chat-thread {
@@ -263,6 +269,7 @@
   flex-direction: column;
   /* `auto` rather than `scroll`: the short conversations that fit show no track,
      and the scripted empty state keeps its original look. */
+  overflow-x: hidden;
   overflow-y: auto;
   /* Keeps a wheel gesture inside the transcript from continuing into the page
      once the thread hits its end. */
@@ -1023,7 +1030,9 @@
 .home-chat-card {
   display: flex;
   min-height: 285px;
-  max-height: 390px;
+  /* Header, feedback row, form and retention notice take ~230px of fixed
+     furniture; this leaves the transcript room for a full exchange. */
+  max-height: 560px;
   flex-direction: column;
   padding: 17px;
   border-radius: 16px;

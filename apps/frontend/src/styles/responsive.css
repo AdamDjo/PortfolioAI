@@ -281,7 +281,7 @@
     grid-template-columns: 1fr 1fr;
   }
   .home-chat-card {
-    max-height: 430px;
+    max-height: min(600px, 80svh);
   }
   /* iOS zooms into any focused field under 16px. */
   .home-chat-card .chat-form input {
