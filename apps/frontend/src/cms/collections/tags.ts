@@ -1,4 +1,5 @@
 import { CONTENT_TAGS, revalidateCollection } from '@/lib/content-cache'
+import { toSlug } from '@/lib/slug'
 
 import type { CollectionConfig } from 'payload'
 
@@ -46,20 +47,9 @@ const Tags: CollectionConfig = {
         description: 'Généré depuis le nom, utilisé dans les URL de filtre.',
       },
       hooks: {
-        beforeValidate: [
-          ({ data }) => {
-            const name = typeof data?.name === 'string' ? data.name : ''
-            return (
-              name
-                .normalize('NFD')
-                // Strips diacritics: "Accessibilité" becomes "accessibilite".
-                .replace(/[\u0300-\u036f]/g, '')
-                .toLowerCase()
-                .replace(/[^a-z0-9]+/g, '-')
-                .replace(/^-+|-+$/g, '')
-            )
-          },
-        ],
+        // The rule is shared with `posts`, so a tag and an article can never
+        // disagree on what a given title becomes in a URL.
+        beforeValidate: [({ data }) => toSlug(typeof data?.name === 'string' ? data.name : '')],
       },
     },
   ],

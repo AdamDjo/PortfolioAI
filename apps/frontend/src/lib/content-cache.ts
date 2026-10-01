@@ -32,6 +32,7 @@ const CONTENT_TAGS = {
   bookmarks: 'content:bookmarks',
   aiTools: 'content:ai-tools',
   aiKnowledge: 'content:ai-knowledge',
+  posts: 'content:posts',
   assistant: 'content:assistant',
 } as const
 
@@ -80,6 +81,13 @@ const PAGES_BY_TAG: Record<ContentTag, { path: string; type: 'layout' | 'page' }
     { path: '/veille', type: 'page' },
   ],
   [CONTENT_TAGS.aiTools]: [{ path: '/outils-ia', type: 'page' }],
+  /*
+   * No page yet: the `posts` collection exists before the `/blog` routes do, so
+   * there is no HTML to replace. The entry is declared all the same, because a
+   * tag without one fails the test that pairs the two — and it is where
+   * `/blog` and `/blog/[slug]` are added with those routes.
+   */
+  [CONTENT_TAGS.posts]: [],
   // The assistant answers from a route handler, so no page holds this content:
   // purging the cache entry is enough, there is no HTML to replace.
   [CONTENT_TAGS.aiKnowledge]: [],

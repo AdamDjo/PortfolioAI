@@ -15,6 +15,7 @@ import { Bookmarks } from './collections/bookmarks'
 import { Conversations } from './collections/conversations'
 import { Experiences } from './collections/experiences'
 import { Media } from './collections/media'
+import { Posts } from './collections/posts'
 import { Projects } from './collections/projects'
 import { Tags } from './collections/tags'
 import { Users } from './collections/users'
@@ -36,6 +37,7 @@ export default buildConfig({
   collections: [
     Users,
     Media,
+    Posts,
     Projects,
     Experiences,
     Tags,
