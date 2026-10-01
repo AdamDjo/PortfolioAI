@@ -15,7 +15,8 @@
     "blog": "Blog",
     "veille": "Veille",
     "tools": "Outils IA",
-    "about": "À propos",
+    "about": "Parcours",
+    "services": "Services",
     "contact": "Contact"
   },
   "Footer": {
@@ -44,7 +45,7 @@
       "feedbackUseful": "Réponse utile",
       "feedbackNotUseful": "Réponse pas utile",
       "feedbackThanks": "Merci pour votre retour.",
-      "privacyLink": "En savoir plus",
+      "privacyLink": "Politique de confidentialité",
       "typing": "Réponse en cours"
     },
     "profile": {
@@ -118,9 +119,9 @@
     "breadcrumbHome": "Accueil"
   },
   "About": {
-    "metaTitle": "À propos",
-    "metaDescription": "Le parcours, les compétences et l’approche frontend d’Adem.",
-    "eyebrow": "À propos",
+    "metaTitle": "Parcours",
+    "metaDescription": "Le parcours et l’approche frontend d’Adem.",
+    "eyebrow": "Parcours",
     "portraitAlt": "Illustration d’un cerveau relié par un réseau neuronal",
     "yearsLabel": "Années d’expérience",
     "skillsEyebrow": "Compétences",
@@ -129,6 +130,28 @@
     "careerHeading": "Où j’ai travaillé, et sur quoi.",
     "principlesEyebrow": "Principes",
     "principlesHeading": "Comment je travaille."
+  },
+  "Services": {
+    "metaTitle": "Services — Développeur Frontend Freelance",
+    "metaDescription": "Développeur frontend freelance en Île-de-France : intégration React/Next.js, intégration IA, audit performance et SEO. Missions courtes ou longues.",
+    "eyebrow": "Services",
+    "title": "Des missions frontend, de l’intégration à l’audit.",
+    "lead": "Je prends en charge des missions freelance sur trois terrains : le développement frontend, l’intégration de fonctionnalités IA, et l’audit de performance ou de SEO.",
+    "offers": {
+      "frontend": {
+        "title": "Développement frontend",
+        "description": "Interfaces React et Next.js rapides, accessibles et maintenables, du prototype à la mise en production."
+      },
+      "ai": {
+        "title": "Intégration IA",
+        "description": "Ajout de fonctionnalités IA à un produit existant : assistants, recherche, automatisations, choix et intégration des providers."
+      },
+      "audit": {
+        "title": "Audit performance & SEO",
+        "description": "Diagnostic Lighthouse, Core Web Vitals et indexation, avec un plan d’action priorisé pour corriger ce qui pèse le plus."
+      }
+    },
+    "cta": "Organiser un call"
   },
   "Contact": {
     "metaTitle": "Contact",
@@ -165,8 +188,13 @@
     "tagPickerComposerLabel": "Tags à associer au lien",
     "tagPickerCardLabel": "Modifier les tags de ce lien",
     "tagPickerNoTags": "Aucun tag pour l’instant. Créez-en dans /admin.",
+    "tagPickerNoTagsOwner": "Aucun tag pour l’instant. Créez le premier ci-dessous.",
     "tagPickerOpenLabel": "Modifier les tags",
     "tagPickerSaveFailed": "Les tags n’ont pas pu être enregistrés.",
+    "tagCreateLabel": "Nom du nouveau tag",
+    "tagCreatePlaceholder": "Nouveau tag…",
+    "tagCreateSubmit": "Créer",
+    "tagCreateFailed": "Le tag n’a pas pu être créé.",
     "emptyState": "Aucun lien publié pour l’instant.",
     "emptyFilteredState": "Aucun lien avec ce tag pour l’instant."
   },

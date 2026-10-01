@@ -34,6 +34,7 @@ const CONTENT_TAGS = {
   aiKnowledge: 'content:ai-knowledge',
   posts: 'content:posts',
   assistant: 'content:assistant',
+  servicesSettings: 'content:services-settings',
 } as const
 
 type ContentTag = (typeof CONTENT_TAGS)[keyof typeof CONTENT_TAGS]
@@ -49,7 +50,7 @@ type ContentTag = (typeof CONTENT_TAGS)[keyof typeof CONTENT_TAGS]
  * Identity feeds the header and footer defined in the shared layout, so every
  * page depends on it — hence the root invalidated in `layout` mode.
  *
- * Paths are stored bare (`/`, `/a-propos`); `purge` turns each into the route
+ * Paths are stored bare (`/`, `/parcours`); `purge` turns each into the route
  * pattern `/[locale]/…` before calling `revalidatePath`.
  *
  * The pattern is what makes this work across languages, and the rule is not
@@ -70,8 +71,8 @@ type ContentTag = (typeof CONTENT_TAGS)[keyof typeof CONTENT_TAGS]
 const PAGES_BY_TAG: Record<ContentTag, { path: string; type: 'layout' | 'page' }[]> = {
   [CONTENT_TAGS.identity]: [{ path: '/', type: 'layout' }],
   [CONTENT_TAGS.availability]: [{ path: '/', type: 'page' }],
-  [CONTENT_TAGS.profile]: [{ path: '/a-propos', type: 'page' }],
-  [CONTENT_TAGS.experiences]: [{ path: '/a-propos', type: 'page' }],
+  [CONTENT_TAGS.profile]: [{ path: '/parcours', type: 'page' }],
+  [CONTENT_TAGS.experiences]: [{ path: '/parcours', type: 'page' }],
   [CONTENT_TAGS.projects]: [
     { path: '/', type: 'page' },
     { path: '/projets', type: 'page' },
@@ -96,6 +97,7 @@ const PAGES_BY_TAG: Record<ContentTag, { path: string; type: 'layout' | 'page' }
   // purging the cache entry is enough, there is no HTML to replace.
   [CONTENT_TAGS.aiKnowledge]: [],
   [CONTENT_TAGS.assistant]: [],
+  [CONTENT_TAGS.servicesSettings]: [{ path: '/services', type: 'page' }],
 }
 
 /**

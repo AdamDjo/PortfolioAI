@@ -24,6 +24,14 @@
     "generate:types": "NODE_OPTIONS=--no-deprecation payload generate:types",
     "seed": "NODE_OPTIONS=--no-deprecation payload run src/cms/seed/index.ts"
   },
+  "//browserslist": "Matches what the stylesheet already requires: `color-mix(in srgb, ...)` is used throughout and needs Chrome 111, Firefox 113 and Safari 16.4. Declaring it stops Next from shipping polyfills for Array.prototype.at/flat/flatMap, Object.fromEntries/hasOwn and String.prototype.trimStart/trimEnd to browsers that have had them for years.",
+  "browserslist": [
+    "chrome >= 111",
+    "edge >= 111",
+    "firefox >= 113",
+    "safari >= 16.4",
+    "not dead"
+  ],
   "dependencies": {
     "@payloadcms/db-postgres": "^3.88.0",
     "@payloadcms/next": "^3.88.0",

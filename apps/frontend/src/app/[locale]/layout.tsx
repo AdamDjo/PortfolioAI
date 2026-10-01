@@ -57,6 +57,15 @@ export async function generateMetadata({
   }
 }
 
+/**
+ * Both beacons are served by Vercel's edge, from `/_vercel/insights/*`. Nowhere
+ * else does that path exist: on the self-hosted target the two scripts 404 on
+ * every page view and the browser logs a MIME-type error for each. Vercel sets
+ * `VERCEL` in the build environment, so this resolves at build time and the
+ * scripts ship only where they can answer.
+ */
+const IS_VERCEL = process.env.VERCEL === '1'
+
 // `themeColor` matches the light `--bg`, the theme served by default.
 export const viewport: Viewport = { colorScheme: 'light dark', themeColor: '#fbfdfe' }
 
@@ -93,8 +102,12 @@ export default async function LocaleLayout({
       </head>
       <body>
         <NextIntlClientProvider>{children}</NextIntlClientProvider>
-        <Analytics />
-        <SpeedInsights />
+        {IS_VERCEL ? (
+          <>
+            <Analytics />
+            <SpeedInsights />
+          </>
+        ) : null}
       </body>
     </html>
   )

@@ -1,6 +1,7 @@
 import { getPathname } from '@/i18n/navigation'
 import { routing } from '@/i18n/routing'
 import { listPublishedPosts } from '@/lib/posts'
+import { getServicesSettings } from '@/lib/site-content'
 import { SITE_URL } from '@/lib/site-url'
 
 import type { MetadataRoute } from 'next'
@@ -20,7 +21,8 @@ import type { MetadataRoute } from 'next'
 const ROUTES = [
   { path: '/', priority: 1 },
   { path: '/projets', priority: 0.8 },
-  { path: '/a-propos', priority: 0.8 },
+  { path: '/parcours', priority: 0.8 },
+  { path: '/services', priority: 0.8 },
   { path: '/blog', priority: 0.8 },
   { path: '/veille', priority: 0.6 },
   { path: '/outils-ia', priority: 0.6 },
@@ -55,15 +57,22 @@ const entriesFor = (path: string, priority: number, lastModified: Date): Metadat
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date()
 
-  /*
-   * Read in one language only: `slug` and `updatedAt` are not localized, so the
-   * other locale would return the same addresses and the same dates for twice
-   * the queries.
-   */
-  const posts = await listPublishedPosts(routing.defaultLocale)
+  const [{ enabled: servicesEnabled }, posts] = await Promise.all([
+    // The toggle has no locale of its own: a page either exists or it does not,
+    // for every language at once, so one read decides for the whole sitemap.
+    getServicesSettings(routing.defaultLocale),
+    /*
+     * Articles are read in one language only: `slug` and `updatedAt` are not
+     * localized, so the other locale would return the same addresses and the
+     * same dates for twice the queries.
+     */
+    listPublishedPosts(routing.defaultLocale),
+  ])
+
+  const routes = servicesEnabled ? ROUTES : ROUTES.filter((route) => route.path !== '/services')
 
   return [
-    ...ROUTES.flatMap(({ path, priority }) => entriesFor(path, priority, now)),
+    ...routes.flatMap(({ path, priority }) => entriesFor(path, priority, now)),
     /*
      * An article's own last-modified date, not the build date: telling a crawler
      * that every article changed on every deploy is how a sitemap stops being

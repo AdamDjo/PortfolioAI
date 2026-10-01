@@ -978,7 +978,7 @@
 .home-profile-card > small {
   overflow: hidden;
   color: var(--muted);
-  font-size: 10px;
+  font-size: var(--text-2xs);
   line-height: 1.55;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -992,7 +992,7 @@
   padding-top: 10px;
   border-top: 1px solid var(--line);
   color: var(--accent-on-soft);
-  font-size: 10px;
+  font-size: var(--text-2xs);
   font-weight: 700;
 }
 .home-skills-card ul {
@@ -1008,7 +1008,7 @@
   align-items: center;
   gap: 8px;
   color: var(--muted);
-  font-size: 11px;
+  font-size: var(--text-2xs);
   white-space: nowrap;
 }
 .home-skills-card li svg {
@@ -1034,7 +1034,7 @@
 }
 .home-chat-card .chat-header span,
 .home-chat-card .chat-header small {
-  font-size: 11px;
+  font-size: var(--text-2xs);
 }
 .home-chat-intro {
   display: grid;
@@ -1044,7 +1044,7 @@
   border-radius: 11px;
   background: var(--accent-soft);
   color: var(--accent-on-soft);
-  font-size: 11px;
+  font-size: var(--text-2xs);
   line-height: 1.5;
 }
 .home-chat-intro strong {
@@ -1054,13 +1054,13 @@
   margin-top: 8px;
 }
 .home-chat-card .message {
-  font-size: 11px;
+  font-size: var(--text-2xs);
 }
 .home-chat-card .avatar {
   flex-basis: 32px;
   height: 32px;
   border-radius: 9px;
-  font-size: 11px;
+  font-size: var(--text-2xs);
 }
 .home-chat-card .chat-form {
   gap: 8px;
@@ -1110,7 +1110,7 @@
 }
 .home-stats small {
   color: var(--muted);
-  font-size: 10px;
+  font-size: var(--text-2xs);
 }
 .home-rail {
   position: relative;
@@ -1177,7 +1177,7 @@
 .home-rail-item small {
   margin-top: 4px;
   color: var(--muted);
-  font-size: 10px;
+  font-size: var(--text-2xs);
   line-height: 1.5;
 }
 .home-rail-underline {
@@ -1240,7 +1240,7 @@
   margin-top: 6px;
   padding: 0;
   color: var(--muted);
-  font-size: 10px;
+  font-size: var(--text-2xs);
   line-height: 1.55;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
@@ -1265,7 +1265,7 @@
   border-radius: var(--radius-full);
   background: var(--surface-2);
   color: var(--muted);
-  font-size: 9px;
+  font-size: var(--text-2xs);
   font-style: normal;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -1317,7 +1317,7 @@
   border-radius: 10px;
   background: var(--bg);
   color: var(--muted);
-  font-size: 10px;
+  font-size: var(--text-2xs);
   text-align: left;
   cursor: pointer;
   transition:
@@ -1365,7 +1365,7 @@
   background: var(--surface);
   color: var(--text);
   font-family: var(--font-handwriting), cursive;
-  font-size: 8px;
+  font-size: var(--text-2xs);
   font-style: italic;
   line-height: 1.25;
   text-align: center;
@@ -1418,11 +1418,11 @@
 }
 .quality-copy strong {
   color: var(--text);
-  font-size: 11px;
+  font-size: var(--text-2xs);
 }
 .quality-copy small {
   color: var(--muted);
-  font-size: 9px;
+  font-size: var(--text-2xs);
   line-height: 1.5;
 }
 :root[data-theme='dark'] .home-mascot::before {

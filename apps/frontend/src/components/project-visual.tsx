@@ -22,6 +22,12 @@ export function ProjectVisual({
 }) {
   const [failed, setFailed] = useState(false)
   const showImage = Boolean(imageUrl) && !failed
+  // Remote domains are not known in advance: Next's optimiser would require an
+  // allowlist that cannot be maintained, so those are served as-is. The bundled
+  // fallback covers are local files and must go through the optimiser — left
+  // unoptimized, the three of them shipped their full-size original into a
+  // 280px-wide card.
+  const isRemote = Boolean(imageUrl) && /^https?:\/\//i.test(imageUrl!)
 
   return (
     <span className="project-visual">
@@ -32,9 +38,7 @@ export function ProjectVisual({
           fill
           sizes="(max-width: 768px) 100vw, 50vw"
           onError={() => setFailed(true)}
-          // Remote domains are not known in advance: Next's optimiser would
-          // require an allowlist that cannot be maintained.
-          unoptimized
+          unoptimized={isRemote}
         />
       ) : (
         <span>

@@ -20,12 +20,19 @@ export const staggerContainer = (stagger = 0.07, delay = 0): Variants => ({
   visible: { transition: { staggerChildren: stagger, delayChildren: delay } },
 })
 
+/**
+ * Entrance for content revealed on scroll.
+ *
+ * `opacity` and `y` only: both run on the compositor. The blur this variant used
+ * to carry could not — `filter` is repainted on the main thread every frame, and
+ * with this variant applied to a few dozen elements the browser reported them all
+ * as non-composited animations.
+ */
 export const riseItem: Variants = {
-  hidden: { opacity: 0, y: 26, filter: 'blur(6px)' },
+  hidden: { opacity: 0, y: 26 },
   visible: {
     opacity: 1,
     y: 0,
-    filter: 'blur(0px)',
     transition: { duration: 0.7, ease: EASE_OUT_QUINT },
   },
 }
@@ -60,7 +67,6 @@ interface RevealProps {
   className?: string
   delay?: number
   y?: number
-  blur?: boolean
   once?: boolean
   /**
    * Animate on mount instead of on scroll into view.
@@ -73,20 +79,14 @@ interface RevealProps {
   onMount?: boolean
 }
 
-export function Reveal({
-  children,
-  className,
-  delay = 0,
-  y = 26,
-  blur = true,
-  onMount,
-}: RevealProps) {
-  const visible = { opacity: 1, y: 0, filter: 'blur(0px)' }
+/** Compositor-only entrance, for the same reason as `riseItem`. */
+export function Reveal({ children, className, delay = 0, y = 26, onMount }: RevealProps) {
+  const visible = { opacity: 1, y: 0 }
 
   return (
     <m.div
       className={className}
-      initial={{ opacity: 0, y, filter: blur ? 'blur(6px)' : 'blur(0px)' }}
+      initial={{ opacity: 0, y }}
       {...(onMount ? { animate: visible } : { whileInView: visible, viewport: VIEWPORT })}
       transition={{ duration: 0.75, delay, ease: EASE_OUT_QUINT }}
     >

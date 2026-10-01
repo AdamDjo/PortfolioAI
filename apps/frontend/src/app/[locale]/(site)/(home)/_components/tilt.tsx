@@ -1,6 +1,7 @@
 'use client'
 
 import { m, useMotionValue, useReducedMotion, useSpring, useTransform } from 'motion/react'
+import { useRef } from 'react'
 
 import type { PointerEvent, ReactNode } from 'react'
 
@@ -19,14 +20,25 @@ export function Tilt({ children, className, max = 5 }: TiltProps) {
   const spring = { stiffness: 260, damping: 22, mass: 0.6 }
   const rotateX = useSpring(useTransform(pointerY, [0, 1], [max, -max]), spring)
   const rotateY = useSpring(useTransform(pointerX, [0, 1], [-max, max]), spring)
+  // Measured once when the pointer arrives, not on every move: the card is being
+  // rotated by the spring while the pointer travels over it, so each
+  // `getBoundingClientRect` in the move handler forced the browser to flush
+  // layout mid-animation — dozens of synchronous reflows per second of hover.
+  const boundsRef = useRef<DOMRect | null>(null)
+
+  function measure(event: PointerEvent<HTMLDivElement>) {
+    boundsRef.current = event.currentTarget.getBoundingClientRect()
+  }
 
   function track(event: PointerEvent<HTMLDivElement>) {
-    const bounds = event.currentTarget.getBoundingClientRect()
+    const bounds = boundsRef.current
+    if (!bounds) return
     pointerX.set((event.clientX - bounds.left) / bounds.width)
     pointerY.set((event.clientY - bounds.top) / bounds.height)
   }
 
   function reset() {
+    boundsRef.current = null
     pointerX.set(0.5)
     pointerY.set(0.5)
   }
@@ -38,6 +50,7 @@ export function Tilt({ children, className, max = 5 }: TiltProps) {
   return (
     <m.div
       className={className}
+      onPointerEnter={measure}
       onPointerMove={track}
       onPointerLeave={reset}
       style={{ rotateX, rotateY, transformPerspective: 900, transformStyle: 'preserve-3d' }}
