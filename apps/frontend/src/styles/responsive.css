@@ -283,6 +283,10 @@
   .home-chat-card {
     max-height: 430px;
   }
+  /* iOS zooms into any focused field under 16px. */
+  .home-chat-card .chat-form input {
+    font-size: var(--text-base);
+  }
   .home-stats {
     order: 4;
     min-height: 0;
@@ -338,11 +342,13 @@
     min-height: 100px;
     padding: 13px;
   }
-  .quality-grid .quality-copy {
-    display: none;
-  }
   .quality-grid > * {
     grid-template-columns: 1fr;
+    align-content: start;
+    justify-items: center;
+    text-align: center;
+  }
+  .quality-grid .quality-copy {
     justify-items: center;
   }
 }
