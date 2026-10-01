@@ -12,6 +12,7 @@
     "openMenu": "Ouvrir le menu",
     "home": "Accueil",
     "projects": "Projets",
+    "blog": "Blog",
     "veille": "Veille",
     "tools": "Outils IA",
     "about": "Parcours",
@@ -101,6 +102,21 @@
     "lead": "Chaque projet ci-dessous est déployé et son code est ouvert. Mes missions en entreprise portent sur des back-offices internes : elles sont décrites dans mon parcours, sans lien public à montrer.",
     "viewAction": "Voir le projet",
     "codeAction": "Code source"
+  },
+  "Blog": {
+    "metaTitle": "Blog",
+    "metaDescription": "Notes d'ingénierie frontend : Next.js, Payload, accessibilité et performance.",
+    "feedTitle": "Adem — Blog",
+    "eyebrow": "Mis par écrit",
+    "title": "Ce que j'apprends en construisant, mis par écrit.",
+    "lead": "Des notes prises sur de vrais projets : ce qui a marché, ce qui a cassé, ce que je ferais autrement. Publié ici d'abord, partagé ensuite.",
+    "allTag": "Tous",
+    "filterAriaLabel": "Filtrer par tag",
+    "emptyState": "Aucun article publié pour l'instant.",
+    "emptyFilteredState": "Aucun article avec ce tag pour l'instant.",
+    "readingTime": "{count, plural, one {# min de lecture} other {# min de lecture}}",
+    "backToIndex": "Tous les articles",
+    "breadcrumbHome": "Accueil"
   },
   "About": {
     "metaTitle": "Parcours",
