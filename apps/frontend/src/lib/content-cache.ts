@@ -82,12 +82,16 @@ const PAGES_BY_TAG: Record<ContentTag, { path: string; type: 'layout' | 'page' }
   ],
   [CONTENT_TAGS.aiTools]: [{ path: '/outils-ia', type: 'page' }],
   /*
-   * No page yet: the `posts` collection exists before the `/blog` routes do, so
-   * there is no HTML to replace. The entry is declared all the same, because a
-   * tag without one fails the test that pairs the two — and it is where
-   * `/blog` and `/blog/[slug]` are added with those routes.
+   * The article pages are prerendered, so publishing has to replace their HTML:
+   * the index gains a card and the article itself appears. `/blog/[slug]` is the
+   * route pattern, which refreshes every article in every language — purging only
+   * the one that changed would need its slug here, and a slug is not something
+   * this table can know.
    */
-  [CONTENT_TAGS.posts]: [],
+  [CONTENT_TAGS.posts]: [
+    { path: '/blog', type: 'page' },
+    { path: '/blog/[slug]', type: 'page' },
+  ],
   // The assistant answers from a route handler, so no page holds this content:
   // purging the cache entry is enough, there is no HTML to replace.
   [CONTENT_TAGS.aiKnowledge]: [],

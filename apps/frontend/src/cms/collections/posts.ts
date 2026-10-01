@@ -124,7 +124,7 @@ const Posts: CollectionConfig = {
       localized: true,
       admin: {
         description:
-          'Collez ici le Markdown rédigé ailleurs : il remplace le corps à l’enregistrement, puis ce champ se vide.',
+          'Collez ici le Markdown rédigé ailleurs : il remplace le corps à l’enregistrement, puis ce champ se vide. Les blocs de code arrivent en paragraphes — le texte et l’indentation sont conservés, la coloration non.',
       },
     },
     {
@@ -140,7 +140,7 @@ const Posts: CollectionConfig = {
       label: 'Visuel de tête',
       admin: {
         description:
-          "Sert aussi d'image de partage. Sans visuel, elle est générée depuis le titre.",
+          "Affiché en tête de l'article. L'image de partage est générée depuis le titre, elle ne reprend pas ce visuel.",
       },
     },
     {

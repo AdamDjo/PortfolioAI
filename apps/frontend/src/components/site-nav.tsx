@@ -16,6 +16,7 @@ import { Link, usePathname } from '@/i18n/navigation'
 const NAV_ITEMS = [
   { href: '/', key: 'home' },
   { href: '/projets', key: 'projects' },
+  { href: '/blog', key: 'blog' },
   { href: '/veille', key: 'veille' },
   { href: '/outils-ia', key: 'tools' },
   { href: '/a-propos', key: 'about' },

@@ -12,6 +12,7 @@
     "openMenu": "Open the menu",
     "home": "Home",
     "projects": "Projects",
+    "blog": "Blog",
     "veille": "Reading list",
     "tools": "AI tools",
     "about": "About",
@@ -100,6 +101,21 @@
     "lead": "Every project below is deployed and its code is open. My client work covers internal back-offices: they are described in my background, with no public link to show.",
     "viewAction": "View project",
     "codeAction": "Source code"
+  },
+  "Blog": {
+    "metaTitle": "Blog",
+    "metaDescription": "Notes on frontend engineering: Next.js, Payload, accessibility and performance.",
+    "feedTitle": "Adem — Blog",
+    "eyebrow": "Written down",
+    "title": "What I learn building things, written down.",
+    "lead": "Notes from real projects: what worked, what broke, and what I would do differently. Published here first, shared afterwards.",
+    "allTag": "All",
+    "filterAriaLabel": "Filter by tag",
+    "emptyState": "No article published yet.",
+    "emptyFilteredState": "No article with this tag yet.",
+    "readingTime": "{count, plural, one {# min read} other {# min read}}",
+    "backToIndex": "All articles",
+    "breadcrumbHome": "Home"
   },
   "About": {
     "metaTitle": "About",

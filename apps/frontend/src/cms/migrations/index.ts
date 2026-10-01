@@ -8,6 +8,7 @@ import * as migration_20260818_141706_assistant from './20260818_141706_assistan
 import * as migration_20260824_203553_ai_tools from './20260824_203553_ai_tools'
 import * as migration_20260825_192608_conversations from './20260825_192608_conversations'
 import * as migration_20260827_154329_localization from './20260827_154329_localization'
+import * as migration_20261001_145032_posts from './20261001_145032_posts'
 
 export const migrations = [
   {
@@ -59,5 +60,10 @@ export const migrations = [
     up: migration_20260827_154329_localization.up,
     down: migration_20260827_154329_localization.down,
     name: '20260827_154329_localization',
+  },
+  {
+    up: migration_20261001_145032_posts.up,
+    down: migration_20261001_145032_posts.down,
+    name: '20261001_145032_posts',
   },
 ]
