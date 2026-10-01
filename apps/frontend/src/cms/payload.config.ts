@@ -2,7 +2,6 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 
 import { postgresAdapter } from '@payloadcms/db-postgres'
-import { lexicalEditor } from '@payloadcms/richtext-lexical'
 import { buildConfig } from 'payload'
 import sharp from 'sharp'
 
@@ -19,6 +18,7 @@ import { Posts } from './collections/posts'
 import { Projects } from './collections/projects'
 import { Tags } from './collections/tags'
 import { Users } from './collections/users'
+import { editor } from './editor'
 import { AssistantSettings } from './globals/assistant-settings'
 import { Availability } from './globals/availability'
 import { Profile } from './globals/profile'
@@ -70,7 +70,7 @@ export default buildConfig({
     defaultLocale: 'fr',
     fallback: true,
   },
-  editor: lexicalEditor(),
+  editor,
   // Required, never defaulted: an empty secret signs session cookies and reset
   // tokens with a value anyone can reproduce. See lib/require-env.
   secret: requireEnv('PAYLOAD_SECRET'),

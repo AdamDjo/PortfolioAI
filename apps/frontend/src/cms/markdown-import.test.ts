@@ -1,6 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { withMarkdownImport } from './markdown-import'
+import { normalizeCodeBlocks, withMarkdownImport } from './markdown-import'
 
 /**
  * The hook is mocked at the editor boundary on purpose: sanitizing a real editor
@@ -9,10 +9,15 @@ import { withMarkdownImport } from './markdown-import'
  * survives a conversion.
  */
 vi.mock('@payloadcms/richtext-lexical', () => ({
-  editorConfigFactory: { default: vi.fn(() => Promise.resolve({ sanitized: true })) },
+  editorConfigFactory: { fromFeatures: vi.fn(() => Promise.resolve({ sanitized: true })) },
   convertMarkdownToLexical: vi.fn(({ markdown }: { markdown: string }) => ({
     root: { converted: markdown },
   })),
+  // `editor.ts` builds the shared editor at module load, so these have to exist
+  // even though the test never looks at what they return.
+  lexicalEditor: vi.fn(() => ({})),
+  BlocksFeature: vi.fn(() => ({})),
+  CodeBlock: vi.fn(() => ({})),
 }))
 
 const { convertMarkdownToLexical } = await import('@payloadcms/richtext-lexical')
@@ -70,5 +75,63 @@ describe('withMarkdownImport', () => {
       expect(result.content).toBe(stored)
       expect(convertMarkdownToLexical).not.toHaveBeenCalled()
     }
+  })
+})
+
+describe('normalizeCodeBlocks', () => {
+  /** A converted tree holding one code block with the given fence tag. */
+  const treeWith = (language: unknown) => ({
+    type: 'root',
+    children: [
+      { type: 'heading', children: [{ type: 'text', text: 'Titre' }] },
+      { type: 'block', fields: { blockType: 'Code', code: 'const a = 1', language } },
+    ],
+  })
+
+  it('rewrites a fence tag the field would reject', () => {
+    const tree = treeWith('ts')
+    normalizeCodeBlocks(tree)
+
+    expect(tree.children[1].fields?.language).toBe('typescript')
+  })
+
+  it('leaves an accepted language alone', () => {
+    const tree = treeWith('json')
+    normalizeCodeBlocks(tree)
+
+    expect(tree.children[1].fields?.language).toBe('json')
+  })
+
+  it('reaches a block nested inside another node', () => {
+    const tree = {
+      type: 'root',
+      children: [
+        {
+          type: 'list',
+          children: [
+            { type: 'block', fields: { blockType: 'Code', code: 'ls', language: 'bash' } },
+          ],
+        },
+      ],
+    }
+    normalizeCodeBlocks(tree)
+
+    expect(tree.children[0].children[0].fields?.language).toBe('shell')
+  })
+
+  it('does not touch a block of another kind', () => {
+    const tree = {
+      type: 'root',
+      children: [{ type: 'block', fields: { blockType: 'Quote', language: 'ts' } }],
+    }
+    normalizeCodeBlocks(tree)
+
+    expect(tree.children[0].fields?.language).toBe('ts')
+  })
+
+  it('walks a tree with no block at all', () => {
+    const tree = { type: 'root', children: [{ type: 'paragraph' }] }
+
+    expect(() => normalizeCodeBlocks(tree)).not.toThrow()
   })
 })
