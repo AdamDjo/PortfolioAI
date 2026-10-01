@@ -163,14 +163,22 @@
   font-size: var(--text-base);
   line-height: 1.7;
 }
-.article-body > * + * {
-  margin-top: var(--spacing-md);
+/*
+ * The rhythm is set on the blocks themselves, not with a child combinator:
+ * `RichText` wraps everything in a `.payload-richtext` element, so a rule on the
+ * direct children of `.article-body` would only ever match that wrapper and the
+ * whole article would run together.
+ */
+.article-body :is(p, ul, ol, blockquote, pre, table, figure) {
+  margin: 0 0 var(--spacing-md);
 }
-.article-body h2,
-.article-body h3 {
-  margin-top: var(--spacing-xl);
+.article-body :is(h2, h3) {
+  margin: var(--spacing-xl) 0 var(--spacing-xs);
   line-height: 1.25;
   text-wrap: balance;
+}
+.article-body :is(.payload-richtext, div) > :last-child {
+  margin-bottom: 0;
 }
 .article-body h2 {
   font-size: var(--text-xl);
@@ -184,9 +192,23 @@
   text-decoration-thickness: 1px;
   text-underline-offset: 2px;
 }
+/*
+ * The marker is restored explicitly: Tailwind's reset strips it from every list,
+ * which is right for navigation and wrong for prose — a list in an article has to
+ * read as a list.
+ */
 .article-body ul,
 .article-body ol {
   padding-left: var(--spacing-lg);
+}
+.article-body ul {
+  list-style: disc;
+}
+.article-body ol {
+  list-style: decimal;
+}
+.article-body li::marker {
+  color: var(--muted);
 }
 .article-body li + li {
   margin-top: var(--spacing-3xs);

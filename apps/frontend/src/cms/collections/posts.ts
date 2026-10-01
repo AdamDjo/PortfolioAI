@@ -124,7 +124,7 @@ const Posts: CollectionConfig = {
       localized: true,
       admin: {
         description:
-          'Collez ici le Markdown rédigé ailleurs : il remplace le corps à l’enregistrement, puis ce champ se vide. Les blocs de code arrivent en paragraphes — le texte et l’indentation sont conservés, la coloration non.',
+          'Collez ici le Markdown rédigé ailleurs : il remplace le corps à l’enregistrement, puis ce champ se vide. Évitez les blocs de code ``` pour l’instant : ils arrivent en paragraphe, délimiteurs compris, et s’affichent tels quels sur la page (suivi par #91).',
       },
     },
     {
