@@ -27,7 +27,7 @@ réseau. Sinon LinkedIn capte le référencement à la place du site.
 | Source des articles | Collection Payload `posts`                                       |
 | Rédaction           | Markdown importé depuis l'éditeur d'Adem, médias déposés ensuite |
 | Langues             | Bilingue anglais et français, comme le reste du site             |
-| Planification       | `Scheduled Publish` natif de Payload (file de jobs)              |
+| Planification       | `Scheduled Publish` de Payload, livré à part (file de jobs, #88) |
 | Publication sociale | Postiz auto-hébergé sur le VPS, via Coolify                      |
 | Rédaction des posts | Brouillons générés par Groq, relus et enrichis dans Postiz       |
 
@@ -160,14 +160,24 @@ brancher la couche 3.
 
 ## 7. Lots de livraison
 
-Chaque lot est livrable et utile seul.
+Chaque lot est livrable et utile seul. Les numéros renvoient aux tickets ouverts.
 
-1. **Lot 1 — Blog et SEO.** Collection `posts`, migration, pages, métadonnées,
+Le lot 1 porte le blog et son référencement (#84). Deux manques repérés à la
+conception en sortent et sont suivis séparément, parce qu'activer l'un sans
+l'autre produirait un échec silencieux ou une page invisible :
+
+- **#88 — planification.** `schedulePublish` n'est qu'un drapeau : sans file de
+  jobs exécutée, le tiroir « Planifier » accepte une date et ne publie jamais.
+- **#89 — relecture d'un brouillon.** Les brouillons sont refusés par l'API
+  publique, donc un article non publié ne se relit aujourd'hui que dans
+  l'éditeur, jamais comme une vraie page.
+
+1. **Lot 1 — Blog et SEO (#84).** Collection `posts`, migration, pages, métadonnées,
    JSON-LD, images Open Graph, flux RSS, sitemap dynamique, traductions
    d'interface. C'est la seule partie indispensable au référencement.
-2. **Lot 2 — Brouillons sociaux.** Collection `social-posts`, génération par
+2. **Lot 2 — Brouillons sociaux (#85).** Collection `social-posts`, génération par
    Groq à la publication, relecture dans `/admin`.
-3. **Lot 3 — Connecteur Postiz.** Poussée des brouillons validés, statut et
+3. **Lot 3 — Connecteur Postiz (#86), déployé par #87.** Poussée des brouillons validés, statut et
    identifiant externe conservés.
 
 ## 8. Validation
