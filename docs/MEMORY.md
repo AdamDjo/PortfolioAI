@@ -56,6 +56,14 @@
   `localized: true`. `/admin` affiche un sélecteur de langue par document. Les
   lectures serveur reçoivent la locale et le cache est clé par langue. Reste à
   faire, et c'est éditorial : écrire les traductions anglaises du contenu réel.
+- Blog et partage social spécifiés dans `docs/FEATURE_SPEC_BLOG.md`, suivis par l'epic
+  #90 et ses six sous-tickets (#84 à #89). Premier lot sur la branche
+  `claude/blog-auto-share-seo-04pga8` : collection `posts` (brouillons, versions, bilingue,
+  lecture publique filtrée sur `_status`), import Markdown, durée de lecture, et la règle de
+  slug extraite dans `src/lib/slug.ts`, désormais partagée avec `tags`.
+  **La migration reste à générer sur une base réelle : la branche n'est pas déployable en l'état.**
+- Documentation vivante de la chaîne éditoriale, à republier à chaque lot livré :
+  https://claude.ai/artifact/VXEvdeXySFy9yzoGkLZMqv
 - Code hérité de l'ère Express retiré : `lib/api.ts`, `lib/query-client.ts`,
   `providers.tsx`, `data/portfolio.ts`, pages `/liens` et `/demo`. React Query,
   Axios et quatre autres dépendances désinstallées.
@@ -68,6 +76,12 @@
 - La spécification fonctionnelle de référence est `docs/FEATURE_SPEC_CMS_AI.md`.
 - Les collections métier arrivent par lots : `users` + `media` en #2, `projects`,
   `bookmarks` et `tags` en #6.
+- Le site reste la source canonique des articles : on partage des liens vers `/blog`,
+  jamais le texte intégral sur un réseau, sinon le référencement part chez le réseau.
+- Postiz, auto-hébergé sur le VPS, détient les jetons LinkedIn et X, les médias et la file
+  de publication. L'application ne pousse que du texte vers son API : le jeton LinkedIn
+  expire à 60 jours sans rafraîchissement programmatique, et X facture chaque post depuis
+  la fermeture de son palier gratuit — deux contraintes qui n'ont pas à vivre dans ce code.
 - Le visiteur ne publie jamais de lien. L'écriture est réservée au propriétaire
   connecté, pour que personne ne puisse polluer la grille de veille.
 - L'ajout d'un lien doit rester possible depuis un téléphone, sur la page publique,
@@ -109,6 +123,11 @@
   (`src/lib/open-graph-hook.ts`), paramétré par les noms de champs.
 - Toute URL est canonicalisée avant enregistrement (`src/lib/canonical-url.ts`),
   sinon l'index unique sur `url` laisserait passer des doublons.
+- L'import Markdown convertit avec `editorConfigFactory.default({ config })` : c'est correct
+  tant que `payload.config.ts` monte `lexicalEditor()` sans features. Le jour où il en reçoit,
+  il faut passer à `fromField`, sinon l'import perd silencieusement les nœuds ajoutés.
+- Un collage Markdown vide est ignoré au lieu de vider le corps : enregistrer un article après
+  avoir seulement changé son titre ne doit pas détruire le texte.
 - **Aucune variable d'environnement critique ne prend de valeur de repli.**
   `process.env.X ?? ''` laissait Payload démarrer avec un secret vide, donc des
   cookies de session et des jetons de réinitialisation signés avec une valeur
