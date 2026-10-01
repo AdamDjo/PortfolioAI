@@ -57,11 +57,16 @@
   lectures serveur reçoivent la locale et le cache est clé par langue. Reste à
   faire, et c'est éditorial : écrire les traductions anglaises du contenu réel.
 - Blog et partage social spécifiés dans `docs/FEATURE_SPEC_BLOG.md`, suivis par l'epic
-  #90 et ses six sous-tickets (#84 à #89). Premier lot sur la branche
+  #90 et ses sous-tickets (#84 à #89, plus #91). **#84 est terminé** sur la branche
   `claude/blog-auto-share-seo-04pga8` : collection `posts` (brouillons, versions, bilingue,
-  lecture publique filtrée sur `_status`), import Markdown, durée de lecture, et la règle de
-  slug extraite dans `src/lib/slug.ts`, désormais partagée avec `tags`.
-  **La migration reste à générer sur une base réelle : la branche n'est pas déployable en l'état.**
+  lecture publique filtrée sur `_status`), import Markdown, durée de lecture, règle de slug
+  partagée avec `tags`, pages `/blog` et `/blog/[slug]`, métadonnées + canonical + hreflang,
+  JSON-LD `BlogPosting` et `BreadcrumbList`, image de partage générée par `next/og`, flux RSS,
+  sitemap dynamique. Migration `20261001_145032_posts` générée et appliquée.
+- Vérifié sur une vraie base et un build de production : les deux articles prérendus dans les
+  deux langues, le flux servi en `application/rss+xml` avec des dates RFC 822, le sitemap qui
+  liste les articles avec leur propre date de modification, l'image de partage en PNG
+  1200×630, et un slug inconnu — comme un brouillon — qui répond 404.
 - Documentation vivante de la chaîne éditoriale, à republier à chaque lot livré :
   https://claude.ai/artifact/VXEvdeXySFy9yzoGkLZMqv
 - Code hérité de l'ère Express retiré : `lib/api.ts`, `lib/query-client.ts`,
@@ -123,6 +128,26 @@
   (`src/lib/open-graph-hook.ts`), paramétré par les noms de champs.
 - Toute URL est canonicalisée avant enregistrement (`src/lib/canonical-url.ts`),
   sinon l'index unique sur `url` laisserait passer des doublons.
+- **Le conteneur de session embarque PostgreSQL 16.** `pg_ctlcluster 16 main start`, puis une
+  base locale, suffit pour appliquer les migrations, en générer une (`script -q /dev/null` pour
+  le TTY), lancer `pnpm seed` et faire un vrai `pnpm build`. Plus besoin d'une base distante
+  pour travailler sur le schéma depuis un agent.
+- **Lexical n'a pas de bloc de code.** Le jeu de fonctionnalités de Payload couvre le code
+  _inline_ et s'arrête là : une clôture Markdown ```arrive en paragraphe. Le texte, les retours
+à la ligne et l'indentation sont conservés (nœuds`linebreak`), seule la présentation est
+perdue. Suivi par #91, et écrit dans la description du champ `markdownImport`.
+- L'image de partage des articles est générée depuis le titre et jamais depuis le visuel de
+  tête : elle est rendue au build, quand aucun serveur ne sert encore les médias téléversés,
+  donc une carte basée sur la couverture dépendrait d'une URL qui n'existe pas encore.
+- La page d'un article ne passe pas par `cachedRead` : l'aide mémoïse par locale, donc une
+  entrée par slug devrait être reconstruite à chaque appel et annulerait le cache qu'elle crée.
+  Les pages sont prérendues et régénérées par `revalidatePath`, donc la requête tourne au build
+  et une fois par publication, pas à chaque visite.
+- Le flux RSS a sa propre lecture (`posts:feed`) : c'est la seule surface qui a besoin du corps,
+  parce qu'un article sans résumé doit quand même porter une description. Charger tous les corps
+  dans l'entrée de cache de l'index serait le mauvais compromis dans l'autre sens.
+- `hero.tsx` fait `name.slice(0, 1)` sur `identity.displayName` : sur une base non seedée, le
+  build casse avec un `Cannot read properties of undefined`. Préexistant au blog, à durcir.
 - L'import Markdown convertit avec `editorConfigFactory.default({ config })` : c'est correct
   tant que `payload.config.ts` monte `lexicalEditor()` sans features. Le jour où il en reçoit,
   il faut passer à `fromField`, sinon l'import perd silencieusement les nœuds ajoutés.
