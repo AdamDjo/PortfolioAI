@@ -21,6 +21,7 @@ import { Users } from './collections/users'
 import { AssistantSettings } from './globals/assistant-settings'
 import { Availability } from './globals/availability'
 import { Profile } from './globals/profile'
+import { ServicesSettings } from './globals/services-settings'
 import { SiteIdentity } from './globals/site-identity'
 
 const filename = fileURLToPath(import.meta.url)
@@ -44,7 +45,7 @@ export default buildConfig({
     AITools,
     Conversations,
   ],
-  globals: [SiteIdentity, Availability, Profile, AssistantSettings],
+  globals: [SiteIdentity, Availability, Profile, AssistantSettings, ServicesSettings],
   /**
    * Editorial content exists once per language on the fields marked `localized`.
    *

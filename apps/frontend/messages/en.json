@@ -14,7 +14,8 @@
     "projects": "Projects",
     "veille": "Reading list",
     "tools": "AI tools",
-    "about": "About",
+    "about": "Background",
+    "services": "Services",
     "contact": "Contact"
   },
   "Footer": {
@@ -102,9 +103,9 @@
     "codeAction": "Source code"
   },
   "About": {
-    "metaTitle": "About",
-    "metaDescription": "Adem’s background, skills and approach to frontend work.",
-    "eyebrow": "About",
+    "metaTitle": "Background",
+    "metaDescription": "Adem’s background and approach to frontend work.",
+    "eyebrow": "Background",
     "portraitAlt": "Illustration of a brain wired as a neural network",
     "yearsLabel": "Years of experience",
     "skillsEyebrow": "Skills",
@@ -113,6 +114,28 @@
     "careerHeading": "Where I have worked, and on what.",
     "principlesEyebrow": "Principles",
     "principlesHeading": "How I work."
+  },
+  "Services": {
+    "metaTitle": "Services — Freelance Frontend Developer",
+    "metaDescription": "Freelance frontend developer near Paris: React/Next.js integration, AI integration, performance and SEO audits. Short or long missions.",
+    "eyebrow": "Services",
+    "title": "Frontend missions, from integration to audit.",
+    "lead": "I take on freelance missions in three areas: frontend development, AI feature integration, and performance or SEO audits.",
+    "offers": {
+      "frontend": {
+        "title": "Frontend development",
+        "description": "Fast, accessible and maintainable React and Next.js interfaces, from prototype to production."
+      },
+      "ai": {
+        "title": "AI integration",
+        "description": "Adding AI features to an existing product: assistants, search, automations, provider selection and integration."
+      },
+      "audit": {
+        "title": "Performance & SEO audit",
+        "description": "Lighthouse, Core Web Vitals and indexing diagnostics, with a prioritized action plan for what weighs most."
+      }
+    },
+    "cta": "Book a call"
   },
   "Contact": {
     "metaTitle": "Contact",

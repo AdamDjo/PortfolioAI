@@ -108,12 +108,14 @@ export interface Config {
     availability: Availability
     profile: Profile
     'assistant-settings': AssistantSetting
+    'services-settings': ServicesSetting
   }
   globalsSelect: {
     'site-identity': SiteIdentitySelect<false> | SiteIdentitySelect<true>
     availability: AvailabilitySelect<false> | AvailabilitySelect<true>
     profile: ProfileSelect<false> | ProfileSelect<true>
     'assistant-settings': AssistantSettingsSelect<false> | AssistantSettingsSelect<true>
+    'services-settings': ServicesSettingsSelect<false> | ServicesSettingsSelect<true>
   }
   locale: 'fr' | 'en'
   widgets: {
@@ -840,6 +842,21 @@ export interface AssistantSetting {
   createdAt?: string | null
 }
 /**
+ * Visibilité de la page /services.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "services-settings".
+ */
+export interface ServicesSetting {
+  id: number
+  /**
+   * Décoché, la page /services n’est plus accessible et redirige vers l’accueil.
+   */
+  enabled?: boolean | null
+  updatedAt?: string | null
+  createdAt?: string | null
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "site-identity_select".
  */
@@ -918,6 +935,16 @@ export interface AssistantSettingsSelect<T extends boolean = true> {
   model?: T
   unavailableMessage?: T
   retentionNotice?: T
+  updatedAt?: T
+  createdAt?: T
+  globalType?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "services-settings_select".
+ */
+export interface ServicesSettingsSelect<T extends boolean = true> {
+  enabled?: T
   updatedAt?: T
   createdAt?: T
   globalType?: T

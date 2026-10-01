@@ -9,24 +9,23 @@ import { getIdentity, getProfile, listExperiences } from '@/lib/site-content'
 
 import { AnimatedCounter } from './_components/animated-counter'
 import { CareerTimeline } from './_components/career-timeline'
-import { SkillGroups } from './_components/skill-groups'
 
 import type { Metadata } from 'next'
 
 export async function generateMetadata({
   params,
-}: PageProps<'/[locale]/a-propos'>): Promise<Metadata> {
+}: PageProps<'/[locale]/parcours'>): Promise<Metadata> {
   const locale = await getPageLocale(params)
   const t = await getTranslations({ locale, namespace: 'About' })
 
   return {
     title: t('metaTitle'),
     description: t('metaDescription'),
-    alternates: buildAlternates(locale, '/a-propos'),
+    alternates: buildAlternates(locale, '/parcours'),
   }
 }
 
-async function AboutPage({ params }: PageProps<'/[locale]/a-propos'>) {
+async function AboutPage({ params }: PageProps<'/[locale]/parcours'>) {
   const locale = await getPageLocale(params)
   setRequestLocale(locale)
 
@@ -76,18 +75,6 @@ async function AboutPage({ params }: PageProps<'/[locale]/a-propos'>) {
             </div>
           </StaggerItem>
         </Stagger>
-      ) : null}
-
-      {profile.skillGroups.length > 0 ? (
-        <section className="content-section">
-          {/* This section still sits in the first screen: it animates on mount,
-              otherwise it reserves its height without ever showing. */}
-          <Reveal onMount>
-            <p className="eyebrow">{t('skillsEyebrow')}</p>
-            <h2>{t('skillsHeading')}</h2>
-          </Reveal>
-          <SkillGroups groups={profile.skillGroups} onMount />
-        </section>
       ) : null}
 
       {experiences.length > 0 ? (
