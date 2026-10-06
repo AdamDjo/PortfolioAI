@@ -1,4 +1,4 @@
-import { RichText } from '@payloadcms/richtext-lexical/react'
+import { RichText, type JSXConvertersFunction } from '@payloadcms/richtext-lexical/react'
 import { ArrowLeft } from 'lucide-react'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
@@ -14,6 +14,30 @@ import { listPublishedPosts, readPublishedPost, resolveDescription } from '@/lib
 import { absoluteUrl } from '@/lib/site-url'
 
 import type { Metadata } from 'next'
+
+/**
+ * Renders the code block Payload's premade `CodeBlock` produces.
+ *
+ * The default converters know nothing about a block's shape — a block is the
+ * project's own data — so without this one a fenced snippet would render as an
+ * empty node. The language lands on the element as the `language-*` class every
+ * highlighter expects, so adding one later needs no change here.
+ */
+const converters: JSXConvertersFunction = ({ defaultConverters }) => ({
+  ...defaultConverters,
+  blocks: {
+    Code: ({ node }: { node: { fields: { code?: string; language?: string } } }) => {
+      const { code, language } = node.fields
+      if (!code) return null
+
+      return (
+        <pre>
+          <code className={language ? `language-${language}` : undefined}>{code}</code>
+        </pre>
+      )
+    },
+  },
+})
 
 /**
  * Prerenders one page per published article, per language.
@@ -145,7 +169,7 @@ async function ArticlePage({ params }: PageProps<'/[locale]/blog/[slug]'>) {
 
         {post.content ? (
           <div className="article-body">
-            <RichText data={post.content} />
+            <RichText converters={converters} data={post.content} />
           </div>
         ) : null}
       </article>
