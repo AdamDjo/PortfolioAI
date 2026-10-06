@@ -3,7 +3,7 @@ import { join } from 'node:path'
 
 import { describe, expect, it } from 'vitest'
 
-import { CONTENT_TAGS, PAGES_BY_TAG } from './content-cache'
+import { CONTENT_TAGS, PAGES_BY_TAG, toRoutePattern } from './content-cache'
 
 /**
  * `revalidatePath` fails silently.
@@ -19,25 +19,13 @@ import { CONTENT_TAGS, PAGES_BY_TAG } from './content-cache'
 
 const APP_DIR = join(import.meta.dirname, '..', 'app')
 
-/** Mirrors what `purge` passes to `revalidatePath`. */
-const toPattern = (path: string) => `/[locale]${path === '/' ? '' : path}`
-
 /**
- * Where a route pattern lives on disk. Route groups are invisible in a URL, so
- * `/[locale]/projets` is served by `[locale]/(site)/projets`, and the home page
- * by a further `(home)`.
+ * The file a route pattern names. Next matches `revalidatePath` against the
+ * route as it sits on disk, route groups included, so the pattern has to lead
+ * to this exact file — a group left out matches nothing.
  */
-const candidatesFor = (path: string, type: 'layout' | 'page') => {
-  const file = type === 'layout' ? 'layout.tsx' : 'page.tsx'
-  const base = join(APP_DIR, '[locale]')
-  const rest = path === '/' ? '' : path
-
-  return [
-    join(base, rest, file),
-    join(base, '(site)', rest, file),
-    join(base, '(site)', rest, '(home)', file),
-  ]
-}
+const fileFor = (path: string, type: 'layout' | 'page') =>
+  join(APP_DIR, toRoutePattern(path, type), type === 'layout' ? 'layout.tsx' : 'page.tsx')
 
 const ALL_ENTRIES = Object.values(PAGES_BY_TAG).flat()
 
@@ -46,18 +34,15 @@ describe('PAGES_BY_TAG', () => {
     expect(Object.keys(PAGES_BY_TAG).sort()).toEqual(Object.values(CONTENT_TAGS).sort())
   })
 
-  it('points every entry at a route that exists on disk', () => {
+  it('points every entry at the exact route file on disk', () => {
     for (const { path, type } of ALL_ENTRIES) {
-      const candidates = candidatesFor(path, type)
-      expect(
-        candidates.some((candidate) => existsSync(candidate)),
-        `${path} (${type}) matches no route; tried:\n${candidates.join('\n')}`
-      ).toBe(true)
+      const file = fileFor(path, type)
+      expect(existsSync(file), `${path} (${type}) matches no route: ${file}`).toBe(true)
     }
   })
 
   /*
-   * Entries are bare app paths; `purge` adds the `[locale]` pattern. A locale
+   * Entries are bare app paths; `toRoutePattern` adds the `[locale]` pattern. A locale
    * written here would produce `/[locale]/en/...`, and a hardcoded language
    * would refresh that one and leave the others stale.
    */
@@ -75,13 +60,14 @@ describe('PAGES_BY_TAG', () => {
    */
   it('pairs a route pattern with a type', () => {
     for (const { path, type } of ALL_ENTRIES) {
-      expect(toPattern(path)).toMatch(/^\/\[locale\]/)
+      expect(toRoutePattern(path, type)).toMatch(/^\/\[locale\]/)
       expect(type, `${path} needs a type`).toMatch(/^(page|layout)$/)
     }
   })
 
-  it('builds the expected patterns', () => {
-    expect(toPattern('/')).toBe('/[locale]')
-    expect(toPattern('/projets')).toBe('/[locale]/projets')
+  it('builds the expected patterns, route groups included', () => {
+    expect(toRoutePattern('/', 'layout')).toBe('/[locale]')
+    expect(toRoutePattern('/', 'page')).toBe('/[locale]/(site)/(home)')
+    expect(toRoutePattern('/blog/[slug]', 'page')).toBe('/[locale]/(site)/blog/[slug]')
   })
 })
