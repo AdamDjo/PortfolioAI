@@ -32,6 +32,7 @@ const CONTENT_TAGS = {
   bookmarks: 'content:bookmarks',
   aiTools: 'content:ai-tools',
   aiKnowledge: 'content:ai-knowledge',
+  posts: 'content:posts',
   assistant: 'content:assistant',
   servicesSettings: 'content:services-settings',
 } as const
@@ -81,6 +82,17 @@ const PAGES_BY_TAG: Record<ContentTag, { path: string; type: 'layout' | 'page' }
     { path: '/veille', type: 'page' },
   ],
   [CONTENT_TAGS.aiTools]: [{ path: '/outils-ia', type: 'page' }],
+  /*
+   * The article pages are prerendered, so publishing has to replace their HTML:
+   * the index gains a card and the article itself appears. `/blog/[slug]` is the
+   * route pattern, which refreshes every article in every language — purging only
+   * the one that changed would need its slug here, and a slug is not something
+   * this table can know.
+   */
+  [CONTENT_TAGS.posts]: [
+    { path: '/blog', type: 'page' },
+    { path: '/blog/[slug]', type: 'page' },
+  ],
   // The assistant answers from a route handler, so no page holds this content:
   // purging the cache entry is enough, there is no HTML to replace.
   [CONTENT_TAGS.aiKnowledge]: [],

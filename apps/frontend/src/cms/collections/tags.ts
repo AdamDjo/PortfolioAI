@@ -1,5 +1,5 @@
 import { CONTENT_TAGS, revalidateCollection } from '@/lib/content-cache'
-import { toTagSlug } from '@/lib/tag-slug'
+import { toSlug } from '@/lib/slug'
 
 import type { CollectionConfig } from 'payload'
 
@@ -16,7 +16,7 @@ const revalidate = revalidateCollection(CONTENT_TAGS.bookmarks)
  * enforces it, since all three collapse to the same identifier.
  *
  * Creation is also offered on `/veille` to the signed-in owner, which is why the
- * slug rule is shared (see lib/tag-slug): the page resolves a typed name against
+ * slug rule is shared (see lib/slug): the page resolves a typed name against
  * the existing vocabulary before posting, so a near-duplicate selects the tag
  * that already exists instead of failing on the unique index.
  */
@@ -53,7 +53,9 @@ const Tags: CollectionConfig = {
         description: 'Généré depuis le nom, utilisé dans les URL de filtre.',
       },
       hooks: {
-        beforeValidate: [({ data }) => toTagSlug(typeof data?.name === 'string' ? data.name : '')],
+        // The rule is shared with `posts`, so a tag and an article can never
+        // disagree on what a given title becomes in a URL.
+        beforeValidate: [({ data }) => toSlug(typeof data?.name === 'string' ? data.name : '')],
       },
     },
   ],

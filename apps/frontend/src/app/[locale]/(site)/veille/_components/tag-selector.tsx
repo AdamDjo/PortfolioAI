@@ -4,7 +4,7 @@ import { Check, Loader2, Plus } from 'lucide-react'
 import { useTranslations } from 'next-intl'
 import { useId, useState, type FormEvent } from 'react'
 
-import { toTagSlug } from '@/lib/tag-slug'
+import { toSlug } from '@/lib/slug'
 
 import type { TagView } from '@/lib/tags'
 
@@ -65,8 +65,8 @@ function TagSelector({
     // Resolve against the vocabulary already loaded, using the very rule the
     // collection slugifies with: typing "react" when "React" exists selects the
     // existing tag instead of posting a name the unique index would reject.
-    const slug = toTagSlug(name)
-    const existing = tags.find((tag) => toTagSlug(tag.name) === slug)
+    const slug = toSlug(name)
+    const existing = tags.find((tag) => toSlug(tag.name) === slug)
     if (existing) {
       setDraft('')
       setFailed(false)
