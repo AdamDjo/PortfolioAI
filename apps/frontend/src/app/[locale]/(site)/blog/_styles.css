@@ -1,0 +1,274 @@
+/*
+ * Blog index and article page.
+ *
+ * The index is a list rather than a grid of equal tiles: articles are read in
+ * order of publication, and a tile grid would suggest they are interchangeable.
+ */
+
+.blog-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--spacing-xs);
+  margin-bottom: var(--spacing-lg);
+}
+.blog-filters button {
+  padding: var(--spacing-2xs) 13px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-full);
+  background: transparent;
+  color: var(--muted);
+  font-size: var(--text-2xs);
+  cursor: pointer;
+  transition:
+    color var(--duration-fast) ease,
+    border-color var(--duration-fast) ease,
+    background-color var(--duration-fast) ease;
+}
+.blog-filters button:hover {
+  border-color: var(--accent);
+  color: var(--text);
+}
+.blog-filters button.is-active {
+  border-color: var(--accent-solid);
+  background: var(--accent-solid);
+  color: white;
+}
+
+.blog-empty {
+  margin: 0;
+  padding: var(--spacing-xl) 0;
+  color: var(--muted);
+}
+
+.blog-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.blog-card {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  overflow: hidden;
+  transition:
+    border-color var(--duration-base) ease,
+    box-shadow var(--duration-base) ease;
+}
+.blog-card:hover {
+  border-color: var(--accent);
+  box-shadow: 0 14px 34px rgb(18 24 40 / 10%);
+}
+.blog-card-link {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: var(--spacing-md);
+  align-items: start;
+}
+.blog-card-cover {
+  width: 100%;
+  height: 100%;
+  max-height: 220px;
+  object-fit: cover;
+}
+.blog-card-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-2xs);
+  min-width: 0;
+  padding: var(--spacing-md);
+}
+.blog-card-meta {
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--text-2xs);
+  /* The date and the duration are data in a list: keep their digits aligned. */
+  font-variant-numeric: tabular-nums;
+}
+.blog-card-body h2 {
+  margin: 0;
+  font-size: var(--text-lg);
+  line-height: 1.25;
+  text-wrap: balance;
+}
+.blog-card-excerpt {
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--text-sm);
+}
+.blog-card-tags {
+  margin: var(--spacing-3xs) 0 0;
+  color: var(--accent);
+  font-size: var(--text-2xs);
+}
+
+/*
+ * A cover earns a column of its own once there is room for one; without a cover
+ * the body spans the card, instead of leaving an empty column behind.
+ */
+@media (min-width: 720px) {
+  .blog-card-link:has(.blog-card-cover) {
+    grid-template-columns: 280px minmax(0, 1fr);
+    gap: 0;
+  }
+  .blog-card-cover {
+    max-height: none;
+  }
+}
+
+/* --- article --- */
+
+.article {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-lg);
+}
+.article-head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+  /* Running text stays near 65 characters whatever the viewport does. */
+  max-width: 68ch;
+}
+.article-head h1 {
+  margin: 0;
+  font-size: var(--text-2xl);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  text-wrap: balance;
+}
+.article-lead {
+  margin: 0;
+  color: var(--muted);
+  font-size: var(--text-lg);
+  line-height: 1.5;
+}
+.article-tags {
+  margin: 0;
+  color: var(--accent);
+  font-size: var(--text-2xs);
+}
+.article-cover {
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-lg);
+}
+
+.article-body {
+  max-width: 68ch;
+  font-size: var(--text-base);
+  line-height: 1.7;
+}
+/*
+ * The rhythm is set on the blocks themselves, not with a child combinator:
+ * `RichText` wraps everything in a `.payload-richtext` element, so a rule on the
+ * direct children of `.article-body` would only ever match that wrapper and the
+ * whole article would run together.
+ */
+.article-body :is(p, ul, ol, blockquote, pre, table, figure) {
+  margin: 0 0 var(--spacing-md);
+}
+.article-body :is(h2, h3) {
+  margin: var(--spacing-xl) 0 var(--spacing-xs);
+  line-height: 1.25;
+  text-wrap: balance;
+}
+.article-body :is(.payload-richtext, div) > :last-child {
+  margin-bottom: 0;
+}
+.article-body h2 {
+  font-size: var(--text-xl);
+}
+.article-body h3 {
+  font-size: var(--text-lg);
+}
+.article-body a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+/*
+ * The marker is restored explicitly: Tailwind's reset strips it from every list,
+ * which is right for navigation and wrong for prose — a list in an article has to
+ * read as a list.
+ */
+.article-body ul,
+.article-body ol {
+  padding-left: var(--spacing-lg);
+}
+.article-body ul {
+  list-style: disc;
+}
+.article-body ol {
+  list-style: decimal;
+}
+.article-body li::marker {
+  color: var(--muted);
+}
+.article-body li + li {
+  margin-top: var(--spacing-3xs);
+}
+.article-body blockquote {
+  margin: var(--spacing-md) 0;
+  padding-left: var(--spacing-md);
+  border-left: 2px solid var(--accent-solid);
+  color: var(--muted);
+}
+.article-body code {
+  padding: 2px 5px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-xs);
+  background: var(--surface);
+  font-size: 0.9em;
+}
+/*
+ * A code block is the one element allowed to be wider than the column: it scrolls
+ * inside its own box so a long line never widens the page.
+ */
+.article-body pre {
+  overflow-x: auto;
+  padding: var(--spacing-md);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+}
+.article-body pre code {
+  padding: 0;
+  border: none;
+  background: none;
+}
+.article-body img {
+  height: auto;
+  border-radius: var(--radius-sm);
+}
+.article-body table {
+  display: block;
+  overflow-x: auto;
+  border-collapse: collapse;
+  width: 100%;
+  font-size: var(--text-sm);
+}
+.article-body th,
+.article-body td {
+  padding: var(--spacing-2xs) var(--spacing-sm);
+  border: 1px solid var(--line);
+  text-align: left;
+}
+
+.article-back {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--spacing-2xs);
+  margin-top: var(--spacing-xl);
+  color: var(--muted);
+  font-size: var(--text-sm);
+  transition: color var(--duration-fast) ease;
+}
+.article-back:hover {
+  color: var(--text);
+}

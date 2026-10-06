@@ -56,6 +56,19 @@
   `localized: true`. `/admin` affiche un sélecteur de langue par document. Les
   lectures serveur reçoivent la locale et le cache est clé par langue. Reste à
   faire, et c'est éditorial : écrire les traductions anglaises du contenu réel.
+- Blog et partage social spécifiés dans `docs/FEATURE_SPEC_BLOG.md`, suivis par l'epic
+  #90 et ses sous-tickets (#84 à #89, plus #91). **#84 est terminé** sur la branche
+  `claude/blog-auto-share-seo-04pga8` : collection `posts` (brouillons, versions, bilingue,
+  lecture publique filtrée sur `_status`), import Markdown, durée de lecture, règle de slug
+  partagée avec `tags`, pages `/blog` et `/blog/[slug]`, métadonnées + canonical + hreflang,
+  JSON-LD `BlogPosting` et `BreadcrumbList`, image de partage générée par `next/og`, flux RSS,
+  sitemap dynamique. Migration `20261001_145032_posts` générée et appliquée.
+- Vérifié sur une vraie base et un build de production : les deux articles prérendus dans les
+  deux langues, le flux servi en `application/rss+xml` avec des dates RFC 822, le sitemap qui
+  liste les articles avec leur propre date de modification, l'image de partage en PNG
+  1200×630, et un slug inconnu — comme un brouillon — qui répond 404.
+- Documentation vivante de la chaîne éditoriale, à republier à chaque lot livré :
+  https://claude.ai/artifact/VXEvdeXySFy9yzoGkLZMqv
 - Code hérité de l'ère Express retiré : `lib/api.ts`, `lib/query-client.ts`,
   `providers.tsx`, `data/portfolio.ts`, pages `/liens` et `/demo`. React Query,
   Axios et quatre autres dépendances désinstallées.
@@ -68,6 +81,12 @@
 - La spécification fonctionnelle de référence est `docs/FEATURE_SPEC_CMS_AI.md`.
 - Les collections métier arrivent par lots : `users` + `media` en #2, `projects`,
   `bookmarks` et `tags` en #6.
+- Le site reste la source canonique des articles : on partage des liens vers `/blog`,
+  jamais le texte intégral sur un réseau, sinon le référencement part chez le réseau.
+- Postiz, auto-hébergé sur le VPS, détient les jetons LinkedIn et X, les médias et la file
+  de publication. L'application ne pousse que du texte vers son API : le jeton LinkedIn
+  expire à 60 jours sans rafraîchissement programmatique, et X facture chaque post depuis
+  la fermeture de son palier gratuit — deux contraintes qui n'ont pas à vivre dans ce code.
 - Le visiteur ne publie jamais de lien. L'écriture est réservée au propriétaire
   connecté, pour que personne ne puisse polluer la grille de veille.
 - L'ajout d'un lien doit rester possible depuis un téléphone, sur la page publique,
@@ -109,6 +128,31 @@
   (`src/lib/open-graph-hook.ts`), paramétré par les noms de champs.
 - Toute URL est canonicalisée avant enregistrement (`src/lib/canonical-url.ts`),
   sinon l'index unique sur `url` laisserait passer des doublons.
+- **Le conteneur de session embarque PostgreSQL 16.** `pg_ctlcluster 16 main start`, puis une
+  base locale, suffit pour appliquer les migrations, en générer une (`script -q /dev/null` pour
+  le TTY), lancer `pnpm seed` et faire un vrai `pnpm build`. Plus besoin d'une base distante
+  pour travailler sur le schéma depuis un agent.
+- **Lexical n'a pas de bloc de code.** Le jeu de fonctionnalités de Payload couvre le code
+  _inline_ et s'arrête là : une clôture Markdown ```arrive en paragraphe. Le texte, les retours
+à la ligne et l'indentation sont conservés (nœuds`linebreak`), seule la présentation est
+perdue. Suivi par #91, et écrit dans la description du champ `markdownImport`.
+- L'image de partage des articles est générée depuis le titre et jamais depuis le visuel de
+  tête : elle est rendue au build, quand aucun serveur ne sert encore les médias téléversés,
+  donc une carte basée sur la couverture dépendrait d'une URL qui n'existe pas encore.
+- La page d'un article ne passe pas par `cachedRead` : l'aide mémoïse par locale, donc une
+  entrée par slug devrait être reconstruite à chaque appel et annulerait le cache qu'elle crée.
+  Les pages sont prérendues et régénérées par `revalidatePath`, donc la requête tourne au build
+  et une fois par publication, pas à chaque visite.
+- Le flux RSS a sa propre lecture (`posts:feed`) : c'est la seule surface qui a besoin du corps,
+  parce qu'un article sans résumé doit quand même porter une description. Charger tous les corps
+  dans l'entrée de cache de l'index serait le mauvais compromis dans l'autre sens.
+- `hero.tsx` fait `name.slice(0, 1)` sur `identity.displayName` : sur une base non seedée, le
+  build casse avec un `Cannot read properties of undefined`. Préexistant au blog, à durcir.
+- L'import Markdown convertit avec `editorConfigFactory.default({ config })` : c'est correct
+  tant que `payload.config.ts` monte `lexicalEditor()` sans features. Le jour où il en reçoit,
+  il faut passer à `fromField`, sinon l'import perd silencieusement les nœuds ajoutés.
+- Un collage Markdown vide est ignoré au lieu de vider le corps : enregistrer un article après
+  avoir seulement changé son titre ne doit pas détruire le texte.
 - **Aucune variable d'environnement critique ne prend de valeur de repli.**
   `process.env.X ?? ''` laissait Payload démarrer avec un secret vide, donc des
   cookies de session et des jetons de réinitialisation signés avec une valeur
@@ -227,6 +271,73 @@
   le paquet qui le référence.
 - `pnpm start` depuis la racine échoue (`ERR_PNPM_NO_SCRIPT_OR_SERVER`) : lancer
   `pnpm --filter @portfolio/frontend start`.
+
+## Performance (Lighthouse)
+
+**Toute mesure se fait sur un build de production.** Un rapport pris sur `next dev`
+est ininterprétable : Turbopack ne minifie ni ne tree-shake en dev, donc le
+barrel `simple-icons` y pèse 2,1 Mo alors que le build de production n'en garde
+que les 27 icônes utilisées (chunk de 41 Ko). S'ajoutent les scripts de
+`next-devtools` et ceux des extensions Chrome, attribués à la page.
+
+Scores sur `/fr`, build de production, cache d'images chaud :
+
+|         | Perf | A11y | Best practices | SEO |
+| ------- | ---- | ---- | -------------- | --- |
+| Desktop | 100  | 100  | 100            | 100 |
+| Mobile  | 92   | 100  | 100            | 100 |
+
+Ce qui a été corrigé et pourquoi :
+
+- **`Critical-CH` sur tout le site.** `withPayload` pose
+  `Accept-CH`/`Vary`/`Critical-CH: Sec-CH-Prefers-Color-Scheme` sur `/:path*`.
+  `Critical-CH` fait **redémarrer la navigation** au premier chargement : 607 ms
+  perdus sur mobile, pour un indice qu'aucune page publique ne lit.
+  `next.config.ts` ramène ce bloc sur `/admin/:path*` (et avec lui le
+  `X-Powered-By` de Payload).
+- **`priority` ne suffit plus en Next 16** : il n'émet que le `<link rel=preload>`,
+  sans `fetchpriority`. L'image LCP porte donc `fetchPriority="high"` explicitement.
+- **AVIF** (`images.formats`) : la mascotte passe de 56 Ko à 27,6 Ko, soit −51 %.
+  C'est le gain LCP le plus net. Encodage à la volée coûteux au premier accès :
+  un cache d'images froid fausse toute mesure.
+- **`images.deviceSizes` commence à 384.** `getWidths` ne retient que les
+  candidats ≥ `deviceSizes[0] × (plus petit vw des sizes)` ; avec 640 comme
+  plancher, une image en `70vw` ne pouvait rien recevoir sous 640px.
+- **`experimental.inlineCss`** : supprime l'aller-retour bloquant du rendu sur la
+  feuille de styles (~15 Ko). La CSP autorise déjà `style-src 'unsafe-inline'`.
+- **`filter: blur()` retiré des animations** (`template.tsx`, `riseItem`,
+  `Reveal`). `filter` ne tourne pas sur le compositeur : chaque frame repeignait
+  la page entière sur le thread principal, pendant l'hydratation. Idem pour le
+  `height: 'auto'` du message d'erreur du chat.
+- **Reflows forcés** : `Tilt` mesurait `getBoundingClientRect()` à chaque
+  `pointermove` pendant que le ressort tournait ; la mesure se fait maintenant une
+  fois à l'entrée du pointeur. Le suivi du fil de discussion lit sa géométrie dans
+  un `requestAnimationFrame` au lieu de le faire juste après le commit React.
+- **Beacons Vercel** : `@vercel/analytics` et `@vercel/speed-insights` appellent
+  `/_vercel/insights/*`, qui n'existe que chez Vercel. Hors Vercel c'était deux
+  404 et deux erreurs MIME par page — Best Practices à 93. Ils sont désormais
+  conditionnés à `process.env.VERCEL === '1'`.
+- **Tailles de police** : dix-huit sélecteurs descendaient sous le plancher de
+  l'échelle (jusqu'à 8px), et Lighthouse ne jugeait que 27 % du texte lisible sur
+  mobile. Tous ramenés sur `var(--text-2xs)`.
+- **`browserslist`** dans `apps/frontend/package.json` : cale les cibles sur ce que
+  la feuille de styles exige déjà (`color-mix(in srgb, ...)` → Chrome 111,
+  Firefox 113, Safari 16.4), ce qui évite d'expédier des polyfills pour
+  `Array.prototype.at`, `Object.hasOwn` et consorts.
+
+**Ce qui reste, et pourquoi c'est architectural.** Sur mobile le score bute sur le
+LCP (3,3 s d'après Lighthouse). Le LCP _observé_ dans la trace est à 298 ms, et une
+mesure réelle sous throttling 4G + CPU ×4 donne 1196 ms : les 3,3 s sont l'estimation
+pessimiste de Lantern, qui modélise le téléchargement et l'exécution des **290 Ko de
+JavaScript répartis sur 17 requêtes** avant la peinture. La cause de fond est que
+toute la page d'accueil est un arbre client : `ConversationSection` est `'use client'`
+uniquement pour relayer un `chatRef` entre les prompts de `ProjectsTeaser` et le champ
+du chat, ce qui entraîne `Hero`, `HomeRail` et `ProjectsTeaser` avec lui — et avec eux
+`simple-icons` (18 Ko) et une bonne part de `lucide-react`. Descendre sous les 2 s
+suppose de rendre le hero côté serveur et de n'isoler que le chat en îlot client, le
+pont passant par un store Zustand plutôt que par un ref partagé. C'est le sens de la
+convention « Server Components par défaut » : ce n'est pas un réglage, c'est une
+refonte de la page d'accueil.
 
 ## Validation
 

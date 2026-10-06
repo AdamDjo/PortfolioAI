@@ -248,9 +248,15 @@
   box-shadow: 0 8px 20px rgb(103 85 245 / 20%);
 }
 .message-ai {
+  /* Beside the avatar it must take the rest of the row and wrap inside it:
+     the base `.message` keeps its natural width (`flex: 0 0 auto`), which here
+     meant one unwrapped line overflowing the thread sideways. */
+  flex: 1 1 auto;
+  min-width: 0;
   max-width: none;
   padding: 0;
   color: var(--text);
+  overflow-wrap: anywhere;
 }
 /* The live conversation, below the scripted example. */
 .chat-thread {
@@ -263,6 +269,7 @@
   flex-direction: column;
   /* `auto` rather than `scroll`: the short conversations that fit show no track,
      and the scripted empty state keeps its original look. */
+  overflow-x: hidden;
   overflow-y: auto;
   /* Keeps a wheel gesture inside the transcript from continuing into the page
      once the thread hits its end. */
@@ -766,7 +773,7 @@
   z-index: 1;
   display: grid;
   min-height: min(840px, calc(100svh - 72px));
-  grid-template-columns: minmax(0, 1.52fr) minmax(220px, 0.62fr) minmax(350px, 1fr);
+  grid-template-columns: minmax(0, 1.45fr) minmax(220px, 0.55fr) minmax(350px, 1.2fr);
   grid-template-rows: minmax(580px, 1fr) auto;
   column-gap: 20px;
   padding-block: 34px 28px;
@@ -941,7 +948,7 @@
 .home-skills-card h2,
 .home-project-assistant h2 {
   margin: 0 0 13px;
-  font-size: 13px;
+  font-size: var(--text-sm);
   letter-spacing: -0.01em;
 }
 .home-profile-card {
@@ -978,7 +985,7 @@
 .home-profile-card > small {
   overflow: hidden;
   color: var(--muted);
-  font-size: 10px;
+  font-size: var(--text-2xs);
   line-height: 1.55;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -992,7 +999,7 @@
   padding-top: 10px;
   border-top: 1px solid var(--line);
   color: var(--accent-on-soft);
-  font-size: 10px;
+  font-size: var(--text-2xs);
   font-weight: 700;
 }
 .home-skills-card ul {
@@ -1008,7 +1015,7 @@
   align-items: center;
   gap: 8px;
   color: var(--muted);
-  font-size: 11px;
+  font-size: var(--text-xs);
   white-space: nowrap;
 }
 .home-skills-card li svg {
@@ -1022,8 +1029,11 @@
 }
 .home-chat-card {
   display: flex;
-  min-height: 285px;
-  max-height: 390px;
+  /* Fits its content between the two bounds: compact when empty, room for
+     a full exchange once the conversation grows, then the thread scrolls.
+     Header, feedback row, form and retention notice take ~230px of the cap. */
+  min-height: 320px;
+  max-height: 560px;
   flex-direction: column;
   padding: 17px;
   border-radius: 16px;
@@ -1034,7 +1044,7 @@
 }
 .home-chat-card .chat-header span,
 .home-chat-card .chat-header small {
-  font-size: 11px;
+  font-size: var(--text-2xs);
 }
 .home-chat-intro {
   display: grid;
@@ -1044,7 +1054,7 @@
   border-radius: 11px;
   background: var(--accent-soft);
   color: var(--accent-on-soft);
-  font-size: 11px;
+  font-size: var(--text-xs);
   line-height: 1.5;
 }
 .home-chat-intro strong {
@@ -1054,13 +1064,13 @@
   margin-top: 8px;
 }
 .home-chat-card .message {
-  font-size: 11px;
+  font-size: var(--text-xs);
 }
 .home-chat-card .avatar {
   flex-basis: 32px;
   height: 32px;
   border-radius: 9px;
-  font-size: 11px;
+  font-size: var(--text-2xs);
 }
 .home-chat-card .chat-form {
   gap: 8px;
@@ -1070,7 +1080,7 @@
   height: 42px;
   padding-inline: 13px;
   border-radius: 10px;
-  font-size: 12px;
+  font-size: var(--text-xs);
 }
 .home-chat-card .chat-form button {
   width: 42px;
@@ -1106,11 +1116,11 @@
   line-height: 1.25;
 }
 .home-stats strong {
-  font-size: 15px;
+  font-size: var(--text-base);
 }
 .home-stats small {
   color: var(--muted);
-  font-size: 10px;
+  font-size: var(--text-2xs);
 }
 .home-rail {
   position: relative;
@@ -1172,12 +1182,12 @@
   display: block;
 }
 .home-rail-item strong {
-  font-size: 12px;
+  font-size: var(--text-sm);
 }
 .home-rail-item small {
   margin-top: 4px;
   color: var(--muted);
-  font-size: 10px;
+  font-size: var(--text-2xs);
   line-height: 1.5;
 }
 .home-rail-underline {
@@ -1231,16 +1241,16 @@
 }
 .home-project-card .home-project-card-body > strong {
   padding: 0;
-  font-size: 14px;
+  font-size: var(--text-base);
 }
 .home-project-card .home-project-card-body > small {
   display: -webkit-box;
   overflow: hidden;
-  min-height: 54px;
+  min-height: calc(3 * 1.55em);
   margin-top: 6px;
   padding: 0;
   color: var(--muted);
-  font-size: 10px;
+  font-size: var(--text-xs);
   line-height: 1.55;
   -webkit-box-orient: vertical;
   -webkit-line-clamp: 3;
@@ -1259,13 +1269,13 @@
   gap: 5px;
 }
 .home-project-tags i {
-  max-width: 90px;
+  max-width: 120px;
   overflow: hidden;
-  padding: 4px 7px;
+  padding: 3px 8px;
   border-radius: var(--radius-full);
   background: var(--surface-2);
   color: var(--muted);
-  font-size: 9px;
+  font-size: var(--text-2xs);
   font-style: normal;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -1317,7 +1327,7 @@
   border-radius: 10px;
   background: var(--bg);
   color: var(--muted);
-  font-size: 10px;
+  font-size: var(--text-xs);
   text-align: left;
   cursor: pointer;
   transition:
@@ -1358,14 +1368,14 @@
   z-index: 2;
   top: -39px;
   right: 57px;
-  width: 84px;
+  width: 100px;
   padding: 8px 9px;
   border: 1px solid color-mix(in srgb, var(--text) 34%, var(--line));
   border-radius: 50%;
   background: var(--surface);
   color: var(--text);
   font-family: var(--font-handwriting), cursive;
-  font-size: 8px;
+  font-size: var(--text-2xs);
   font-style: italic;
   line-height: 1.25;
   text-align: center;
@@ -1418,11 +1428,11 @@
 }
 .quality-copy strong {
   color: var(--text);
-  font-size: 11px;
+  font-size: var(--text-sm);
 }
 .quality-copy small {
   color: var(--muted);
-  font-size: 9px;
+  font-size: var(--text-2xs);
   line-height: 1.5;
 }
 :root[data-theme='dark'] .home-mascot::before {

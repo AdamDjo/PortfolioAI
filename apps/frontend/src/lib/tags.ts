@@ -8,13 +8,13 @@ import type { Locale } from '@/i18n/routing'
 /**
  * Server-side access to the tag vocabulary.
  *
- * Tags are created in `/admin` only, so this module just reads them: the site
- * offers them for selection but never adds to the list. That is what keeps
- * near-duplicates ("React" / "react" / "ReactJS") from piling up.
+ * Read-only: tags are created through the Payload API, either from `/admin` or
+ * from `/veille` itself. Near-duplicates ("React" / "react" / "ReactJS") are kept
+ * out by the unique `slug`, not by restricting where creation happens.
  *
  * Cached under the bookmarks tag rather than one of its own: the two are always
  * displayed together on `/veille`, and the `tags` collection already purges that
- * tag on write, so a tag created in the admin reaches the selector immediately.
+ * tag on write, so a newly created tag reaches the selector immediately.
  */
 
 /** Minimal shape the selector needs, decoupled from the Payload-generated types. */

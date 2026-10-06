@@ -69,6 +69,7 @@ export interface Config {
   collections: {
     users: User
     media: Media
+    posts: Post
     projects: Project
     experiences: Experience
     tags: Tag
@@ -85,6 +86,7 @@ export interface Config {
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>
     media: MediaSelect<false> | MediaSelect<true>
+    posts: PostsSelect<false> | PostsSelect<true>
     projects: ProjectsSelect<false> | ProjectsSelect<true>
     experiences: ExperiencesSelect<false> | ExperiencesSelect<true>
     tags: TagsSelect<false> | TagsSelect<true>
@@ -108,12 +110,14 @@ export interface Config {
     availability: Availability
     profile: Profile
     'assistant-settings': AssistantSetting
+    'services-settings': ServicesSetting
   }
   globalsSelect: {
     'site-identity': SiteIdentitySelect<false> | SiteIdentitySelect<true>
     availability: AvailabilitySelect<false> | AvailabilitySelect<true>
     profile: ProfileSelect<false> | ProfileSelect<true>
     'assistant-settings': AssistantSettingsSelect<false> | AssistantSettingsSelect<true>
+    'services-settings': ServicesSettingsSelect<false> | ServicesSettingsSelect<true>
   }
   locale: 'fr' | 'en'
   widgets: {
@@ -187,6 +191,83 @@ export interface Media {
   height?: number | null
   focalX?: number | null
   focalY?: number | null
+}
+/**
+ * Rédigez en Markdown dans votre éditeur, collez-le dans « Import Markdown », puis ajoutez les images dans le corps.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "posts".
+ */
+export interface Post {
+  id: number
+  title: string
+  /**
+   * Généré depuis le titre. Modifiable avant la première publication : le changer ensuite casse l'adresse déjà partagée.
+   */
+  slug?: string | null
+  /**
+   * Sert de méta-description et de résumé dans la liste. Laissez vide pour reprendre le début de l'article.
+   */
+  excerpt?: string | null
+  /**
+   * Collez ici le Markdown rédigé ailleurs : il remplace le corps à l’enregistrement, puis ce champ se vide. Évitez les blocs de code ``` pour l’instant : ils arrivent en paragraphe, délimiteurs compris, et s’affichent tels quels sur la page (suivi par #91).
+   */
+  markdownImport?: string | null
+  content?: {
+    root: {
+      type: string
+      children: {
+        type: any
+        version: number
+        [k: string]: unknown
+      }[]
+      direction: ('ltr' | 'rtl') | null
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | ''
+      indent: number
+      version: number
+    }
+    [k: string]: unknown
+  } | null
+  /**
+   * Affiché en tête de l'article. L'image de partage est générée depuis le titre, elle ne reprend pas ce visuel.
+   */
+  cover?: (number | null) | Media
+  /**
+   * Réutilise le vocabulaire de la veille.
+   */
+  tags?: (number | Tag)[] | null
+  /**
+   * Date affichée et ordre de la liste.
+   */
+  publishedAt?: string | null
+  /**
+   * Calculée à chaque enregistrement.
+   */
+  readingTime?: number | null
+  /**
+   * À remplir seulement pour sortir du titre et du résumé par défaut.
+   */
+  seo?: {
+    title?: string | null
+    description?: string | null
+  }
+  updatedAt: string
+  createdAt: string
+  _status?: ('draft' | 'published') | null
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "tags".
+ */
+export interface Tag {
+  id: number
+  name: string
+  /**
+   * Généré depuis le nom, utilisé dans les URL de filtre.
+   */
+  slug?: string | null
+  updatedAt: string
+  createdAt: string
 }
 /**
  * Renseignez l'URL : le titre, la description et l'image d'aperçu sont récupérés automatiquement.
@@ -270,20 +351,6 @@ export interface Experience {
       }[]
     | null
   technologies?: string[] | null
-  updatedAt: string
-  createdAt: string
-}
-/**
- * This interface was referenced by `Config`'s JSON-Schema
- * via the `definition` "tags".
- */
-export interface Tag {
-  id: number
-  name: string
-  /**
-   * Généré depuis le nom, utilisé dans les URL de filtre.
-   */
-  slug?: string | null
   updatedAt: string
   createdAt: string
 }
@@ -453,6 +520,10 @@ export interface PayloadLockedDocument {
         value: number | Media
       } | null)
     | ({
+        relationTo: 'posts'
+        value: number | Post
+      } | null)
+    | ({
         relationTo: 'projects'
         value: number | Project
       } | null)
@@ -562,6 +633,30 @@ export interface MediaSelect<T extends boolean = true> {
   height?: T
   focalX?: T
   focalY?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "posts_select".
+ */
+export interface PostsSelect<T extends boolean = true> {
+  title?: T
+  slug?: T
+  excerpt?: T
+  markdownImport?: T
+  content?: T
+  cover?: T
+  tags?: T
+  publishedAt?: T
+  readingTime?: T
+  seo?:
+    | T
+    | {
+        title?: T
+        description?: T
+      }
+  updatedAt?: T
+  createdAt?: T
+  _status?: T
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
@@ -840,6 +935,21 @@ export interface AssistantSetting {
   createdAt?: string | null
 }
 /**
+ * Visibilité de la page /services.
+ *
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "services-settings".
+ */
+export interface ServicesSetting {
+  id: number
+  /**
+   * Décoché, la page /services n’est plus accessible et redirige vers l’accueil.
+   */
+  enabled?: boolean | null
+  updatedAt?: string | null
+  createdAt?: string | null
+}
+/**
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "site-identity_select".
  */
@@ -918,6 +1028,16 @@ export interface AssistantSettingsSelect<T extends boolean = true> {
   model?: T
   unavailableMessage?: T
   retentionNotice?: T
+  updatedAt?: T
+  createdAt?: T
+  globalType?: T
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "services-settings_select".
+ */
+export interface ServicesSettingsSelect<T extends boolean = true> {
+  enabled?: T
   updatedAt?: T
   createdAt?: T
   globalType?: T

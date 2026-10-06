@@ -4,7 +4,14 @@ import { CONTENT_TAGS, cachedRead } from '@/lib/content-cache'
 import config from '@payload-config'
 
 import type { Locale } from '@/i18n/routing'
-import type { Availability, Experience, Profile, Project, SiteIdentity } from '@/payload-types'
+import type {
+  Availability,
+  Experience,
+  Profile,
+  Project,
+  ServicesSetting,
+  SiteIdentity,
+} from '@/payload-types'
 
 /**
  * Server-side access to the site content: identity, profile, career, projects.
@@ -97,6 +104,10 @@ interface ExperienceView {
   context: string | null
   achievements: string[]
   technologies: string[]
+}
+
+interface ServicesSettingsView {
+  enabled: boolean
 }
 
 interface ProjectView {
@@ -210,6 +221,10 @@ const toAvailabilityView = (doc: Availability): AvailabilityView => ({
   detail: asText(doc.detail),
 })
 
+const toServicesSettingsView = (doc: ServicesSetting): ServicesSettingsView => ({
+  enabled: Boolean(doc.enabled),
+})
+
 /**
  * Reads go through normal access control (`overrideAccess: false`): this content
  * is public by definition, so there is no reason to bypass it.
@@ -227,6 +242,16 @@ const readAvailability = async (locale: Locale): Promise<AvailabilityView> => {
   const payload = await getPayload({ config })
   const doc = await payload.findGlobal({ slug: 'availability', locale, overrideAccess: false })
   return toAvailabilityView(doc)
+}
+
+const readServicesSettings = async (locale: Locale): Promise<ServicesSettingsView> => {
+  const payload = await getPayload({ config })
+  const doc = await payload.findGlobal({
+    slug: 'services-settings',
+    locale,
+    overrideAccess: false,
+  })
+  return toServicesSettingsView(doc)
 }
 
 const readProfile = async (locale: Locale): Promise<ProfileView> => {
@@ -267,15 +292,22 @@ const getAvailability = cachedRead(CONTENT_TAGS.availability, 'availability', re
 const getProfile = cachedRead(CONTENT_TAGS.profile, 'profile', readProfile)
 const listExperiences = cachedRead(CONTENT_TAGS.experiences, 'experiences', readExperiences)
 const listProjects = cachedRead(CONTENT_TAGS.projects, 'projects', readProjects)
+const getServicesSettings = cachedRead(
+  CONTENT_TAGS.servicesSettings,
+  'services-settings',
+  readServicesSettings
+)
 
 export {
   getAvailability,
   getIdentity,
   getProfile,
+  getServicesSettings,
   listExperiences,
   listProjects,
   type AvailabilityView,
   type ExperienceView,
   type ProjectView,
+  type ServicesSettingsView,
   type SkillGroupView,
 }

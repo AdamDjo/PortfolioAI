@@ -65,6 +65,21 @@ function CardTagEditor({ bookmarkId, tags, selectedIds, onSaved }: CardTagEditor
       ? draftIds.filter((entry) => entry !== id)
       : [...draftIds, id]
 
+    await save(next)
+  }
+
+  /**
+   * Attaches a freshly created tag to this link.
+   *
+   * Creation and attachment are one gesture here: reaching for the field inside
+   * a card's popover means wanting that tag on *this* link.
+   */
+  async function attachCreated(id: string) {
+    if (draftIds.includes(id)) return
+    await save([...draftIds, id])
+  }
+
+  async function save(next: string[]) {
     const previous = draftIds
     setDraftIds(next)
     setSaving(true)
@@ -114,6 +129,9 @@ function CardTagEditor({ bookmarkId, tags, selectedIds, onSaved }: CardTagEditor
             onToggle={toggleTag}
             disabled={saving}
             ariaLabel={t('tagPickerCardLabel')}
+            // The editor only renders for the signed-in owner.
+            canCreate
+            onCreated={(tag) => void attachCreated(tag.id)}
           />
           {failed ? (
             <p className="veille-tag-editor-error" role="alert">
