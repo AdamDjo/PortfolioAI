@@ -25,6 +25,11 @@ FROM node:20-alpine AS runner
 WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
+# Docker sets HOSTNAME to the container id, and the standalone server binds to
+# it — that is, to the container's network address only. The job runner calls
+# the server on 127.0.0.1 (src/instrumentation-node.ts), so listen everywhere.
+ENV HOSTNAME=0.0.0.0
+ENV PORT=3000
 
 COPY --from=builder /app/apps/frontend/.next/standalone ./
 COPY --from=builder /app/apps/frontend/.next/static ./apps/frontend/.next/static

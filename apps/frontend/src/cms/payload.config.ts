@@ -6,6 +6,7 @@ import { buildConfig } from 'payload'
 import sharp from 'sharp'
 
 import { resolvePayloadEmailAdapter } from '@/lib/email/payload'
+import { isJobRunnerRequest } from '@/lib/job-runner'
 import { requireEnv } from '@/lib/require-env'
 
 import { AIKnowledge } from './collections/ai-knowledge'
@@ -24,6 +25,10 @@ import { Availability } from './globals/availability'
 import { Profile } from './globals/profile'
 import { ServicesSettings } from './globals/services-settings'
 import { SiteIdentity } from './globals/site-identity'
+
+// Required, never defaulted: an empty secret signs session cookies and reset
+// tokens with a value anyone can reproduce. See lib/require-env.
+const payloadSecret = requireEnv('PAYLOAD_SECRET')
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -70,10 +75,29 @@ export default buildConfig({
     defaultLocale: 'fr',
     fallback: true,
   },
+  /*
+   * The job queue, which today carries a single task: the scheduled publish of
+   * `posts`. Payload registers that task itself from `schedulePublish`; what it
+   * does not provide is something that executes it. That executor is the
+   * server's own timer in `src/instrumentation-node.ts`, calling
+   * `/api/payload-jobs/run` every minute.
+   *
+   * Payload's `autoRun` would be the obvious choice and is deliberately not
+   * used: it runs jobs from a bare timer, outside any Next request, where the
+   * publish hook's `revalidatePath` cannot work — the article would be
+   * published in the database and stay a 404 on the site.
+   *
+   * The run endpoint stays closed to visitors: a signed-in user, or the
+   * server's runner presenting its token.
+   */
+  jobs: {
+    access: {
+      run: ({ req }) =>
+        Boolean(req.user) || isJobRunnerRequest(req.headers.get('authorization'), payloadSecret),
+    },
+  },
   editor,
-  // Required, never defaulted: an empty secret signs session cookies and reset
-  // tokens with a value anyone can reproduce. See lib/require-env.
-  secret: requireEnv('PAYLOAD_SECRET'),
+  secret: payloadSecret,
   // Absent when the sending domain is not configured. Payload then reports that
   // email is unavailable rather than pretending a reset link was delivered.
   email: resolvePayloadEmailAdapter(),
