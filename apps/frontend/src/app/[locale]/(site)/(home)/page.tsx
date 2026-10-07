@@ -35,10 +35,12 @@ async function Home({ params }: PageProps<'/[locale]'>) {
     getAssistantConfig(locale),
   ])
 
-  // Without a project flagged as featured, show the first of the sort order
-  // rather than an empty grid.
-  const featured = projects.filter((project) => project.featured)
-  const shown = [...featured, ...projects.filter((project) => !project.featured)].slice(0, 3)
+  // Featured projects lead, so they fill the row shown before the section is
+  // expanded; without any, the sort order set in `/admin` decides.
+  const ordered = [
+    ...projects.filter((project) => project.featured),
+    ...projects.filter((project) => !project.featured),
+  ]
 
   return (
     <>
@@ -51,7 +53,7 @@ async function Home({ params }: PageProps<'/[locale]'>) {
         skills={profile.skillGroups.flatMap((group) => group.items).slice(0, 5)}
         availability={{ available: availability.available, label: availability.label }}
         retentionNotice={assistant.retentionNotice}
-        projects={shown.map((project) => ({
+        projects={ordered.map((project) => ({
           id: project.id,
           url: project.url,
           title: project.title,
@@ -62,6 +64,7 @@ async function Home({ params }: PageProps<'/[locale]'>) {
             PROJECT_FALLBACK_IMAGES[project.title] ??
             null,
           technologies: project.technologies,
+          repositoryUrl: project.repositoryUrl,
         }))}
       />
       <QualityStrip />

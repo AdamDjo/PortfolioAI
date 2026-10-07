@@ -134,9 +134,10 @@ export function Hero({
 
         <StaggerItem variant="rise-visible">
           <div className="home-hero-actions">
-            <Link className="button button-primary" href="/projets">
+            {/* Same page: a plain fragment link, so the browser scrolls instead of navigating. */}
+            <a className="button button-primary" href="#projects">
               {t('hero.primaryAction')} <ArrowRight size={16} />
-            </Link>
+            </a>
             <Link className="button button-secondary" href="/contact">
               {t('hero.secondaryAction')}
             </Link>

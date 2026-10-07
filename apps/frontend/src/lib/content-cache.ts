@@ -73,15 +73,14 @@ const PAGES_BY_TAG: Record<ContentTag, { path: string; type: 'layout' | 'page' }
   [CONTENT_TAGS.availability]: [{ path: '/', type: 'page' }],
   [CONTENT_TAGS.profile]: [{ path: '/parcours', type: 'page' }],
   [CONTENT_TAGS.experiences]: [{ path: '/parcours', type: 'page' }],
-  [CONTENT_TAGS.projects]: [
-    { path: '/', type: 'page' },
-    { path: '/projets', type: 'page' },
-  ],
+  // Projects are listed on the home page only.
+  [CONTENT_TAGS.projects]: [{ path: '/', type: 'page' }],
   [CONTENT_TAGS.bookmarks]: [
     { path: '/', type: 'page' },
     { path: '/veille', type: 'page' },
   ],
-  [CONTENT_TAGS.aiTools]: [{ path: '/outils-ia', type: 'page' }],
+  // AI tools are the second tab of `/veille`.
+  [CONTENT_TAGS.aiTools]: [{ path: '/veille/outils-ia', type: 'page' }],
   /*
    * The article pages are prerendered, so publishing has to replace their HTML:
    * the index gains a card and the article itself appears. `/blog/[slug]` is the
@@ -97,7 +96,8 @@ const PAGES_BY_TAG: Record<ContentTag, { path: string; type: 'layout' | 'page' }
   // purging the cache entry is enough, there is no HTML to replace.
   [CONTENT_TAGS.aiKnowledge]: [],
   [CONTENT_TAGS.assistant]: [],
-  [CONTENT_TAGS.servicesSettings]: [{ path: '/services', type: 'page' }],
+  // The services section closes the `/parcours` page.
+  [CONTENT_TAGS.servicesSettings]: [{ path: '/parcours', type: 'page' }],
 }
 
 /**

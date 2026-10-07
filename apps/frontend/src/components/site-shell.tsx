@@ -6,7 +6,7 @@ import { SiteHeaderShell } from '@/components/site-header-shell'
 import { SiteNav } from '@/components/site-nav'
 import { ThemeToggle } from '@/components/theme-toggle'
 import { Link } from '@/i18n/navigation'
-import { getIdentity, getServicesSettings } from '@/lib/site-content'
+import { getIdentity } from '@/lib/site-content'
 
 import type { ReactNode } from 'react'
 
@@ -20,11 +20,10 @@ import type { ReactNode } from 'react'
  */
 export async function SiteShell({ children }: { children: ReactNode }) {
   const locale = await getLocale()
-  const [tLayout, tFooter, identity, servicesSettings] = await Promise.all([
+  const [tLayout, tFooter, identity] = await Promise.all([
     getTranslations('Layout'),
     getTranslations('Footer'),
     getIdentity(locale),
-    getServicesSettings(locale),
   ])
   const { role, location, githubUrl, linkedinUrl } = identity
 
@@ -40,7 +39,6 @@ export async function SiteShell({ children }: { children: ReactNode }) {
             ADEM<span>.</span>
           </Link>
           <SiteNav
-            servicesEnabled={servicesSettings.enabled}
             actions={
               <>
                 {githubUrl ? (

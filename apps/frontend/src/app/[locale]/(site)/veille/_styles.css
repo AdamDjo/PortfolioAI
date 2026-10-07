@@ -318,3 +318,34 @@
 }
 
 /* À propos — profile, stats, skills */
+
+/* Section tabs: links to `?tab=…`, styled as a segmented control. */
+.section-tabs {
+  display: inline-flex;
+  gap: 4px;
+  margin-bottom: var(--spacing-lg);
+  padding: 4px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-full);
+  background: var(--surface);
+}
+.section-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: var(--radius-full);
+  color: var(--muted);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  transition:
+    background-color 220ms ease,
+    color 220ms ease;
+}
+.section-tab:hover {
+  color: var(--text);
+}
+.section-tab.is-active {
+  background: var(--accent-soft);
+  color: var(--accent-on-soft);
+}

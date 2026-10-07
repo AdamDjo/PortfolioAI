@@ -20,7 +20,8 @@ const RAIL_ITEMS = [
   },
   {
     id: 'projects',
-    href: '/projets',
+    // The projects live further down this page, so this one is a fragment link.
+    href: '#projects',
     icon: FolderOpen,
     title: 'projectsTitle',
     description: 'projectsDescription',
@@ -69,6 +70,14 @@ export function HomeRail({ onStartChat }: { onStartChat: () => void }) {
             </span>
           </>
         )
+
+        if (item.href?.startsWith('#')) {
+          return (
+            <a className="home-rail-item" href={item.href} key={item.id}>
+              {content}
+            </a>
+          )
+        }
 
         return item.href ? (
           <Link className="home-rail-item" href={item.href} key={item.id}>

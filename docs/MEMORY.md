@@ -74,6 +74,12 @@
   `/en` et `/fr` comme l'index passent de 404 à 200.
 - Documentation vivante de la chaîne éditoriale, à republier à chaque lot livré :
   https://claude.ai/artifact/VXEvdeXySFy9yzoGkLZMqv
+- Navigation resserrée (#98) : **Accueil · Veille · Parcours · Blog · Contact**. Tous les
+  projets sont sur l'accueil (première rangée visible, le reste dans une section dépliable,
+  lien GitHub en icône sur chaque carte) et `/projets` n'existe plus. `/outils-ia` devient
+  l'onglet `/veille/outils-ia`, `/services` la dernière section de `/parcours` (`#services`).
+  Redirections 308 dans `next.config.ts` (`MERGED_PAGES`). Le global `services-settings`
+  garde son slug et sa colonne : il masque désormais une section, plus une page.
 - Code hérité de l'ère Express retiré : `lib/api.ts`, `lib/query-client.ts`,
   `providers.tsx`, `data/portfolio.ts`, pages `/liens` et `/demo`. React Query,
   Axios et quatre autres dépendances désinstallées.
@@ -270,6 +276,12 @@ perdue. Suivi par #91, et écrit dans la description du champ `markdownImport`.
   qui lisent via `cachedRead` se rafraîchissaient quand même grâce à leur étiquette de données,
   ce qui masquait le bug ; la page d'un article, elle, ne se rafraîchissait jamais. `toRoutePattern`
   ajoute `(site)` (et `(home)` pour l'accueil), et le test vérifie le fichier exact sur disque.
+- **Les onglets de `/veille` sont des routes, pas un `?tab=`.** Une navigation client qui ne
+  change que la query laisse le `<title>` de l'onglet précédent (vérifié sur build de prod).
+  Deux routes gardent aussi l'onglet Outils IA prérendu alors que les liens restent dynamiques.
+- Section projets dépliable : transition `grid-template-rows: 0fr → 1fr` (pas de mesure JS),
+  région `inert` quand elle est fermée. Les cartes cachées restent dans le HTML pour les
+  robots, ce qui compte maintenant que `/projets` a disparu.
 - Prettier et ESLint doivent être lancés depuis le workspace
   (`pnpm --filter @portfolio/frontend exec …`), pas depuis la racine.
 - Un écran `500` sur toutes les routes `/api/*` et `/admin` après plusieurs
