@@ -61,9 +61,13 @@ async function AboutPage({ params }: PageProps<'/[locale]/parcours'>) {
             src="/images/adem-mascot.webp"
             width={1024}
             height={1536}
-            sizes="(max-width: 640px) 82vw, 38vw"
+            // Matches the rendered width: 260px of a 390px viewport on mobile.
+            sizes="(max-width: 640px) 68vw, 38vw"
             alt={t('portraitAlt')}
             priority
+            // `priority` only emits the preload in Next 16; the fetch priority of
+            // the LCP image itself has to be raised explicitly.
+            fetchPriority="high"
           />
         </div>
       </div>
