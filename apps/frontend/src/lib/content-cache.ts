@@ -50,8 +50,8 @@ type ContentTag = (typeof CONTENT_TAGS)[keyof typeof CONTENT_TAGS]
  * Identity feeds the header and footer defined in the shared layout, so every
  * page depends on it — hence the root invalidated in `layout` mode.
  *
- * Paths are stored bare (`/`, `/parcours`); `purge` turns each into the route
- * pattern `/[locale]/…` before calling `revalidatePath`.
+ * Paths are stored bare (`/`, `/parcours`); `toRoutePattern` turns each into
+ * the route pattern `revalidatePath` expects before `purge` calls it.
  *
  * The pattern is what makes this work across languages, and the rule is not
  * obvious: `revalidatePath` takes a *literal* path with no `type` to refresh one
@@ -98,6 +98,24 @@ const PAGES_BY_TAG: Record<ContentTag, { path: string; type: 'layout' | 'page' }
   [CONTENT_TAGS.aiKnowledge]: [],
   [CONTENT_TAGS.assistant]: [],
   [CONTENT_TAGS.servicesSettings]: [{ path: '/services', type: 'page' }],
+}
+
+/**
+ * The route pattern `revalidatePath` matches for a bare path.
+ *
+ * A pattern names the file on disk, route groups included: Next tags a page
+ * with `/[locale]/(site)/blog/[slug]/page`, so `/[locale]/blog/[slug]` matches
+ * nothing. The miss is silent, and it went unnoticed because most pages also
+ * carry their read's data tag, which `purge` expires too. The article page has
+ * no such tag — it would stay on its old HTML, or on a 404 cached before the
+ * article was published.
+ *
+ * The root layout sits above the `(site)` group; every page sits inside it, the
+ * home page in a further `(home)`.
+ */
+const toRoutePattern = (path: string, type: 'layout' | 'page'): string => {
+  if (type === 'layout') return `/[locale]${path === '/' ? '' : path}`
+  return `/[locale]/(site)${path === '/' ? '/(home)' : path}`
 }
 
 /**
@@ -161,7 +179,7 @@ const purge = (tag: ContentTag): void => {
     revalidateTag(tag, { expire: 0 })
 
     for (const { path, type } of PAGES_BY_TAG[tag]) {
-      revalidatePath(`/[locale]${path === '/' ? '' : path}`, type)
+      revalidatePath(toRoutePattern(path, type), type)
     }
   } catch (error) {
     const message = error instanceof Error ? error.message : ''
@@ -202,4 +220,11 @@ const revalidateCollection = (
  * is inferred anyway. Exporting it would invite declaring a tag elsewhere, while
  * the list has to stay defined here.
  */
-export { CONTENT_TAGS, PAGES_BY_TAG, cachedRead, revalidateCollection, revalidateGlobal }
+export {
+  CONTENT_TAGS,
+  PAGES_BY_TAG,
+  cachedRead,
+  revalidateCollection,
+  revalidateGlobal,
+  toRoutePattern,
+}

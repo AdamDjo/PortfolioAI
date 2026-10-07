@@ -10,6 +10,7 @@ import * as migration_20260825_192608_conversations from './20260825_192608_conv
 import * as migration_20260827_154329_localization from './20260827_154329_localization'
 import * as migration_20260922_145711_services_settings from './20260922_145711_services_settings'
 import * as migration_20261001_145032_posts from './20261001_145032_posts'
+import * as migration_20261006_215929_schedule_publish from './20261006_215929_schedule_publish'
 
 export const migrations = [
   {
@@ -71,5 +72,10 @@ export const migrations = [
     up: migration_20261001_145032_posts.up,
     down: migration_20261001_145032_posts.down,
     name: '20261001_145032_posts',
+  },
+  {
+    up: migration_20261006_215929_schedule_publish.up,
+    down: migration_20261006_215929_schedule_publish.down,
+    name: '20261006_215929_schedule_publish',
   },
 ]

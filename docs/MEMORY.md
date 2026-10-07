@@ -67,6 +67,11 @@
   deux langues, le flux servi en `application/rss+xml` avec des dates RFC 822, le sitemap qui
   liste les articles avec leur propre date de modification, l'image de partage en PNG
   1200×630, et un slug inconnu — comme un brouillon — qui répond 404.
+- Publication planifiée des articles (#88) : `schedulePublish` activé sur `posts`, file de jobs
+  Payload (tables `payload_jobs*`, migration `20261006_215929_schedule_publish`), exécutée chaque
+  minute par le serveur lui-même depuis `src/instrumentation-node.ts`. Vérifié sur un build de
+  production : un brouillon planifié à +60 s devient public sans visite de `/admin`, et ses pages
+  `/en` et `/fr` comme l'index passent de 404 à 200.
 - Documentation vivante de la chaîne éditoriale, à republier à chaque lot livré :
   https://claude.ai/artifact/VXEvdeXySFy9yzoGkLZMqv
 - Code hérité de l'ère Express retiré : `lib/api.ts`, `lib/query-client.ts`,
@@ -243,6 +248,28 @@ perdue. Suivi par #91, et écrit dans la description du champ `markdownImport`.
   `purge` fait donc les deux : `revalidateTag(tag, { expire: 0 })` puis
   `revalidatePath`. Le profil par défaut de `revalidateTag` ne fait que marquer
   périmé et resservirait l'ancienne valeur une fois de plus.
+- **La file de jobs passe par HTTP, pas par `autoRun`.** `jobs.autoRun` exécute les jobs depuis
+  un minuteur nu, hors requête Next : le hook `afterChange` de `posts` y appelle `revalidatePath`,
+  qui lève « static generation store missing », erreur que `purge` avale (prévue pour le seed).
+  Résultat mesuré : article publié en base, pages restées en 404. Le minuteur de
+  `instrumentation-node.ts` appelle donc `GET /api/payload-jobs/run` sur `127.0.0.1:$PORT`, avec
+  un jeton HMAC dérivé de `PAYLOAD_SECRET` (`src/lib/job-runner.ts`) : aucune variable de plus.
+  L'endpoint reste fermé aux visiteurs (401), `/api/payload-jobs` aussi (403).
+- Les crons Payload ne démarrent que sur une instance créée avec `cron: true`, ce que font les
+  routes admin/REST mais pas les lectures du site. C'est pourquoi l'exécuteur démarre dans
+  `register`, au boot, et non à la première visite de `/admin`.
+- `instrumentation.ts` est aussi compilé pour Edge : le test `NEXT_RUNTIME === 'nodejs'` doit
+  entourer directement l'`import()` du fichier Node, sinon Payload part dans le bundle Edge et le
+  build casse.
+- L'image Docker fixe `HOSTNAME=0.0.0.0` : Docker met l'id du conteneur dans `HOSTNAME`, le
+  serveur standalone n'écouterait alors que sur l'IP du conteneur et l'exécuteur ne joindrait pas
+  `127.0.0.1`. Sur un hébergeur serverless (Vercel), rien ne garde le minuteur en vie : la
+  planification n'y fonctionne pas.
+- **`revalidatePath` exige les groupes de routes dans le motif.** Next étiquette une page
+  `/[locale]/(site)/blog/[slug]/page` ; `/[locale]/blog/[slug]` ne correspondait à rien. Les pages
+  qui lisent via `cachedRead` se rafraîchissaient quand même grâce à leur étiquette de données,
+  ce qui masquait le bug ; la page d'un article, elle, ne se rafraîchissait jamais. `toRoutePattern`
+  ajoute `(site)` (et `(home)` pour l'accueil), et le test vérifie le fichier exact sur disque.
 - Prettier et ESLint doivent être lancés depuis le workspace
   (`pnpm --filter @portfolio/frontend exec …`), pas depuis la racine.
 - Un écran `500` sur toutes les routes `/api/*` et `/admin` après plusieurs

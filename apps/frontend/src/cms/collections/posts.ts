@@ -51,7 +51,15 @@ const Posts: CollectionConfig = {
     // Drafts, and the version history that comes with them: an article is a
     // long-lived document, so being able to read back what changed matters as
     // much as the draft state itself.
-    drafts: true,
+    drafts: {
+      /*
+       * Adds the "Schedule publish" drawer. A scheduled publish is a job in
+       * Payload's queue, not a timestamp on the document: it only ever fires
+       * because `src/instrumentation-node.ts` runs the queue every minute.
+       * Without that runner this drawer is a silent no-op.
+       */
+      schedulePublish: true,
+    },
   },
   access: {
     /*
