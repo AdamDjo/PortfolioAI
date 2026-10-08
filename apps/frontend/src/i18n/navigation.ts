@@ -10,4 +10,4 @@ import { routing } from './routing'
  * returns the path *without* the locale, which is what an active-link check
  * should compare against.
  */
-export const { Link, redirect, usePathname, useRouter, getPathname } = createNavigation(routing)
+export const { Link, usePathname, useRouter, getPathname } = createNavigation(routing)

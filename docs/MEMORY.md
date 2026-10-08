@@ -364,19 +364,23 @@ Ce qui a été corrigé et pourquoi :
   Firefox 113, Safari 16.4), ce qui évite d'expédier des polyfills pour
   `Array.prototype.at`, `Object.hasOwn` et consorts.
 
-**Ce qui reste, et pourquoi c'est architectural.** Sur mobile le score bute sur le
-LCP (3,3 s d'après Lighthouse). Le LCP _observé_ dans la trace est à 298 ms, et une
-mesure réelle sous throttling 4G + CPU ×4 donne 1196 ms : les 3,3 s sont l'estimation
-pessimiste de Lantern, qui modélise le téléchargement et l'exécution des **290 Ko de
-JavaScript répartis sur 17 requêtes** avant la peinture. La cause de fond est que
-toute la page d'accueil est un arbre client : `ConversationSection` est `'use client'`
-uniquement pour relayer un `chatRef` entre les prompts de `ProjectsTeaser` et le champ
-du chat, ce qui entraîne `Hero`, `HomeRail` et `ProjectsTeaser` avec lui — et avec eux
-`simple-icons` (18 Ko) et une bonne part de `lucide-react`. Descendre sous les 2 s
-suppose de rendre le hero côté serveur et de n'isoler que le chat en îlot client, le
-pont passant par un store Zustand plutôt que par un ref partagé. C'est le sens de la
-convention « Server Components par défaut » : ce n'est pas un réglage, c'est une
-refonte de la page d'accueil.
+**Accueil en composants serveur (#98).** Le hero, le rail et la section projets sont rendus
+côté serveur ; les seuls îlots client sont `HeroChat`, `ChatTrigger` (prompts et raccourci
+« Assistant »), `ProjectsMore` (section dépliable) et les enveloppes d'animation. Le pont entre
+les prompts et le champ du chat est un store Zustand (`src/stores/chat-bridge.ts`), plus un
+`ref` partagé qui forçait toute la page en client. `simple-icons` et la plupart de
+`lucide-react` ne partent plus dans le navigateur.
+
+**Les fonctionnalités Motion étaient dans le bundle initial de chaque page.** Le provider
+faisait `import('motion/react')` : le même module que tous les composants importent
+statiquement, donc impossible à séparer. Il passe désormais par `components/motion/features.ts`.
+JS de l'accueil : 284 → 232 Ko transférés, TBT simulé 400 → 40 ms.
+
+**Mesurer en local fausse la perf mobile.** Le serveur répond si vite que tous les scripts ont
+fini avant le premier rendu ; Lantern les rattache alors au LCP et l'estime à ~3 s alors que le
+LCP observé est de 0,2 s (pages texte). `--throttling-method=devtools` donne les vrais chiffres
+(96–99). Le score de référence est PageSpeed Insights sur la preview Vercel, que la session
+cloud ne peut pas joindre (`vercel.app` bloqué par le proxy).
 
 ## Validation
 

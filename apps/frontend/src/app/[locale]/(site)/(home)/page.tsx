@@ -5,7 +5,9 @@ import { getPageLocale } from '@/i18n/params'
 import { getAssistantConfig } from '@/lib/assistant-context'
 import { getAvailability, getIdentity, getProfile, listProjects } from '@/lib/site-content'
 
-import { ConversationSection } from './_components/conversation-section'
+import { Hero } from './_components/hero'
+import { HomeRail } from './_components/home-rail'
+import { ProjectsTeaser } from './_components/projects-teaser'
 import { QualityStrip } from './_components/quality-strip'
 
 import type { Metadata } from 'next'
@@ -44,7 +46,7 @@ async function Home({ params }: PageProps<'/[locale]'>) {
 
   return (
     <>
-      <ConversationSection
+      <Hero
         name={identity.displayName}
         role={identity.role}
         location={identity.location}
@@ -53,6 +55,9 @@ async function Home({ params }: PageProps<'/[locale]'>) {
         skills={profile.skillGroups.flatMap((group) => group.items).slice(0, 5)}
         availability={{ available: availability.available, label: availability.label }}
         retentionNotice={assistant.retentionNotice}
+      />
+      <HomeRail />
+      <ProjectsTeaser
         projects={ordered.map((project) => ({
           id: project.id,
           url: project.url,
