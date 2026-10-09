@@ -272,3 +272,28 @@
 .article-back:hover {
   color: var(--text);
 }
+
+/* Shown only in the draft preview (#89): says plainly that this is not live. */
+.preview-banner {
+  position: sticky;
+  z-index: 5;
+  top: 76px;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 16px;
+  margin-bottom: var(--spacing-lg);
+  padding: 10px 16px;
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, var(--line));
+  border-radius: var(--radius-md);
+  background: var(--accent-soft);
+  color: var(--accent-on-soft);
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+.preview-banner a {
+  color: inherit;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
