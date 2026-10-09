@@ -82,7 +82,7 @@ const Projects: CollectionConfig = {
       type: 'text',
       label: 'Dépôt source',
       admin: {
-        description: 'Optionnel. Affiché à côté du lien de démonstration.',
+        description: 'Optionnel. Affiché en icône GitHub sur la carte du projet, sur l’accueil.',
       },
     },
     {
@@ -91,7 +91,7 @@ const Projects: CollectionConfig = {
       label: 'Technologies',
       hasMany: true,
       admin: {
-        description: 'Affichées en surtitre de la carte projet.',
+        description: 'Les trois premières sont affichées en étiquettes sur la carte projet.',
       },
     },
     {
@@ -99,6 +99,10 @@ const Projects: CollectionConfig = {
       type: 'checkbox',
       label: "Mettre en avant sur l'accueil",
       defaultValue: false,
+      admin: {
+        description:
+          'Les projets mis en avant occupent la première rangée, visible sans déplier la section.',
+      },
     },
     {
       name: 'order',

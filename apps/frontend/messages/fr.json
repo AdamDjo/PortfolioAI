@@ -11,12 +11,9 @@
     "label": "Navigation principale",
     "openMenu": "Ouvrir le menu",
     "home": "Accueil",
-    "projects": "Projets",
     "blog": "Blog",
     "veille": "Veille",
-    "tools": "Outils IA",
     "about": "Parcours",
-    "services": "Services",
     "contact": "Contact"
   },
   "Footer": {
@@ -72,9 +69,11 @@
       "contactDescription": "Coordonnées et disponibilités."
     },
     "projects": {
-      "eyebrow": "Projets sélectionnés",
-      "heading": "Quelques réalisations",
-      "action": "Voir tous les projets",
+      "eyebrow": "Projets personnels",
+      "heading": "Des projets en ligne, pas des maquettes.",
+      "showAll": "Voir les {count} projets",
+      "showLess": "Réduire la liste",
+      "codeAriaLabel": "Code source de {name}",
       "assistantHeading": "Demandez à mon IA",
       "prompt1": "Parle-moi de ton meilleur projet",
       "prompt2": "Quelles technologies utilises-tu ?",
@@ -94,15 +93,6 @@
       "seoDetail": "Optimisées pour le référencement."
     }
   },
-  "Projects": {
-    "metaTitle": "Projets",
-    "metaDescription": "Une sélection de projets personnels, en ligne et consultables.",
-    "eyebrow": "Projets personnels",
-    "title": "Des projets en ligne, pas des maquettes.",
-    "lead": "Chaque projet ci-dessous est déployé et son code est ouvert. Mes missions en entreprise portent sur des back-offices internes : elles sont décrites dans mon parcours, sans lien public à montrer.",
-    "viewAction": "Voir le projet",
-    "codeAction": "Code source"
-  },
   "Blog": {
     "metaTitle": "Blog",
     "metaDescription": "Notes d'ingénierie frontend : Next.js, Payload, accessibilité et performance.",
@@ -119,8 +109,8 @@
     "breadcrumbHome": "Accueil"
   },
   "About": {
-    "metaTitle": "Parcours",
-    "metaDescription": "Le parcours et l’approche frontend d’Adem.",
+    "metaTitle": "Parcours et services",
+    "metaDescription": "Le parcours, les compétences et les services freelance d’Adem : développement React/Next.js, intégration IA, audit performance et SEO.",
     "eyebrow": "Parcours",
     "portraitAlt": "Illustration d’un cerveau relié par un réseau neuronal",
     "yearsLabel": "Années d’expérience",
@@ -132,8 +122,6 @@
     "principlesHeading": "Comment je travaille."
   },
   "Services": {
-    "metaTitle": "Services — Développeur Frontend Freelance",
-    "metaDescription": "Développeur frontend freelance en Île-de-France : intégration React/Next.js, intégration IA, audit performance et SEO. Missions courtes ou longues.",
     "eyebrow": "Services",
     "title": "Des missions frontend, de l’intégration à l’audit.",
     "lead": "Je prends en charge des missions freelance sur trois terrains : le développement frontend, l’intégration de fonctionnalités IA, et l’audit de performance ou de SEO.",
@@ -196,7 +184,10 @@
     "tagCreateSubmit": "Créer",
     "tagCreateFailed": "Le tag n’a pas pu être créé.",
     "emptyState": "Aucun lien publié pour l’instant.",
-    "emptyFilteredState": "Aucun lien avec ce tag pour l’instant."
+    "emptyFilteredState": "Aucun lien avec ce tag pour l’instant.",
+    "tabsLabel": "Sections de la veille",
+    "linksTab": "Liens",
+    "toolsTab": "Outils IA"
   },
   "Tools": {
     "metaTitle": "Outils IA",

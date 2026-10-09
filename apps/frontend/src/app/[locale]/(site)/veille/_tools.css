@@ -71,7 +71,8 @@
 }
 .tool-kind-skill {
   background: color-mix(in srgb, var(--accent) 14%, var(--bg));
-  color: var(--accent-solid);
+  /* `--accent-solid` reached only 4.05:1 on this tint at 12px. */
+  color: var(--accent-on-soft);
 }
 .tool-kind-plugin {
   background: color-mix(in srgb, #3ecf8e 16%, var(--bg));

@@ -124,6 +124,7 @@
     grid-template-columns: 1fr;
   }
   .home-project-assistant-reveal {
+    position: static;
     padding-top: 0;
   }
   .home-project-assistant {

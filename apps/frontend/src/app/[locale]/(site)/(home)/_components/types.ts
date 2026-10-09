@@ -13,6 +13,7 @@ export interface HomeProject {
   description: string | null
   imageUrl: string | null
   technologies: string[]
+  repositoryUrl: string | null
 }
 
 export interface HomeBookmark {

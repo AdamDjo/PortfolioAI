@@ -160,6 +160,8 @@ async function ArticlePage({ params }: PageProps<'/[locale]/blog/[slug]'>) {
             className="article-cover"
             height={630}
             priority
+            // `priority` alone only preloads in Next 16; the cover is the LCP image.
+            fetchPriority="high"
             // Served straight from Payload's media route, as on the index.
             unoptimized
             src={post.coverUrl}

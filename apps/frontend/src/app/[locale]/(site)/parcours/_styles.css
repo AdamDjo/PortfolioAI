@@ -182,3 +182,17 @@
   gap: 14px;
   margin-top: 22px;
 }
+
+/* Services section, reached from the former `/services` URL through `#services`. */
+#services {
+  scroll-margin-top: 84px;
+}
+.services-grid {
+  margin-top: 22px;
+}
+.services-grid > * {
+  min-height: 0;
+}
+.services-cta {
+  margin-top: 28px;
+}

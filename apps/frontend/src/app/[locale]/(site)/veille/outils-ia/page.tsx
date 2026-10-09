@@ -4,24 +4,26 @@ import { buildAlternates } from '@/i18n/metadata'
 import { getPageLocale } from '@/i18n/params'
 import { listPublicAITools } from '@/lib/ai-tools'
 
-import { ToolGrid } from './_components/tool-grid'
+import { ToolGrid } from '../_components/tool-grid'
+import { VeilleTabs } from '../_components/veille-tabs'
 
 import type { Metadata } from 'next'
 
 export async function generateMetadata({
   params,
-}: PageProps<'/[locale]/outils-ia'>): Promise<Metadata> {
+}: PageProps<'/[locale]/veille/outils-ia'>): Promise<Metadata> {
   const locale = await getPageLocale(params)
   const t = await getTranslations({ locale, namespace: 'Tools' })
 
   return {
     title: t('metaTitle'),
     description: t('metaDescription'),
-    alternates: buildAlternates(locale, '/outils-ia'),
+    alternates: buildAlternates(locale, '/veille/outils-ia'),
   }
 }
 
-async function AIToolsPage({ params }: PageProps<'/[locale]/outils-ia'>) {
+/** Second tab of the reading list. Prerendered: it changes only on publish. */
+async function AIToolsPage({ params }: PageProps<'/[locale]/veille/outils-ia'>) {
   const locale = await getPageLocale(params)
   setRequestLocale(locale)
 
@@ -34,6 +36,7 @@ async function AIToolsPage({ params }: PageProps<'/[locale]/outils-ia'>) {
         <h1>{t('title')}</h1>
         <p>{t('lead')}</p>
       </header>
+      <VeilleTabs active="/veille/outils-ia" />
       <ToolGrid tools={tools} />
     </div>
   )

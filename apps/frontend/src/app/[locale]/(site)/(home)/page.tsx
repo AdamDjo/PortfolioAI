@@ -5,7 +5,9 @@ import { getPageLocale } from '@/i18n/params'
 import { getAssistantConfig } from '@/lib/assistant-context'
 import { getAvailability, getIdentity, getProfile, listProjects } from '@/lib/site-content'
 
-import { ConversationSection } from './_components/conversation-section'
+import { Hero } from './_components/hero'
+import { HomeRail } from './_components/home-rail'
+import { ProjectsTeaser } from './_components/projects-teaser'
 import { QualityStrip } from './_components/quality-strip'
 
 import type { Metadata } from 'next'
@@ -35,14 +37,16 @@ async function Home({ params }: PageProps<'/[locale]'>) {
     getAssistantConfig(locale),
   ])
 
-  // Without a project flagged as featured, show the first of the sort order
-  // rather than an empty grid.
-  const featured = projects.filter((project) => project.featured)
-  const shown = [...featured, ...projects.filter((project) => !project.featured)].slice(0, 3)
+  // Featured projects lead, so they fill the row shown before the section is
+  // expanded; without any, the sort order set in `/admin` decides.
+  const ordered = [
+    ...projects.filter((project) => project.featured),
+    ...projects.filter((project) => !project.featured),
+  ]
 
   return (
     <>
-      <ConversationSection
+      <Hero
         name={identity.displayName}
         role={identity.role}
         location={identity.location}
@@ -51,7 +55,10 @@ async function Home({ params }: PageProps<'/[locale]'>) {
         skills={profile.skillGroups.flatMap((group) => group.items).slice(0, 5)}
         availability={{ available: availability.available, label: availability.label }}
         retentionNotice={assistant.retentionNotice}
-        projects={shown.map((project) => ({
+      />
+      <HomeRail />
+      <ProjectsTeaser
+        projects={ordered.map((project) => ({
           id: project.id,
           url: project.url,
           title: project.title,
@@ -62,6 +69,7 @@ async function Home({ params }: PageProps<'/[locale]'>) {
             PROJECT_FALLBACK_IMAGES[project.title] ??
             null,
           technologies: project.technologies,
+          repositoryUrl: project.repositoryUrl,
         }))}
       />
       <QualityStrip />

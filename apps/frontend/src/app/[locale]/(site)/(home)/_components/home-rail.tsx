@@ -1,10 +1,10 @@
-'use client'
-
 import { FileText, FolderOpen, Route } from 'lucide-react'
 import Image from 'next/image'
-import { useTranslations } from 'next-intl'
+import { getTranslations } from 'next-intl/server'
 
 import { Link } from '@/i18n/navigation'
+
+import { ChatTrigger } from './chat-trigger'
 
 /**
  * Destination, icon and copy keys travel together: pairing them by index across
@@ -20,7 +20,8 @@ const RAIL_ITEMS = [
   },
   {
     id: 'projects',
-    href: '/projets',
+    // The projects live further down this page, so this one is a fragment link.
+    href: '#projects',
     icon: FolderOpen,
     title: 'projectsTitle',
     description: 'projectsDescription',
@@ -41,8 +42,9 @@ const RAIL_ITEMS = [
   },
 ] as const
 
-export function HomeRail({ onStartChat }: { onStartChat: () => void }) {
-  const t = useTranslations('Home.rail')
+/** Shortcuts under the hero. Server-rendered; only the chat entry is a client island. */
+export async function HomeRail() {
+  const t = await getTranslations('Home.rail')
 
   return (
     <nav className="home-rail shell" aria-label={t('label')}>
@@ -70,20 +72,23 @@ export function HomeRail({ onStartChat }: { onStartChat: () => void }) {
           </>
         )
 
+        if (item.href?.startsWith('#')) {
+          return (
+            <a className="home-rail-item" href={item.href} key={item.id}>
+              {content}
+            </a>
+          )
+        }
+
         return item.href ? (
           <Link className="home-rail-item" href={item.href} key={item.id}>
             {content}
           </Link>
         ) : (
-          <button
-            className="home-rail-item is-active"
-            key={item.id}
-            onClick={onStartChat}
-            type="button"
-          >
+          <ChatTrigger className="home-rail-item is-active" key={item.id}>
             {content}
             {index === 0 ? <span className="home-rail-underline" /> : null}
-          </button>
+          </ChatTrigger>
         )
       })}
     </nav>

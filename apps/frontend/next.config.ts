@@ -2,6 +2,8 @@ import bundleAnalyzer from '@next/bundle-analyzer'
 import { withPayload } from '@payloadcms/next/withPayload'
 import createNextIntlPlugin from 'next-intl/plugin'
 
+import { routing } from './src/i18n/routing'
+
 import type { NextConfig } from 'next'
 
 const withBundleAnalyzer = bundleAnalyzer({
@@ -68,9 +70,35 @@ const securityHeaders = [
   { key: 'Strict-Transport-Security', value: 'max-age=63072000; includeSubDomains' },
 ]
 
+/**
+ * Pages folded into others (#98). Permanent, so search engines move the ranking
+ * of the old address over to the new one instead of dropping it.
+ *
+ * Only the prefixed form is listed: redirects run before the proxy, which then
+ * sends a bare `/projets` to `/en/projets`, where this rule picks it up.
+ */
+const LOCALE_SEGMENT = `:locale(${routing.locales.join('|')})`
+
+const MERGED_PAGES = [
+  // Every project is now listed on the home page.
+  { from: 'projets', to: '#projects' },
+  // The AI tools are the second tab of the reading list.
+  { from: 'outils-ia', to: '/veille/outils-ia' },
+  // The freelance offer closes the background page.
+  { from: 'services', to: '/parcours#services' },
+]
+
 const nextConfig: NextConfig = {
   output: process.env.DOCKER_BUILD === 'true' ? 'standalone' : undefined,
   headers: () => Promise.resolve([{ source: '/:path*', headers: securityHeaders }]),
+  redirects: () =>
+    Promise.resolve(
+      MERGED_PAGES.map(({ from, to }) => ({
+        source: `/${LOCALE_SEGMENT}/${from}`,
+        destination: `/:locale${to}`,
+        permanent: true,
+      }))
+    ),
 
   experimental: {
     /*

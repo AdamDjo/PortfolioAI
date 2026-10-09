@@ -34,9 +34,14 @@ export function LanguageSwitcher() {
             hrefLang={locale}
             className={isActive ? 'language-option is-active' : 'language-option'}
             aria-current={isActive ? 'true' : undefined}
-            aria-label={LOCALE_LABELS[locale]}
           >
+            {/*
+              The full name is added for screen readers instead of replacing the
+              visible code through `aria-label`: speech-input users say what they
+              see, "EN", so the accessible name has to start with it (WCAG 2.5.3).
+            */}
             {LOCALE_SHORT[locale]}
+            <span className="sr-only"> — {LOCALE_LABELS[locale]}</span>
           </Link>
         )
       })}

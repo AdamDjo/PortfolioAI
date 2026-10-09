@@ -10,6 +10,7 @@ import config from '@payload-config'
 
 import { BookmarkComposer } from './_components/bookmark-composer'
 import { BookmarkGrid } from './_components/bookmark-grid'
+import { VeilleTabs } from './_components/veille-tabs'
 
 import type { Metadata } from 'next'
 
@@ -59,6 +60,7 @@ async function WatchPage() {
         <h1>{t('title')}</h1>
         <p>{t('lead')}</p>
       </header>
+      <VeilleTabs active="/veille" />
       {owner ? <BookmarkComposer tags={allTags} /> : null}
       <BookmarkGrid bookmarks={bookmarks} allTags={allTags} canEdit={owner} />
     </div>

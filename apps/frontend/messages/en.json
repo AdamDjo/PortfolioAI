@@ -11,12 +11,9 @@
     "label": "Main navigation",
     "openMenu": "Open the menu",
     "home": "Home",
-    "projects": "Projects",
     "blog": "Blog",
     "veille": "Reading list",
-    "tools": "AI tools",
     "about": "Background",
-    "services": "Services",
     "contact": "Contact"
   },
   "Footer": {
@@ -72,9 +69,11 @@
       "contactDescription": "Contact details and availability."
     },
     "projects": {
-      "eyebrow": "Selected projects",
-      "heading": "A few things I have built",
-      "action": "See every project",
+      "eyebrow": "Personal projects",
+      "heading": "Live projects, not mockups.",
+      "showAll": "Show all {count} projects",
+      "showLess": "Show fewer projects",
+      "codeAriaLabel": "Source code of {name}",
       "assistantHeading": "Ask my AI",
       "prompt1": "Tell me about your best project",
       "prompt2": "Which technologies do you use?",
@@ -94,15 +93,6 @@
       "seoDetail": "Built to be found."
     }
   },
-  "Projects": {
-    "metaTitle": "Projects",
-    "metaDescription": "A selection of personal projects, live and open to browse.",
-    "eyebrow": "Personal projects",
-    "title": "Live projects, not mockups.",
-    "lead": "Every project below is deployed and its code is open. My client work covers internal back-offices: they are described in my background, with no public link to show.",
-    "viewAction": "View project",
-    "codeAction": "Source code"
-  },
   "Blog": {
     "metaTitle": "Blog",
     "metaDescription": "Notes on frontend engineering: Next.js, Payload, accessibility and performance.",
@@ -119,8 +109,8 @@
     "breadcrumbHome": "Home"
   },
   "About": {
-    "metaTitle": "Background",
-    "metaDescription": "Adem’s background and approach to frontend work.",
+    "metaTitle": "Background & services",
+    "metaDescription": "Adem’s background, skills and freelance frontend services: React/Next.js development, AI integration, performance and SEO audits.",
     "eyebrow": "Background",
     "portraitAlt": "Illustration of a brain wired as a neural network",
     "yearsLabel": "Years of experience",
@@ -132,8 +122,6 @@
     "principlesHeading": "How I work."
   },
   "Services": {
-    "metaTitle": "Services — Freelance Frontend Developer",
-    "metaDescription": "Freelance frontend developer near Paris: React/Next.js integration, AI integration, performance and SEO audits. Short or long missions.",
     "eyebrow": "Services",
     "title": "Frontend missions, from integration to audit.",
     "lead": "I take on freelance missions in three areas: frontend development, AI feature integration, and performance or SEO audits.",
@@ -196,7 +184,10 @@
     "tagCreateSubmit": "Create",
     "tagCreateFailed": "The tag could not be created.",
     "emptyState": "No links published yet.",
-    "emptyFilteredState": "No links with this tag yet."
+    "emptyFilteredState": "No links with this tag yet.",
+    "tabsLabel": "Reading list sections",
+    "linksTab": "Links",
+    "toolsTab": "AI tools"
   },
   "Tools": {
     "metaTitle": "AI tools",

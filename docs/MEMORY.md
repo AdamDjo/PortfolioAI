@@ -74,6 +74,12 @@
   `/en` et `/fr` comme l'index passent de 404 à 200.
 - Documentation vivante de la chaîne éditoriale, à republier à chaque lot livré :
   https://claude.ai/artifact/VXEvdeXySFy9yzoGkLZMqv
+- Navigation resserrée (#98) : **Accueil · Veille · Parcours · Blog · Contact**. Tous les
+  projets sont sur l'accueil (première rangée visible, le reste dans une section dépliable,
+  lien GitHub en icône sur chaque carte) et `/projets` n'existe plus. `/outils-ia` devient
+  l'onglet `/veille/outils-ia`, `/services` la dernière section de `/parcours` (`#services`).
+  Redirections 308 dans `next.config.ts` (`MERGED_PAGES`). Le global `services-settings`
+  garde son slug et sa colonne : il masque désormais une section, plus une page.
 - Code hérité de l'ère Express retiré : `lib/api.ts`, `lib/query-client.ts`,
   `providers.tsx`, `data/portfolio.ts`, pages `/liens` et `/demo`. React Query,
   Axios et quatre autres dépendances désinstallées.
@@ -270,6 +276,12 @@ perdue. Suivi par #91, et écrit dans la description du champ `markdownImport`.
   qui lisent via `cachedRead` se rafraîchissaient quand même grâce à leur étiquette de données,
   ce qui masquait le bug ; la page d'un article, elle, ne se rafraîchissait jamais. `toRoutePattern`
   ajoute `(site)` (et `(home)` pour l'accueil), et le test vérifie le fichier exact sur disque.
+- **Les onglets de `/veille` sont des routes, pas un `?tab=`.** Une navigation client qui ne
+  change que la query laisse le `<title>` de l'onglet précédent (vérifié sur build de prod).
+  Deux routes gardent aussi l'onglet Outils IA prérendu alors que les liens restent dynamiques.
+- Section projets dépliable : transition `grid-template-rows: 0fr → 1fr` (pas de mesure JS),
+  région `inert` quand elle est fermée. Les cartes cachées restent dans le HTML pour les
+  robots, ce qui compte maintenant que `/projets` a disparu.
 - Prettier et ESLint doivent être lancés depuis le workspace
   (`pnpm --filter @portfolio/frontend exec …`), pas depuis la racine.
 - Un écran `500` sur toutes les routes `/api/*` et `/admin` après plusieurs
@@ -352,19 +364,23 @@ Ce qui a été corrigé et pourquoi :
   Firefox 113, Safari 16.4), ce qui évite d'expédier des polyfills pour
   `Array.prototype.at`, `Object.hasOwn` et consorts.
 
-**Ce qui reste, et pourquoi c'est architectural.** Sur mobile le score bute sur le
-LCP (3,3 s d'après Lighthouse). Le LCP _observé_ dans la trace est à 298 ms, et une
-mesure réelle sous throttling 4G + CPU ×4 donne 1196 ms : les 3,3 s sont l'estimation
-pessimiste de Lantern, qui modélise le téléchargement et l'exécution des **290 Ko de
-JavaScript répartis sur 17 requêtes** avant la peinture. La cause de fond est que
-toute la page d'accueil est un arbre client : `ConversationSection` est `'use client'`
-uniquement pour relayer un `chatRef` entre les prompts de `ProjectsTeaser` et le champ
-du chat, ce qui entraîne `Hero`, `HomeRail` et `ProjectsTeaser` avec lui — et avec eux
-`simple-icons` (18 Ko) et une bonne part de `lucide-react`. Descendre sous les 2 s
-suppose de rendre le hero côté serveur et de n'isoler que le chat en îlot client, le
-pont passant par un store Zustand plutôt que par un ref partagé. C'est le sens de la
-convention « Server Components par défaut » : ce n'est pas un réglage, c'est une
-refonte de la page d'accueil.
+**Accueil en composants serveur (#98).** Le hero, le rail et la section projets sont rendus
+côté serveur ; les seuls îlots client sont `HeroChat`, `ChatTrigger` (prompts et raccourci
+« Assistant »), `ProjectsMore` (section dépliable) et les enveloppes d'animation. Le pont entre
+les prompts et le champ du chat est un store Zustand (`src/stores/chat-bridge.ts`), plus un
+`ref` partagé qui forçait toute la page en client. `simple-icons` et la plupart de
+`lucide-react` ne partent plus dans le navigateur.
+
+**Les fonctionnalités Motion étaient dans le bundle initial de chaque page.** Le provider
+faisait `import('motion/react')` : le même module que tous les composants importent
+statiquement, donc impossible à séparer. Il passe désormais par `components/motion/features.ts`.
+JS de l'accueil : 284 → 232 Ko transférés, TBT simulé 400 → 40 ms.
+
+**Mesurer en local fausse la perf mobile.** Le serveur répond si vite que tous les scripts ont
+fini avant le premier rendu ; Lantern les rattache alors au LCP et l'estime à ~3 s alors que le
+LCP observé est de 0,2 s (pages texte). `--throttling-method=devtools` donne les vrais chiffres
+(96–99). Le score de référence est PageSpeed Insights sur la preview Vercel, que la session
+cloud ne peut pas joindre (`vercel.app` bloqué par le proxy).
 
 ## Validation
 

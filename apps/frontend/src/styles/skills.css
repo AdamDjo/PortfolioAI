@@ -1,6 +1,6 @@
 /* Compétences groupées par domaine : liste de définitions, le domaine est le
-   terme et les technologies la définition. Utilisé par /parcours (chips seules,
-   dans le parcours professionnel) et /services (groupes complets). */
+   terme et les technologies la définition. Utilisé par /parcours, en chips seules dans
+   le parcours professionnel et en groupes complets dans la section compétences. */
 .skill-groups {
   display: grid;
   /* Deux colonnes dès qu'il y a la place, une seule sinon : le nombre de domaines

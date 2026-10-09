@@ -306,13 +306,16 @@ export interface Project {
    */
   cover?: (number | null) | Media
   /**
-   * Optionnel. Affiché à côté du lien de démonstration.
+   * Optionnel. Affiché en icône GitHub sur la carte du projet, sur l’accueil.
    */
   repositoryUrl?: string | null
   /**
-   * Affichées en surtitre de la carte projet.
+   * Les trois premières sont affichées en étiquettes sur la carte projet.
    */
   technologies?: string[] | null
+  /**
+   * Les projets mis en avant occupent la première rangée, visible sans déplier la section.
+   */
   featured?: boolean | null
   /**
    * Croissant : 0 en premier. À valeur égale, les projets les plus récents passent devant.
@@ -429,7 +432,7 @@ export interface AiKnowledge {
   createdAt: string
 }
 /**
- * Skills, plugins et serveurs MCP affichés sur /outils-ia.
+ * Skills, plugins et serveurs MCP affichés dans l’onglet « Outils IA » de /veille.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "ai-tools".
@@ -1066,7 +1069,7 @@ export interface AssistantSetting {
   createdAt?: string | null
 }
 /**
- * Visibilité de la page /services.
+ * Visibilité de la section Services, en bas de la page /parcours.
  *
  * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "services-settings".
@@ -1074,7 +1077,7 @@ export interface AssistantSetting {
 export interface ServicesSetting {
   id: number
   /**
-   * Décoché, la page /services n’est plus accessible et redirige vers l’accueil.
+   * Décoché, la section Services disparaît de /parcours. L’ancienne adresse /services mène toujours à /parcours.
    */
   enabled?: boolean | null
   updatedAt?: string | null

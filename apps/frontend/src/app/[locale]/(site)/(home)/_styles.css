@@ -1289,8 +1289,106 @@
   border: 1px solid var(--line);
   border-radius: 50%;
 }
+/* The sticky header would otherwise cover the section title after a jump to `#projects`. */
+.home-projects {
+  scroll-margin-top: 84px;
+}
+.home-project-card-frame {
+  position: relative;
+}
+/* Repository link, laid over the card's thumbnail as a sibling of the card link. */
+.home-project-code {
+  position: absolute;
+  z-index: 2;
+  top: 15px;
+  right: 15px;
+  display: grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  border: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  color: var(--text);
+  backdrop-filter: blur(6px);
+  transition:
+    border-color 220ms ease,
+    color 220ms ease,
+    transform 220ms ease;
+}
+.home-project-code:hover,
+.home-project-code:focus-visible {
+  border-color: var(--accent);
+  color: var(--accent);
+  transform: scale(1.06);
+}
+/*
+  Collapsible rest of the projects. Animating `grid-template-rows` from 0fr to
+  1fr is what lets the height follow the content without measuring it in
+  JavaScript: `height: auto` cannot be transitioned, a fraction can.
+*/
+.home-projects-more {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition:
+    grid-template-rows 520ms var(--ease-out-quint),
+    opacity 360ms ease;
+}
+.home-projects-more.is-open {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+.home-projects-more-inner {
+  overflow: hidden;
+  min-height: 0;
+}
+.home-projects-more.is-open .home-projects-more-inner {
+  /* Room for the hover lift and the tilt, which the clip would otherwise cut. */
+  padding-top: 15px;
+}
+.home-projects-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 18px;
+  padding: 9px 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-full);
+  background: var(--surface);
+  color: var(--text);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    border-color 220ms ease,
+    color 220ms ease;
+}
+.home-projects-toggle:hover {
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--line));
+  color: var(--accent);
+}
+.home-projects-toggle svg {
+  transition: transform 320ms var(--ease-out-quint);
+}
+.home-projects-toggle[aria-expanded='true'] svg {
+  transform: rotate(180deg);
+}
+@media (prefers-reduced-motion: reduce) {
+  .home-projects-more,
+  .home-projects-toggle svg {
+    transition: none;
+  }
+}
+/*
+  Sized to the first row of cards, not to the column: stretched, the panel would
+  grow with the projects list when it is expanded. Sticky so it stays within
+  reach while the visitor scrolls through the expanded list.
+*/
 .home-project-assistant-reveal {
-  height: 100%;
+  position: sticky;
+  top: 16px;
+  align-self: start;
   padding-top: 71px;
 }
 .home-project-assistant {

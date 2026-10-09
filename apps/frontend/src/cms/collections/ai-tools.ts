@@ -24,7 +24,8 @@ const AITools: CollectionConfig = {
   admin: {
     useAsTitle: 'name',
     defaultColumns: ['name', 'kind', 'active', 'updatedAt'],
-    description: 'Skills, plugins et serveurs MCP affichés sur /outils-ia.',
+    description:
+      'Skills, plugins et serveurs MCP affichés dans l’onglet « Outils IA » de /veille (/veille/outils-ia).',
   },
   access: {
     read: () => true,
