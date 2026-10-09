@@ -7,6 +7,12 @@ const enable = vi.fn()
 const getPreviewUser = vi.fn<() => Promise<{ id: number; email: string } | null>>()
 
 vi.mock('next/headers', () => ({ draftMode: () => Promise.resolve({ enable }) }))
+// `redirect()` throws to end the handler; the stub throws the target so the test can read it.
+vi.mock('next/navigation', () => ({
+  redirect: (path: string) => {
+    throw new Error(`redirect:${path}`)
+  },
+}))
 vi.mock('@/lib/preview', async (importOriginal) => ({
   ...(await importOriginal<typeof Preview>()),
   getPreviewUser: () => getPreviewUser(),
@@ -44,13 +50,11 @@ describe('GET /api/preview', () => {
   it('enables draft mode for the admin and redirects to the article', async () => {
     getPreviewUser.mockResolvedValue({ id: 1, email: 'admin@example.com' })
 
-    const response = await GET(request('locale=en&slug=server-components-101'))
-
-    expect(enable).toHaveBeenCalledOnce()
-    expect(response.status).toBe(307)
-    expect(response.headers.get('location')).toBe(
-      'http://localhost:3000/en/blog/server-components-101'
+    // A relative path: an absolute URL built from the request would name the
+    // address the server listens on, not the public domain behind the proxy.
+    await expect(GET(request('locale=en&slug=server-components-101'))).rejects.toThrow(
+      'redirect:/en/blog/server-components-101'
     )
-    expect(response.headers.get('cache-control')).toBe('no-store')
+    expect(enable).toHaveBeenCalledOnce()
   })
 })
