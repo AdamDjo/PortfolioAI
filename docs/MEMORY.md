@@ -74,6 +74,10 @@
   `/en` et `/fr` comme l'index passent de 404 à 200.
 - Documentation vivante de la chaîne éditoriale, à republier à chaque lot livré :
   https://claude.ai/artifact/VXEvdeXySFy9yzoGkLZMqv
+- Aperçu des brouillons d'article (#89) : bouton « Aperçu » sur un article dans `/admin`
+  (`admin.preview`) → `/api/preview` active le Draft Mode de Next puis redirige vers
+  `/[locale]/blog/[slug]`, qui lit la dernière version (`draft: true`) avec un bandeau et
+  `noindex`. `/api/preview/exit` en sort. Pas d'aperçu en direct pendant la frappe (hors périmètre).
 - Navigation resserrée (#98) : **Accueil · Veille · Parcours · Blog · Contact**. Tous les
   projets sont sur l'accueil (première rangée visible, le reste dans une section dépliable,
   lien GitHub en icône sur chaque carte) et `/projets` n'existe plus. `/outils-ia` devient
@@ -282,6 +286,14 @@ perdue. Suivi par #91, et écrit dans la description du champ `markdownImport`.
 - Section projets dépliable : transition `grid-template-rows: 0fr → 1fr` (pas de mesure JS),
   région `inert` quand elle est fermée. Les cartes cachées restent dans le HTML pour les
   robots, ce qui compte maintenant que `/projets` a disparu.
+- **Aperçu : deux verrous, jamais un seul.** `/api/preview` ne pose le cookie de Draft Mode que
+  pour une session Payload valide (sinon 404, comme une requête malformée), et la page ne lit
+  un brouillon que si la requête porte _à la fois_ ce cookie et la session. Un lien d'aperçu ou
+  un cookie `__prerender_bypass` qui fuite ne montre donc rien. La lecture passe par
+  `overrideAccess: false` + `user` : la règle d'accès de `posts` reste le seul arbitre.
+- Le lien « Quitter l'aperçu » est une `<a>`, pas un `Link` : un préchargement de la route de
+  sortie désactiverait le Draft Mode tout seul. La page reste prérendue (`●`) : `draftMode()`
+  ne la rend dynamique que pour les requêtes qui portent le cookie, servies en `no-store`.
 - Prettier et ESLint doivent être lancés depuis le workspace
   (`pnpm --filter @portfolio/frontend exec …`), pas depuis la racine.
 - Un écran `500` sur toutes les routes `/api/*` et `/admin` après plusieurs

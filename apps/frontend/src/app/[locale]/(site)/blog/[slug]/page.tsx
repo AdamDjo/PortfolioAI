@@ -1,5 +1,6 @@
 import { RichText, type JSXConvertersFunction } from '@payloadcms/richtext-lexical/react'
 import { ArrowLeft } from 'lucide-react'
+import { draftMode } from 'next/headers'
 import Image from 'next/image'
 import { notFound } from 'next/navigation'
 import { hasLocale } from 'next-intl'
@@ -10,10 +11,36 @@ import { buildAlternates } from '@/i18n/metadata'
 import { getPathname, Link } from '@/i18n/navigation'
 import { getPageLocale } from '@/i18n/params'
 import { routing } from '@/i18n/routing'
-import { listPublishedPosts, readPublishedPost, resolveDescription } from '@/lib/posts'
+import {
+  listPublishedPosts,
+  readDraftPost,
+  readPublishedPost,
+  resolveDescription,
+} from '@/lib/posts'
+import { getPreviewUser } from '@/lib/preview'
 import { absoluteUrl } from '@/lib/site-url'
 
+import type { Locale } from '@/i18n/routing'
 import type { Metadata } from 'next'
+
+/**
+ * The article to render, and whether it is the draft preview.
+ *
+ * Drafts are read only when the request carries draft mode *and* a signed-in
+ * admin: either alone falls back to the published article, exactly what any
+ * visitor gets. See `lib/preview.ts` for why both are required.
+ *
+ * Outside draft mode `draftMode()` costs nothing and keeps the page static; with
+ * the cookie, Next renders it per request and skips every cache, so a preview
+ * is never stored nor served to someone else.
+ */
+async function loadArticle(locale: Locale, slug: string) {
+  const { isEnabled } = await draftMode()
+  const user = isEnabled ? await getPreviewUser() : null
+
+  if (user) return { post: await readDraftPost(locale, slug, user), preview: true }
+  return { post: await readPublishedPost(locale, slug), preview: false }
+}
 
 /**
  * Renders the code block Payload's premade `CodeBlock` produces.
@@ -57,11 +84,14 @@ export async function generateMetadata({
 }: PageProps<'/[locale]/blog/[slug]'>): Promise<Metadata> {
   const { slug } = await params
   const locale = await getPageLocale(params)
-  const post = await readPublishedPost(locale, slug)
+  const { post, preview } = await loadArticle(locale, slug)
 
   // A slug that matches nothing renders the 404 below; metadata for a page that
   // does not exist would only describe the error.
   if (!post) return {}
+
+  // A preview link can leak; a crawler following it must not index the draft.
+  if (preview) return { title: post.title, robots: { index: false, follow: false } }
 
   const title = post.seoTitle ?? post.title
   const description = post.seoDescription ?? resolveDescription(post.excerpt, post.content)
@@ -86,15 +116,16 @@ async function ArticlePage({ params }: PageProps<'/[locale]/blog/[slug]'>) {
   const locale = await getPageLocale(params)
   setRequestLocale(locale)
 
-  const [t, format, post] = await Promise.all([
+  const [t, format, { post, preview }] = await Promise.all([
     getTranslations('Blog'),
     getFormatter({ locale }),
-    readPublishedPost(locale, slug),
+    loadArticle(locale, slug),
   ])
 
-  // Covers both an unknown slug and a draft: the collection refuses to serve an
-  // unpublished document, so a draft is indistinguishable from a typo here. That
-  // is the intended behaviour — a draft must not even confirm that it exists.
+  // Covers both an unknown slug and a draft outside the preview: the collection
+  // refuses to serve an unpublished document to a visitor, so a draft is
+  // indistinguishable from a typo here. That is the intended behaviour — a draft
+  // must not even confirm that it exists.
   if (!post) notFound()
 
   const url = absoluteUrl(getPathname({ href: `/blog/${slug}`, locale }))
@@ -105,6 +136,16 @@ async function ArticlePage({ params }: PageProps<'/[locale]/blog/[slug]'>) {
 
   return (
     <div className="page shell">
+      {preview ? (
+        <div className="preview-banner" role="status">
+          <span>{t('previewBanner')}</span>
+          {/*
+            A plain anchor, not `Link`: the target is a route handler that turns
+            draft mode off, and a prefetch of it would end the preview on its own.
+          */}
+          <a href={`/api/preview/exit?locale=${locale}`}>{t('previewExit')}</a>
+        </div>
+      ) : null}
       <JsonLd
         data={{
           '@context': 'https://schema.org',

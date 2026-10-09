@@ -106,7 +106,9 @@
     "emptyFilteredState": "No article with this tag yet.",
     "readingTime": "{count, plural, one {# min read} other {# min read}}",
     "backToIndex": "All articles",
-    "breadcrumbHome": "Home"
+    "breadcrumbHome": "Home",
+    "previewBanner": "Draft preview — this version is not published.",
+    "previewExit": "Exit preview"
   },
   "About": {
     "metaTitle": "Background & services",

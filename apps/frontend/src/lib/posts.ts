@@ -1,5 +1,5 @@
 import { convertLexicalToPlaintext } from '@payloadcms/richtext-lexical/plaintext'
-import { getPayload } from 'payload'
+import { getPayload, type Payload } from 'payload'
 
 import { CONTENT_TAGS, cachedRead } from '@/lib/content-cache'
 import config from '@payload-config'
@@ -260,13 +260,50 @@ const readPublishedPost = async (locale: Locale, slug: string): Promise<PostDeta
   return doc ? toDetail(doc) : null
 }
 
+/**
+ * The latest saved version of an article, draft or not, as `user` may read it.
+ *
+ * Used by the preview only. `draft: true` returns the newest version instead of
+ * the published one, and access is still evaluated — against the signed-in user,
+ * never with `overrideAccess` — so the collection's own rule stays the single
+ * gate. Without a user there is nothing to preview: the function refuses rather
+ * than falling back to the public read.
+ */
+const readDraftPost = async (
+  locale: Locale,
+  slug: string,
+  user: PreviewUser | null
+): Promise<PostDetail | null> => {
+  if (!user) return null
+  const payload = await getPayload({ config })
+
+  const result = await payload.find({
+    collection: 'posts',
+    locale,
+    where: { slug: { equals: slug } },
+    limit: 1,
+    depth: 1,
+    draft: true,
+    overrideAccess: false,
+    user,
+  })
+
+  const doc = result.docs[0]
+  return doc ? toDetail(doc) : null
+}
+
+/** The signed-in admin, as Payload's `auth` returns it. */
+type PreviewUser = NonNullable<Awaited<ReturnType<Payload['auth']>>['user']>
+
 export {
   DESCRIPTION_LIMIT,
   listFeedEntries,
   listPublishedPosts,
+  readDraftPost,
   readPublishedPost,
   resolveDescription,
   type FeedEntry,
   type PostDetail,
   type PostSummary,
+  type PreviewUser,
 }

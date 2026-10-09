@@ -106,7 +106,9 @@
     "emptyFilteredState": "Aucun article avec ce tag pour l'instant.",
     "readingTime": "{count, plural, one {# min de lecture} other {# min de lecture}}",
     "backToIndex": "Tous les articles",
-    "breadcrumbHome": "Accueil"
+    "breadcrumbHome": "Accueil",
+    "previewBanner": "Aperçu du brouillon — cette version n’est pas publiée.",
+    "previewExit": "Quitter l’aperçu"
   },
   "About": {
     "metaTitle": "Parcours et services",

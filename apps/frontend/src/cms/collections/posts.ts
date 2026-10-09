@@ -46,6 +46,15 @@ const Posts: CollectionConfig = {
     defaultColumns: ['title', 'slug', '_status', 'publishedAt', 'updatedAt'],
     description:
       'Rédigez en Markdown dans votre éditeur, collez-le dans « Import Markdown », puis ajoutez les images dans le corps.',
+    /*
+     * The "Preview" button of an article opens it as a real page, draft included
+     * (#89). Relative on purpose: the admin and the site share an origin, and
+     * the route turns draft mode on for the signed-in admin only.
+     */
+    preview: (doc, { locale }) =>
+      typeof doc.slug === 'string' && doc.slug
+        ? `/api/preview?slug=${encodeURIComponent(doc.slug)}&locale=${encodeURIComponent(locale)}`
+        : null,
   },
   versions: {
     // Drafts, and the version history that comes with them: an article is a
